@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">AppLifecycle</string>
+    <string name="lifecycle_log_title">Activity Lifecycle Logger</string>
+    <string name="viewgroup_log_title">RelativeLayout lifecycle</string>
+    <string name="view_log_title">TextView lifecycle</string>
+    <string name="close">Close</string>
+    <string name="next">NEXT</string>
+    <string name="clear">Clear</string>
+</resources>
