@@ -34,56 +34,56 @@ public class LoggableView extends android.support.v7.widget.AppCompatTextView im
 
     @Override
     public void onAttachedToWindow() {
-        super.onAttachedToWindow();
         log("onAttachedToWindow");
+        super.onAttachedToWindow();
     }
 
     @Override
     public void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
         log("onDetachedFromWindow");
+        super.onDetachedFromWindow();
     }
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         log("onMeasure");
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
     public void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
         log("onLayout");
+        super.onLayout(changed, l, t, r, b);
     }
 
     @Override
     public void dispatchDraw(Canvas canvas) {
-        super.dispatchDraw(canvas);
         log("dispatchDraw");
+        super.dispatchDraw(canvas);
     }
 
     @Override
     public void draw(Canvas canvas) {
-        super.draw(canvas);
         log("draw");
+        super.draw(canvas);
     }
 
     @Override
     public void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
         log("onDraw");
+        super.onDraw(canvas);
     }
 
     @Override
     public void invalidate() {
-        super.invalidate();
         log("invalidate");
+        super.invalidate();
     }
 
     @Override
     public void requestLayout() {
-        super.requestLayout();
         log("requestLayout");
+        super.requestLayout();
     }
 
     public static void setLifecycleLogger(Loggable logger)

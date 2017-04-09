@@ -22,28 +22,28 @@ public abstract class LoggableActivity extends AppCompatActivity implements Logg
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
         log("onPostCreate");
+        super.onPostCreate(savedInstanceState);
     }
 
     @Override
     protected void onResume() {
-        super.onResume();
         Toast.makeText(this, "Activity is visible", Toast.LENGTH_SHORT).show();
         log("onResume");
+        super.onResume();
     }
 
     @Override
     protected void onPostResume() {
-        super.onPostResume();
         log("onPostResume");
+        super.onPostResume();
     }
 
     @Override
     protected void onStart() {
-        super.onStart();
         Toast.makeText(this, "Activity was started", Toast.LENGTH_SHORT).show();
         log("onStart");
+        super.onStart();
     }
 
     @Override
@@ -76,14 +76,14 @@ public abstract class LoggableActivity extends AppCompatActivity implements Logg
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         log("onSaveInstanceState");
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
         log("onRestoreInstanceState");
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     public void log(String body) {

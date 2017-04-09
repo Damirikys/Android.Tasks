@@ -17,29 +17,29 @@ public class Application extends android.app.Application
 
     @Override
     public void onLowMemory() {
-        super.onLowMemory();
         Toast.makeText(this, TAG + ": onLowMemory", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onLowMemory");
+        super.onLowMemory();
     }
 
     @Override
     public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
         Toast.makeText(this, TAG + ": onTrimMemory", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onTrimMemory");
+        super.onTrimMemory(level);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
         Toast.makeText(this, TAG + ": onConfigurationChanged", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onConfigurationChanged");
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override
     public void onTerminate() {
-        super.onTerminate();
         Toast.makeText(this, TAG + ": onTerminate", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onTerminate");
+        super.onTerminate();
     }
 }
