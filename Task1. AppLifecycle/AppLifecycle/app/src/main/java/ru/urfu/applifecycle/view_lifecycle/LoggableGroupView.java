@@ -50,6 +50,18 @@ public class LoggableGroupView extends RelativeLayout implements ViewLifecycleLi
     }
 
     @Override
+    public void addView(View child) {
+        super.addView(child);
+        log("addView");
+    }
+
+    @Override
+    public void removeView(View view) {
+        super.removeView(view);
+        log("removeView");
+    }
+
+    @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         log("onMeasure");
