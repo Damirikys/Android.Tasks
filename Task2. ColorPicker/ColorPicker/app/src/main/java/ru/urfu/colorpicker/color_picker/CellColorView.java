@@ -97,11 +97,12 @@ public class CellColorView extends View implements View.OnTouchListener
     private void offsetColor(float x, float y) {
         float from = (float) (size / 2);
         int distanceX = (int) (x - from);
-        int distanceY = (int) (y - from);
+        float distanceY = (y - from) * 0.005f;
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
         hsv[0] = hsv[0] + (distanceX / 10);
-        hsv[2] = hsv[2] - (distanceY * 0.001f);
+        hsv[1] = hsv[1] + distanceY;
+        hsv[2] = hsv[2] - distanceY;
         setBackgroundColor(Color.HSVToColor(hsv));
     }
 
