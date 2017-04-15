@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -85,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
 
         favoriteList = (RecyclerView) navigationView.getHeaderView(0)
                 .findViewById(R.id.favorite_list);
+        NestedScrollView scrollWrapper = (NestedScrollView) navigationView.getHeaderView(0)
+                .findViewById(R.id.scroll_wrapper);
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         storage = getSharedPreferences(STORAGE_NAME, MODE_PRIVATE);
@@ -94,9 +97,35 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
         for (Object o : map.values())
             favoriteColors.add((int) o);
 
+        favoriteList.setNestedScrollingEnabled(false);
         favoriteList.setLayoutManager(new LinearLayoutManager(this));
         favoriteList.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        favoriteList.setAdapter(adapter = new FavoriteListAdapter(favoriteColors));
+
+        favoriteList.setAdapter(adapter = new FavoriteListAdapter(new FavoriteListAdapter.EventListener() {
+            @Override
+            public void onScrollingEnable() {
+                scrollWrapper.requestDisallowInterceptTouchEvent(false);
+                favoriteList.requestDisallowInterceptTouchEvent(false);
+            }
+
+            @Override
+            public void onScrollingDisable() {
+                scrollWrapper.requestDisallowInterceptTouchEvent(true);
+                favoriteList.requestDisallowInterceptTouchEvent(true);
+            }
+
+            @Override
+            public void onColorSelected(int color) {
+                pickerContent.setCurrentColor(color);
+                drawerLayout.closeDrawer(GravityCompat.START);
+            }
+
+            @Override
+            public void onColorDeleted(int color) {
+                deleteFromFavorite(color);
+            }
+        }, favoriteColors));
+
 
         currentColor.setBackgroundColor(pickerContent.getCurrentColor());
         pickerContent.subscribe(this);
@@ -130,6 +159,13 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
 
         adapter.addItem(pickerContent.getCurrentColor());
         Toast.makeText(this, "Цвет сохранен в избранное", Toast.LENGTH_SHORT).show();
+    }
+
+    public void deleteFromFavorite(int color) {
+        SharedPreferences.Editor editor = storage.edit();
+        editor.remove(String.valueOf(color));
+        editor.apply();
+        editor.commit();
     }
 
     @Override

@@ -11,10 +11,17 @@
         android:textSize="18sp"
         android:text="@string/favorites_title" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/favorite_list"
-        android:scrollbars="none"
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scroll_wrapper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/favorite_list"
+            android:scrollbars="none"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

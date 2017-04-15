@@ -24,7 +24,7 @@ public class PickerView extends AbstractPickerView
     }
 
     @Override
-    protected void setCurrentColor(int currentColor) {
+    public void setCurrentColor(int currentColor) {
         super.setCurrentColor(currentColor);
         notifySubscribers(Action.onColorChange);
     }
