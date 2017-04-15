@@ -4,19 +4,22 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.view.View;
+import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -38,6 +41,9 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
     Vibrator vibrator;
     SharedPreferences storage;
 
+    @BindView(R.id.content_body)
+    LinearLayout contentLayout;
+
     @BindView(R.id.picker_view)
     PickerView pickerContent;
     @BindView(R.id.current_color)
@@ -48,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
     @BindView(R.id.hsv_value)
     EditText hsv_output;
 
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
     @BindView(R.id.nav_view)
     NavigationView navigationView;
 
@@ -59,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ButterKnife.bind(this);
     }
 
@@ -66,6 +75,14 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
     protected void onPostCreate(@Nullable Bundle savedInstanceState)
     {
         super.onPostCreate(savedInstanceState);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.included_toolbar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(R.drawable.ic_menu_list);
+        toolbar.setTitle("ColorPicker");
+        toolbar.setSubtitle("Yandex Android School 2017");
+        toolbar.setNavigationOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+
         favoriteList = (RecyclerView) navigationView.getHeaderView(0)
                 .findViewById(R.id.favorite_list);
 
@@ -81,8 +98,20 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
         favoriteList.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         favoriteList.setAdapter(adapter = new FavoriteListAdapter(favoriteColors));
 
+        currentColor.setBackgroundColor(pickerContent.getCurrentColor());
         pickerContent.subscribe(this);
         pickerContent.setCellCount(16);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            contentLayout.setOrientation(LinearLayout.HORIZONTAL);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            contentLayout.setOrientation(LinearLayout.VERTICAL);
+        }
     }
 
     @OnClick(R.id.save_button)

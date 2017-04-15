@@ -2,7 +2,12 @@ package ru.urfu.colorpicker.color_picker;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.ColorFilter;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
+import android.graphics.drawable.PaintDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -10,15 +15,12 @@ import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
-import ru.urfu.colorpicker.Application;
-import ru.urfu.colorpicker.utils.BitmapManager;
-
 public abstract class AbstractPickerView extends HorizontalScrollView
 {
     private LinearLayout root;
     private boolean enableScrolling = true;
 
-    private BitmapDrawable drawable;
+    private PaintDrawable drawable;
     private int currentColor = Color.WHITE;
     private boolean EDIT_MODE = false;
     private int cellCount = 10;
@@ -80,7 +82,11 @@ public abstract class AbstractPickerView extends HorizontalScrollView
     public void setCellCount(int cellCount) {
         removeAllViews();
         root = new LinearLayout(getContext());
-        root.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        root.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT)
+        );
+
         root.setOrientation(LinearLayout.HORIZONTAL);
 
         this.cellCount = cellCount;
@@ -92,28 +98,55 @@ public abstract class AbstractPickerView extends HorizontalScrollView
 
     protected void calculateColors()
     {
+        float[] hsv = new float[] {0f, 1f, 1f};
+
         for (int i = 0; i < root.getChildCount(); i++)
         {
+            float offset = ((getWidth() / root.getChildCount()) * i);
+            hsv[0] = 360 * offset / getWidth();
+
             CellColorView view = (CellColorView) root.getChildAt(i);
-            int cX = (drawable.getBitmap().getWidth() / root.getChildCount()) * i;
-            int cY = (drawable.getBitmap().getHeight() / 2);
-
-            view.setCellColor(drawable.getBitmap().getPixel(cX, cY));
+            view.setCellColor(Color.HSVToColor(hsv));
         }
-
-        BitmapManager.brightness(drawable.getBitmap(), 0.8f);
-        root.setBackground(drawable);
     }
 
     protected void init()
     {
-        this.drawable = new BitmapDrawable(Application.getContext().getResources(),
-                BitmapManager.getHueBitmap(getWidth(), getHeight()));
+        this.setBackgroundColor(Color.BLACK);
+        this.drawable = getHueGradientDrawable();
+        this.drawable.setColorFilter(new ColorFilter());
+        root.setBackground(drawable);
 
         calculateColors();
     }
 
     interface Callback {
         void call(PickerViewStateListener observer);
+    }
+
+    private PaintDrawable getHueGradientDrawable() {
+        ShapeDrawable.ShaderFactory shaderFactory = new ShapeDrawable.ShaderFactory() {
+            @Override
+            public Shader resize(int width, int height) {
+                return new LinearGradient(0, 0, width, height,
+                        new int[] {
+                                0xFFFF0D00,
+                                0xFFFBFF00,
+                                0xFF04FF00,
+                                0xFF00FBFF,
+                                0xFF0800FF,
+                                0xFFFF00FF,
+                                0xFFFF0004
+                        },
+                        null, Shader.TileMode.CLAMP);
+            }
+        };
+
+        PaintDrawable paint = new PaintDrawable();
+        paint.setShape(new RectShape());
+        paint.setShaderFactory(shaderFactory);
+        paint.setAlpha(220);
+
+        return paint;
     }
 }

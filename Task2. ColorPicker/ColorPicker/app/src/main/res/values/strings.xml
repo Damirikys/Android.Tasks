@@ -10,5 +10,5 @@
     <string name="current_color">Выбранный цвет:</string>
     <string name="rgb">RGB:</string>
     <string name="hsv">HSV:</string>
-    <string name="add_to_favorite">Добавить в избранное</string>
+    <string name="add_to_favorite">в избранное</string>
 </resources>
