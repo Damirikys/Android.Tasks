@@ -4,5 +4,6 @@ public enum Action
 {
     onColorChange,
     editModeEnable,
-    editModeDisable
+    editModeDisable,
+    theBoundaryIsReached;
 }

@@ -215,4 +215,9 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
     public void editModeDisable() {
         vibrator.vibrate(10);
     }
+
+    @Override
+    public void theBoundaryIsReached() {
+        vibrator.vibrate(10);
+    }
 }

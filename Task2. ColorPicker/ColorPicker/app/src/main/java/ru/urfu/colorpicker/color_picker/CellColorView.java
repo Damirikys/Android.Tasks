@@ -27,6 +27,7 @@ public class CellColorView extends View implements View.OnTouchListener
     }
 
     private GestureDetector gestureDetector;
+    private GestureListener gestureListener;
     private PickerView parent;
     private int color;
 
@@ -59,7 +60,7 @@ public class CellColorView extends View implements View.OnTouchListener
         this.parent = (PickerView) view;
         this.setOnTouchListener(this);
 
-        gestureDetector = new GestureDetector(getContext(), new GestureListener());
+        gestureDetector = new GestureDetector(getContext(), gestureListener = new GestureListener());
 
         return this;
     }
@@ -80,10 +81,19 @@ public class CellColorView extends View implements View.OnTouchListener
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                if (parent.isEnableEditMode())
+                if (parent.isEnableEditMode()) {
+                    if (gestureListener.newTouch) {
+                        gestureListener.tapX = event.getX();
+                        gestureListener.tapY = event.getY();
+
+                        gestureListener.newTouch = false;
+                    }
+
                     offsetColor(event.getX(), event.getY());
+                }
                 break;
             case MotionEvent.ACTION_UP:
+                gestureListener.newTouch = true;
                 parent.notifySubscribers(Action.editModeDisable);
                 this.setLayoutParams(defaultParams);
                 this.invalidate();
@@ -95,12 +105,23 @@ public class CellColorView extends View implements View.OnTouchListener
 
 
     private void offsetColor(float x, float y) {
-        float from = (float) (size / 2);
-        int distanceX = (int) (x - from);
-        float distanceY = (y - from) * 0.005f;
+        float fromX = gestureListener.tapX;
+        float fromY = gestureListener.tapY ;
+
+        float distanceX = (x - fromX);
+        float distanceY = ((y - fromY) * 0.005f);
+
+
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
-        hsv[0] = hsv[0] + (distanceX / 10);
+
+        if (distanceX >= size || distanceX <= -size) {
+            parent.notifySubscribers(Action.theBoundaryIsReached);
+            hsv[0] = hsv[0] + ((distanceX > 0) ? size : -size + 8) / 10;
+        } else {
+            hsv[0] = hsv[0] + (distanceX / 10);
+        }
+
         hsv[1] = hsv[1] + distanceY;
         hsv[2] = hsv[2] - distanceY;
         setBackgroundColor(Color.HSVToColor(hsv));
@@ -109,6 +130,9 @@ public class CellColorView extends View implements View.OnTouchListener
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener
     {
+        boolean newTouch = true;
+        float tapX, tapY;
+
         @Override
         public boolean onDown(MotionEvent e) {
             return true;

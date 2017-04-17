@@ -56,6 +56,9 @@ public class PickerView extends AbstractPickerView
                     notify(PickerViewStateListener::editModeDisable);
                 }
                 break;
+            case theBoundaryIsReached:
+                notify(PickerViewStateListener::theBoundaryIsReached);
+                break;
         }
     }
 
