@@ -91,9 +91,50 @@ public abstract class AbstractPickerView extends HorizontalScrollView
 
         this.cellCount = cellCount;
         for (int i = 0; i < cellCount; i++)
-            root.addView(CellColorView.create(this));
+            root.addView(CellColorView.create(this).setPosition(i));
 
         addView(root);
+    }
+
+    public float[] getHsvBorders(CellColorView cellColorView)
+    {
+        float[] borders = new float[2];
+        float[] defaultColorHsv = new float[3];
+        Color.colorToHSV(cellColorView.getDefaultColor(), defaultColorHsv);
+
+        int position = cellColorView.getPosition();
+
+        if (position == 0) {
+
+            CellColorView next = (CellColorView) root.getChildAt(cellColorView.getPosition() + 1);
+            float[] hsv_next = new float[3];
+            Color.colorToHSV(next.getDefaultColor(), hsv_next);
+            borders[0] = 0f;
+            borders[1] = defaultColorHsv[0] + ((hsv_next[0] - defaultColorHsv[0]) / 2);
+
+        } else if (position == cellCount - 1) {
+
+            CellColorView prev = (CellColorView) root.getChildAt(cellColorView.getPosition() - 1);
+            float[] hsv_prev = new float[3];
+            Color.colorToHSV(prev.getDefaultColor(), hsv_prev);
+            borders[0] = hsv_prev[0] + ((defaultColorHsv[0] - hsv_prev[0]) / 2);
+            borders[1] = 360f;
+
+        } else {
+
+            CellColorView prev = (CellColorView) root.getChildAt(cellColorView.getPosition() - 1);
+            CellColorView next = (CellColorView) root.getChildAt(cellColorView.getPosition() + 1);
+
+            float[] hsv_prev = new float[3];
+            Color.colorToHSV(prev.getDefaultColor(), hsv_prev);
+            float[] hsv_next = new float[3];
+            Color.colorToHSV(next.getDefaultColor(), hsv_next);
+
+            borders[0] = hsv_prev[0] + ((defaultColorHsv[0] - hsv_prev[0]) / 2);
+            borders[1] = defaultColorHsv[0] + ((hsv_next[0] - defaultColorHsv[0]) / 2);
+        }
+
+        return borders;
     }
 
     protected void calculateColors()
@@ -106,7 +147,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
             hsv[0] = 360 * offset / getWidth();
 
             CellColorView view = (CellColorView) root.getChildAt(i);
-            view.setCellColor(Color.HSVToColor(hsv));
+            view.setDefaultColor(Color.HSVToColor(hsv));
         }
     }
 

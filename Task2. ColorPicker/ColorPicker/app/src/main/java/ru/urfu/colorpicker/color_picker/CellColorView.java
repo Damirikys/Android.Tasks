@@ -29,7 +29,12 @@ public class CellColorView extends View implements View.OnTouchListener
     private GestureDetector gestureDetector;
     private GestureListener gestureListener;
     private PickerView parent;
-    private int color;
+    private int position;
+    private int defaultColor;
+    private int currentColor;
+
+    private float LEFT_HSV_BORDER;
+    private float RIGHT_HSV_BORDER;
 
     private CellColorView(Context context) {
         super(context);
@@ -43,10 +48,15 @@ public class CellColorView extends View implements View.OnTouchListener
         super(context, attrs, defStyleAttr);
     }
 
-    public CellColorView setCellColor(int color)
+    public CellColorView setDefaultColor(int color)
     {
-        this.color = color;
-        setBackgroundColor(color);
+        this.defaultColor = color;
+        return setCurrentColor(color);
+    }
+
+    public CellColorView setCurrentColor(int color) {
+        this.currentColor = color;
+        setBackgroundColor(currentColor);
         return this;
     }
 
@@ -63,6 +73,19 @@ public class CellColorView extends View implements View.OnTouchListener
         gestureDetector = new GestureDetector(getContext(), gestureListener = new GestureListener());
 
         return this;
+    }
+
+    public int getDefaultColor() {
+        return defaultColor;
+    }
+
+    public CellColorView setPosition(int position) {
+        this.position = position;
+        return this;
+    }
+
+    public int getPosition() {
+        return position;
     }
 
     public static CellColorView create(AbstractPickerView pickerView)
@@ -94,6 +117,7 @@ public class CellColorView extends View implements View.OnTouchListener
                 break;
             case MotionEvent.ACTION_UP:
                 gestureListener.newTouch = true;
+                setCurrentColor(((ColorDrawable)getBackground()).getColor());
                 parent.notifySubscribers(Action.editModeDisable);
                 this.setLayoutParams(defaultParams);
                 this.invalidate();
@@ -104,27 +128,30 @@ public class CellColorView extends View implements View.OnTouchListener
     }
 
 
-    private void offsetColor(float x, float y) {
+    private void offsetColor(float x, float y)
+    {
         float fromX = gestureListener.tapX;
         float fromY = gestureListener.tapY ;
 
         float distanceX = (x - fromX);
         float distanceY = ((y - fromY) * 0.005f);
 
-
         float[] hsv = new float[3];
-        Color.colorToHSV(color, hsv);
+        Color.colorToHSV(currentColor, hsv);
 
-        if (distanceX >= size || distanceX <= -size) {
-            parent.notifySubscribers(Action.theBoundaryIsReached);
-            hsv[0] = hsv[0] + ((distanceX > 0) ? size : -size + 8) / 10;
-        } else {
-            hsv[0] = hsv[0] + (distanceX / 10);
-        }
-
+        hsv[0] = hsv[0] + (distanceX / 10);
         hsv[1] = hsv[1] + distanceY;
         hsv[2] = hsv[2] - distanceY;
-        setBackgroundColor(Color.HSVToColor(hsv));
+
+        if (hsv[0] < LEFT_HSV_BORDER || hsv[0] > RIGHT_HSV_BORDER)
+        {
+            parent.notifySubscribers(Action.theBoundaryIsReached);
+            hsv[0] = (hsv[0] < LEFT_HSV_BORDER) ? LEFT_HSV_BORDER : RIGHT_HSV_BORDER;
+        }
+        else
+        {
+            setBackgroundColor(Color.HSVToColor(hsv));
+        }
     }
 
 
@@ -146,6 +173,10 @@ public class CellColorView extends View implements View.OnTouchListener
 
         @Override
         public void onLongPress(MotionEvent e) {
+            float[] borders = parent.getHsvBorders(CellColorView.this);
+            LEFT_HSV_BORDER = borders[0];
+            RIGHT_HSV_BORDER = borders[1];
+
             parent.notifySubscribers(Action.editModeEnable);
             CellColorView.this.setLayoutParams(scaledParams);
             CellColorView.this.invalidate();
@@ -154,7 +185,7 @@ public class CellColorView extends View implements View.OnTouchListener
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            setBackgroundColor(color);
+            setBackgroundColor(defaultColor);
             return true;
         }
     }
