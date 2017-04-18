@@ -115,7 +115,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
             CellColorView view = (CellColorView) root.getChildAt(i);
 
             float offset = ((getWidth() / root.getChildCount()) * i);
-            hsv[0] = 360 * offset / getWidth();
+            hsv[0] = (360 * (offset + CellColorView.CELL_MARGIN)) / getWidth();
             view.setDefaultColor(hsv);
 
             if (restoreCache) {
@@ -191,7 +191,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
         PaintDrawable paint = new PaintDrawable();
         paint.setShape(new RectShape());
         paint.setShaderFactory(shaderFactory);
-        paint.setAlpha(220);
+        paint.setAlpha(240);
 
         return paint;
     }

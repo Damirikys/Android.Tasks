@@ -20,11 +20,11 @@ public class CellColorView extends View implements View.OnTouchListener
     private static LinearLayout.LayoutParams defaultParams;
     private static LinearLayout.LayoutParams scaledParams;
     public static final int CELL_SIZE = SizeManager.dpToPx(65);
+    public static final int CELL_MARGIN = (int) (CELL_SIZE * 0.25);
 
     static {
-        int margin = (int) (CELL_SIZE * 0.25);
         defaultParams = new LinearLayout.LayoutParams(CELL_SIZE, CELL_SIZE);
-        defaultParams.setMargins(margin, margin, margin, margin);
+        defaultParams.setMargins(CELL_MARGIN, CELL_MARGIN, CELL_MARGIN, CELL_MARGIN);
         scaledParams = new LinearLayout.LayoutParams(CELL_SIZE + CELL_SIZE /2, CELL_SIZE + CELL_SIZE /2);
     }
 
