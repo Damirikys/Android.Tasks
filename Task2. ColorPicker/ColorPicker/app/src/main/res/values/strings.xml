@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">ColorPicker</string>
+    <string name="app_desc">Yandex Android School 2017</string>
+    <string name="color_storage_name">favorite_color_storage</string>
     <string name="title_activity_main2">Main2Activity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -11,4 +13,7 @@
     <string name="rgb">RGB:</string>
     <string name="hsv">HSV:</string>
     <string name="add_to_favorite">в избранное</string>
+    <string name="copied">Скопировано</string>
+    <string name="already_in_favorite">Вы уже добавили в избранное этот цвет</string>
+    <string name="saved_in_favorite">Цвет сохранен в избранное</string>
 </resources>

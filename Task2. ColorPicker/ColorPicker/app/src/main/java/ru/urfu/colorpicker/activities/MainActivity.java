@@ -5,6 +5,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -30,17 +31,22 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import ru.urfu.colorpicker.Application;
 import ru.urfu.colorpicker.R;
 import ru.urfu.colorpicker.adapters.FavoriteListAdapter;
 import ru.urfu.colorpicker.color_picker.PickerView;
-import ru.urfu.colorpicker.color_picker.PickerViewStateListener;
+import ru.urfu.colorpicker.color_picker.listeners.PickerViewStateListener;
 
 public class MainActivity extends AppCompatActivity implements PickerViewStateListener
 {
-    private static final String STORAGE_NAME = "FavoriteColors";
+    private final Resources resources = Application.getContext().getResources();
+    private final String TITLE = resources.getString(R.string.app_name);
+    private final String SUBTITLE = resources.getString(R.string.app_desc);
+    private final String STORAGE_NAME = resources.getString(R.string.color_storage_name);
+    private static final int CELL_COUNT = 16;
 
-    Vibrator vibrator;
-    SharedPreferences storage;
+    private Vibrator vibrator;
+    private SharedPreferences storage;
 
     @BindView(R.id.content_body)
     LinearLayout contentLayout;
@@ -80,8 +86,8 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
         setSupportActionBar(toolbar);
 
         toolbar.setNavigationIcon(R.drawable.ic_menu_list);
-        toolbar.setTitle("ColorPicker");
-        toolbar.setSubtitle("Yandex Android School 2017");
+        toolbar.setTitle(TITLE);
+        toolbar.setSubtitle(SUBTITLE);
         toolbar.setNavigationOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
         favoriteList = (RecyclerView) navigationView.getHeaderView(0)
@@ -129,11 +135,12 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
 
         currentColor.setBackgroundColor(pickerContent.getCurrentColor());
         pickerContent.subscribe(this);
-        pickerContent.setCellCount(16);
+        pickerContent.setCellCount(CELL_COUNT);
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(Configuration newConfig)
+    {
         super.onConfigurationChanged(newConfig);
 
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -148,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
         String currentColor = String.valueOf(pickerContent.getCurrentColor());
 
         if (storage.getAll().containsKey(currentColor)) {
-            Toast.makeText(this, "Вы уже добавили в избранное этот цвет", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, resources.getString(R.string.already_in_favorite), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -158,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
         editor.commit();
 
         adapter.addItem(pickerContent.getCurrentColor());
-        Toast.makeText(this, "Цвет сохранен в избранное", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, resources.getString(R.string.saved_in_favorite), Toast.LENGTH_SHORT).show();
     }
 
     public void deleteFromFavorite(int color) {
@@ -190,12 +197,12 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
 
     @OnClick(R.id.rgb_value)
     public void rgbCopyToBuffer() {
-        copyToBuffer("RGB: " + rgb_output.getText().toString());
+        copyToBuffer(resources.getString(R.string.rgb) + rgb_output.getText().toString());
     }
 
     @OnClick(R.id.hsv_value)
     public void hsvCopyToBuffer() {
-        copyToBuffer("HSV: " + rgb_output.getText().toString());
+        copyToBuffer(resources.getString(R.string.hsv) + rgb_output.getText().toString());
     }
 
     private void copyToBuffer(String text) {
@@ -203,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements PickerViewStateLi
         ClipData clip = ClipData.newPlainText("", text);
         clipboard.setPrimaryClip(clip);
 
-        Toast.makeText(this, "Скопировано", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, resources.getString(R.string.copied), Toast.LENGTH_SHORT).show();
     }
 
     @Override

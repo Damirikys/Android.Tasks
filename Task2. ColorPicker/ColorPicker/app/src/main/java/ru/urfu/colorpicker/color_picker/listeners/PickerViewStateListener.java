@@ -1,4 +1,4 @@
-package ru.urfu.colorpicker.color_picker;
+package ru.urfu.colorpicker.color_picker.listeners;
 
 public interface PickerViewStateListener
 {

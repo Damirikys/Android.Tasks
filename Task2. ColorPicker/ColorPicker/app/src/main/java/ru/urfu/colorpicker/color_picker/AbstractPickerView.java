@@ -2,7 +2,6 @@ package ru.urfu.colorpicker.color_picker;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
 import android.graphics.drawable.PaintDrawable;
@@ -15,15 +14,25 @@ import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
+import java.util.Arrays;
+
+import ru.urfu.colorpicker.color_picker.listeners.PickerViewStateListener;
+
 public abstract class AbstractPickerView extends HorizontalScrollView
 {
+    private static final int DEFAULT_CELL_COUNT = 10;
+    private static final int DEFAULT_CELL_COLOR = Color.WHITE;
+
     private LinearLayout root;
+
+    private int currentColor = DEFAULT_CELL_COLOR;
+    private int cellCount = DEFAULT_CELL_COUNT;
+
+    private boolean EDIT_MODE = false;
     private boolean enableScrolling = true;
 
-    private PaintDrawable drawable;
-    private int currentColor = Color.WHITE;
-    private boolean EDIT_MODE = false;
-    private int cellCount = 10;
+    private float[][] colorCache;
+
 
     public AbstractPickerView(Context context) {
         super(context);
@@ -36,6 +45,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
     public AbstractPickerView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
+
 
     public boolean isEnableScrolling() {
         return enableScrolling;
@@ -53,6 +63,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
         EDIT_MODE = bool;
     }
 
+
     public int getCurrentColor() {
         return currentColor;
     }
@@ -61,25 +72,13 @@ public abstract class AbstractPickerView extends HorizontalScrollView
         this.currentColor = currentColor;
     }
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return isEnableScrolling() && super.onInterceptTouchEvent(ev);
+    protected void changeColorCache(int position, float[] value) {
+        colorCache[position] = Arrays.copyOf(value, 3);
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        return isEnableScrolling() && super.onTouchEvent(ev);
-    }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh)
+    public void setCellCount(int count)
     {
-        super.onSizeChanged(w, h, oldw, oldh);
-        if (root != null && root.getChildCount() == cellCount)
-            init();
-    }
-
-    public void setCellCount(int cellCount) {
         removeAllViews();
         root = new LinearLayout(getContext());
         root.setLayoutParams(new LinearLayout.LayoutParams(
@@ -89,12 +88,45 @@ public abstract class AbstractPickerView extends HorizontalScrollView
 
         root.setOrientation(LinearLayout.HORIZONTAL);
 
-        this.cellCount = cellCount;
+        cellCount = count;
+
         for (int i = 0; i < cellCount; i++)
             root.addView(CellColorView.create(this).setPosition(i));
 
         addView(root);
     }
+
+    protected void init()
+    {
+        this.setBackgroundColor(Color.BLACK);
+        root.setBackground(getHueGradientDrawable());
+        calculateColors();
+    }
+
+    protected void calculateColors()
+    {
+        boolean restoreCache = (colorCache != null && colorCache.length == cellCount);
+        if (!restoreCache) colorCache = new float[cellCount][3];
+
+        float[] hsv = new float[] {0f, 1f, 1f};
+
+        for (int i = 0; i < root.getChildCount(); i++)
+        {
+            CellColorView view = (CellColorView) root.getChildAt(i);
+
+            float offset = ((getWidth() / root.getChildCount()) * i);
+            hsv[0] = 360 * offset / getWidth();
+            view.setDefaultColor(hsv);
+
+            if (restoreCache) {
+                view.setCurrentColor(colorCache[i]);
+            } else {
+                colorCache[i] = Arrays.copyOf(hsv, 3);
+
+            }
+        }
+    }
+
 
     public float[] getHsvBorders(CellColorView cellColorView)
     {
@@ -137,35 +169,8 @@ public abstract class AbstractPickerView extends HorizontalScrollView
         return borders;
     }
 
-    protected void calculateColors()
+    private PaintDrawable getHueGradientDrawable()
     {
-        float[] hsv = new float[] {0f, 1f, 1f};
-
-        for (int i = 0; i < root.getChildCount(); i++)
-        {
-            float offset = ((getWidth() / root.getChildCount()) * i);
-            hsv[0] = 360 * offset / getWidth();
-
-            CellColorView view = (CellColorView) root.getChildAt(i);
-            view.setDefaultColor(Color.HSVToColor(hsv));
-        }
-    }
-
-    protected void init()
-    {
-        this.setBackgroundColor(Color.BLACK);
-        this.drawable = getHueGradientDrawable();
-        this.drawable.setColorFilter(new ColorFilter());
-        root.setBackground(drawable);
-
-        calculateColors();
-    }
-
-    interface Callback {
-        void call(PickerViewStateListener observer);
-    }
-
-    private PaintDrawable getHueGradientDrawable() {
         ShapeDrawable.ShaderFactory shaderFactory = new ShapeDrawable.ShaderFactory() {
             @Override
             public Shader resize(int width, int height) {
@@ -189,5 +194,28 @@ public abstract class AbstractPickerView extends HorizontalScrollView
         paint.setAlpha(220);
 
         return paint;
+    }
+
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return isEnableScrolling() && super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        return isEnableScrolling() && super.onTouchEvent(ev);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh)
+    {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (root != null && root.getChildCount() == cellCount)
+            init();
+    }
+
+    interface Callback {
+        void call(PickerViewStateListener observer);
     }
 }

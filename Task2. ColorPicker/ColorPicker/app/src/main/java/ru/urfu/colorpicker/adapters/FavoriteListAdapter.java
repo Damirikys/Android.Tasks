@@ -130,8 +130,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
         private void removeItem() {
             eventListener.onColorDeleted(items.get(position));
             items.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(0, getItemCount());
+            notifyDataSetChanged();
         }
     }
 
