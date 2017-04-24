@@ -1,4 +1,4 @@
-package ru.urfu.colorpicker.color_picker;
+package ru.urfu.taskmanager.color_picker;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -12,8 +12,8 @@ import android.widget.LinearLayout;
 
 import java.util.Arrays;
 
-import ru.urfu.colorpicker.color_picker.states.Action;
-import ru.urfu.colorpicker.utils.SizeManager;
+import ru.urfu.taskmanager.color_picker.states.Action;
+import ru.urfu.taskmanager.utils.tools.SizeManager;
 
 public class CellColorView extends View implements View.OnTouchListener
 {
@@ -114,8 +114,8 @@ public class CellColorView extends View implements View.OnTouchListener
         float[] hsvValue = Arrays.copyOf(currentColor, 3);
 
         hsvValue[0] = hsvValue[0] + (distanceX / 10);
-        hsvValue[1] = normalize(hsvValue[1] + distanceY);
-        hsvValue[2] = normalize(hsvValue[2] - distanceY);
+        hsvValue[1] = hsvValue[1] + distanceY;
+        hsvValue[2] = hsvValue[2] - distanceY;
 
         if (hsvValue[0] < LEFT_HSV_BORDER || hsvValue[0] > RIGHT_HSV_BORDER)
         {
@@ -126,16 +126,6 @@ public class CellColorView extends View implements View.OnTouchListener
         colorBuffer = hsvValue;
         setBackgroundColor(Color.HSVToColor(hsvValue));
     }
-
-    private float normalize(float value) {
-        if (value < 0f)
-            return 0f;
-        if (value > 1f)
-            return 1f;
-
-        return value;
-    }
-
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {

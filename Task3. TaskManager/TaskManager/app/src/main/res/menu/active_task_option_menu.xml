@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/task_is_complete"
+        android:title="@string/task_is_complete"/>
+
+    <item
+        android:id="@+id/postpone_the_task"
+        android:title="@string/postpone_the_task"/>
+
+    <item
+        android:id="@+id/delete_the_task"
+        android:title="@string/delete_the_task"/>
+</menu>

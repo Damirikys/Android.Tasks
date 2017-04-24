@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF7043</color>
+    <color name="colorPrimaryDark">#ed6237</color>
+    <color name="colorAccent">#FF7043</color>
+    <color name="pickerTextColor">#b7b7b7</color>
+    <color name="selectedTextColor">#848484</color>
+</resources>
