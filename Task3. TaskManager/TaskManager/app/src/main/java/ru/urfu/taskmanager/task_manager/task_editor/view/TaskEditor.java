@@ -10,4 +10,7 @@ public interface TaskEditor extends View.OnClickListener, PickerViewStateListene
     Intent getIntent();
     void setToolbarTitle(String title);
     void initializeEditor(TaskEntry entryToEdit);
+    void showTitleError(String string);
+    void showDescriptionError(String string);
+    void exit(int result);
 }

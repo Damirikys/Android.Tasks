@@ -3,9 +3,13 @@ package ru.urfu.taskmanager.task_manager.task_editor.view;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,6 +36,7 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
     TaskEditorPresenter presenter;
 
     SingleDateAndTimePicker dateAndTimePicker;
+    TextInputLayout titleInputLayout, descriptionInputLayout;
     PickerView pickerView;
     CardView cardColorView;
     EditText title_edit_field, desc_edit_field;
@@ -57,22 +62,24 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
     }
 
     private void initView() {
+        descriptionInputLayout = (TextInputLayout) findViewById(R.id.description_input_layout);
         dateAndTimePicker = (SingleDateAndTimePicker) findViewById(R.id.datetime_picker);
         dateAndTimePicker.setMustBeOnFuture(true);
-        pickerView = (PickerView) findViewById(R.id.pickerView);
+        titleInputLayout = (TextInputLayout) findViewById(R.id.title_input_layout);
         cardColorView = (CardView) findViewById(R.id.cardColor);
-        title_edit_field = (EditText) findViewById(R.id.title_edit_field);
         desc_edit_field = (EditText) findViewById(R.id.descr_edit_field);
+        title_edit_field = (EditText) findViewById(R.id.title_edit_field);
         save_button = (Button) findViewById(R.id.save_button);
         save_button.setOnClickListener(this);
+        pickerView = (PickerView) findViewById(R.id.pickerView);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         cardColorView.setCardBackgroundColor(pickerView.getCurrentColor());
-        pickerView.subscribe(this);
         pickerView.setCellCount(CELL_COUNT);
+        pickerView.subscribe(this);
 
         presenter = new TaskEditorPresenterImpl(this);
     }
@@ -90,8 +97,21 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
     }
 
     @Override
+    public void showTitleError(String string) {
+        titleInputLayout.setError(string);
+    }
+
+
+    @Override
+    public void showDescriptionError(String string) {
+        descriptionInputLayout.setError(string);
+    }
+
+    @Override
     public void onClick(View v) {
-        setResult(RESULT_OK);
+        titleInputLayout.setErrorEnabled(false);
+        descriptionInputLayout.setErrorEnabled(false);
+
         presenter.saveState(
                 new TaskEntry()
                     .setTitle(title_edit_field.getText().toString())
@@ -99,8 +119,6 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
                     .setTtl(dateAndTimePicker.getDate().getTime())
                     .setColor(pickerView.getCurrentColor())
         );
-
-        finish();
     }
 
     @Override
@@ -162,5 +180,12 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
         }
+    }
+
+    @Override
+    public void exit(int result) {
+        Log.d("EXIT", "result: " + result);
+        setResult(result);
+        finish();
     }
 }
