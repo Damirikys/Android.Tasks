@@ -17,6 +17,7 @@ import ru.urfu.taskmanager.task_manager.fragments.view.TaskListActive;
 import ru.urfu.taskmanager.task_manager.fragments.view.TaskListCompleted;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenter;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenterImpl;
+import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
 
 public class TaskManagerActivity extends AppCompatActivity implements TaskManager
 {
@@ -80,6 +81,14 @@ public class TaskManagerActivity extends AppCompatActivity implements TaskManage
     @Override
     public void showAlert(String message) {
         Snackbar.make(getWindow().getDecorView(), message, 2000).show();
+    }
+
+    @Override
+    public void startEditor(int id) {
+        Intent intent = new Intent(this, TaskEditorActivity.class);
+        intent.setAction(ACTION_EDIT);
+        intent.putExtra(TasksDatabaseHelper.ID, id);
+        startActivityForResult(intent, REQUEST_EDIT);
     }
 
     @Override

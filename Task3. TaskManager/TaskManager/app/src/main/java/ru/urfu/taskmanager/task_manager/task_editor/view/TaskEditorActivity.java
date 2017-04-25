@@ -3,13 +3,10 @@ package ru.urfu.taskmanager.task_manager.task_editor.view;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -41,6 +38,8 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
     CardView cardColorView;
     EditText title_edit_field, desc_edit_field;
     Button save_button;
+
+    boolean isRestored = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,11 +76,18 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        if (savedInstanceState != null)
+            isRestored = true;
+
         cardColorView.setCardBackgroundColor(pickerView.getCurrentColor());
         pickerView.setCellCount(CELL_COUNT);
         pickerView.subscribe(this);
 
         presenter = new TaskEditorPresenterImpl(this);
+    }
+
+    public boolean isRestored() {
+        return isRestored;
     }
 
     public void initializeEditor(TaskEntry entry) {

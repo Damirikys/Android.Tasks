@@ -28,6 +28,9 @@ public class TaskListActive extends TaskListFragment
                 case R.id.task_is_complete:
                     presenter.taskIsCompleted((int) id);
                     break;
+                case R.id.edit_the_task:
+                    presenter.editTheTask((int) id);
+                    break;
                 case R.id.postpone_the_task:
                 {
                     presenter.postponeTheTask(

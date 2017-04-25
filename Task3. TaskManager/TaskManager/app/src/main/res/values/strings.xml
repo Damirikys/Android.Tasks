@@ -8,6 +8,7 @@
     <string name="task_is_complete">Задача выполнена</string>
     <string name="postpone_the_task">Отложить задачу</string>
     <string name="delete_the_task">Удалить задачу</string>
+    <string name="edit_the_task">Редактировать</string>
     <string name="restore_the_task">Восстановить задачу</string>
     <string name="task_was_created">Новая задача создана</string>
     <string name="task_was_updated">Задача обновлена</string>

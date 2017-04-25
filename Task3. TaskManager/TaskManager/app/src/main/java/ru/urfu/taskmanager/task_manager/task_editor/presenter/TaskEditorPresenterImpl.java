@@ -33,7 +33,8 @@ public class TaskEditorPresenterImpl implements TaskEditorPresenter
             itemId = editor.getIntent().getIntExtra(TasksDatabaseHelper.ID, -1);
             if (itemId != -1) {
                 TaskEntry entryToEdit = database.getEntryById(itemId);
-                editor.initializeEditor(entryToEdit);
+                if(!editor.isRestored())
+                    editor.initializeEditor(entryToEdit);
             }
         }
     }

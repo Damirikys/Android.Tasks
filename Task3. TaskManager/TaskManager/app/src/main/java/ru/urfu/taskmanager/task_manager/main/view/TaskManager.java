@@ -5,4 +5,5 @@ import android.view.View;
 import ru.urfu.taskmanager.utils.interfaces.Showable;
 
 public interface TaskManager extends View.OnClickListener, Showable {
+    void startEditor(int id);
 }

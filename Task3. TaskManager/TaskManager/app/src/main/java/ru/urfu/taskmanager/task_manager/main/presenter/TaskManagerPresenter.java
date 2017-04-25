@@ -14,5 +14,6 @@ public interface TaskManagerPresenter
     void postponeTheTask(int id, Coupler<Callback<Date>, TaskEntry> coupler);
     void deleteTheTask(int id);
     void restoreTheTask(int id, Coupler<Callback<Date>, TaskEntry> coupler);
+    void editTheTask(int id);
     void onResult(int requestCode, int resultCode);
 }

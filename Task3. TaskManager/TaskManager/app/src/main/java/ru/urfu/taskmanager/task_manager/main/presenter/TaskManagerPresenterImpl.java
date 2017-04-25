@@ -69,6 +69,11 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
     }
 
     @Override
+    public void editTheTask(int id) {
+        view.startEditor(id);
+    }
+
+    @Override
     public TaskListView bindView(TaskListView view) {
         taskLists.add(view);
         return view.bindPresenter(this);

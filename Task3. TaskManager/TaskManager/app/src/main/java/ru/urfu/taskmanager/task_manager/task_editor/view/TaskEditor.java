@@ -8,6 +8,7 @@ import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 
 public interface TaskEditor extends View.OnClickListener, PickerViewStateListener {
     Intent getIntent();
+    boolean isRestored();
     void setToolbarTitle(String title);
     void initializeEditor(TaskEntry entryToEdit);
     void showTitleError(String string);
