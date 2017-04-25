@@ -57,8 +57,8 @@ public class TaskManagerActivity extends AppCompatActivity implements TaskManage
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.add(presenter.addModel(new TaskListActive()), getString(R.string.active_tasks_title));
-        adapter.add(presenter.addModel(new TaskListCompleted()), getString(R.string.completed_tasks_title));
+        adapter.add(presenter.bindView(new TaskListActive()), getString(R.string.active_tasks_title));
+        adapter.add(presenter.bindView(new TaskListCompleted()), getString(R.string.completed_tasks_title));
 
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
@@ -84,7 +84,6 @@ public class TaskManagerActivity extends AppCompatActivity implements TaskManage
 
     @Override
     protected void onDestroy() {
-        presenter.onDestroy();
         super.onDestroy();
     }
 }

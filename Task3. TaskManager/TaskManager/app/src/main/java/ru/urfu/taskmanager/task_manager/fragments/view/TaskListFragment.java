@@ -11,11 +11,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import ru.urfu.taskmanager.R;
-import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
-import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity;
 import ru.urfu.taskmanager.task_manager.fragments.adapters.TasksListAdapter;
-import ru.urfu.taskmanager.task_manager.fragments.presenter.TaskListPresenter;
-import ru.urfu.taskmanager.task_manager.fragments.presenter.TaskListPresenterImpl;
+import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenter;
+import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity;
+import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
 
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.ACTION_EDIT;
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQUEST_EDIT;
@@ -23,7 +22,7 @@ import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQ
 public abstract class TaskListFragment extends Fragment
         implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, TaskListView
 {
-    protected TaskListPresenter presenter = new TaskListPresenterImpl(this);
+    protected TaskManagerPresenter presenter;
 
     ListView tasksListView;
     TasksListAdapter adapter;
@@ -68,8 +67,9 @@ public abstract class TaskListFragment extends Fragment
     }
 
     @Override
-    public TaskListPresenter getPresenter() {
-        return presenter;
+    public TaskListView bindPresenter(TaskManagerPresenter presenter) {
+        this.presenter = presenter;
+        return this;
     }
 
     @Override
