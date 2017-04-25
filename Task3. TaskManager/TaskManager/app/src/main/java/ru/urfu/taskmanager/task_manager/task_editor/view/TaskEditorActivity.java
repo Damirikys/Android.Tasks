@@ -184,7 +184,6 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
 
     @Override
     public void exit(int result) {
-        Log.d("EXIT", "result: " + result);
         setResult(result);
         finish();
     }

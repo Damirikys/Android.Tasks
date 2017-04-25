@@ -32,6 +32,7 @@ public class TaskListPresenterImpl implements TaskListPresenter
     public void taskIsCompleted(int id) {
         database.updateEntry(
                 database.getEntryById(id)
+                        .setTtl(System.currentTimeMillis())
                         .setCompleted(true)
         );
 
