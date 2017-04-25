@@ -14,6 +14,8 @@ public class AbstractTaskListAdapter extends SimpleCursorAdapter
 
     public static final int COMPLETED_TASKS = 2;
 
+    protected static final String OVERDUE = "Просрочено";
+
     protected static final int LAYOUT = R.layout.task_list_item;
 
     protected static final String[] FROM = new String[] {

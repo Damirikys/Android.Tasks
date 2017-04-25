@@ -37,6 +37,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter
         View view = inflater.inflate(LAYOUT, parent, false);
 
         ViewHolder holder = new ViewHolder();
+        holder.layout = view.findViewById(R.id.task_layout);
         holder.header = view.findViewById(R.id.task_header);
         holder.header_text = (TextView) view.findViewById(R.id.header_text);
         holder.title = (TextView) view.findViewById(R.id.task_item_title);
@@ -72,6 +73,8 @@ public class TasksListAdapter extends AbstractTaskListAdapter
     private ViewHolder attachHeader(ViewHolder holder, TaskEntry entry, TaskEntry prev)
     {
         String entryTitle = getTitleFromEntry(entry);
+        if (entryTitle.equals(OVERDUE))
+            holder.layout.setAlpha(0.4f);
 
         if (prev != null) {
             String prevTitle = getTitleFromEntry(prev);
@@ -92,7 +95,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter
 
     private String getTitleFromEntry(TaskEntry entry) {
         if (System.currentTimeMillis() > entry.getTtl() & dataMode == ACTIVE_TASKS) {
-            return "Просрочено";
+            return OVERDUE;
         } else {
             Calendar entryDate = Calendar.getInstance();
             entryDate.setTimeInMillis(entry.getTtl());
@@ -127,6 +130,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter
 
     private static class ViewHolder
     {
+        View layout;
         View header;
         TextView header_text;
         TextView title;
