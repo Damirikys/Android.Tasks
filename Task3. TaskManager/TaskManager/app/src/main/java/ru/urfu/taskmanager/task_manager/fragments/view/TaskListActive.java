@@ -8,12 +8,19 @@ import com.github.florent37.singledateandtimepicker.dialog.SingleDateAndTimePick
 import java.util.Date;
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.fragments.adapters.TasksListAdapter;
+import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
+import ru.urfu.taskmanager.utils.db.TasksFilter;
 
 public class TaskListActive extends TaskListFragment
 {
     @Override
     protected TasksListAdapter getAdapter() {
-        return new TasksListAdapter(getContext(), TasksListAdapter.ACTIVE_TASKS);
+        return new TasksListAdapter(getContext(),
+                TasksFilter.builder()
+                        .setType(TasksFilter.ACTIVE_TASK)
+                        .setGroupBy(TasksDatabaseHelper.TTL)
+                        .build()
+        );
     }
 
     @SuppressWarnings("deprecation")

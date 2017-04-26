@@ -9,11 +9,11 @@ import android.util.Log;
 import ru.urfu.taskmanager.Application;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 
+import static ru.urfu.taskmanager.utils.db.TasksFilter.COMPLETED_TASK;
+
 public class TasksDatabase
 {
     private static TasksDatabase instance;
-    private static final int ACTIVE_TASK = 0;
-    private static final int COMPLETED_TASK = 1;
 
     private final String TAG = getClass().getSimpleName();
 
@@ -74,20 +74,22 @@ public class TasksDatabase
         return getCurrentEntryFromCursor(cursor);
     }
 
-    public Cursor getCursorActiveTasks() {
-        return getCursor(ACTIVE_TASK);
-    }
-
-    public Cursor getCursorCompletedTasks() {
-        return getCursor(COMPLETED_TASK);
-    }
-
-    private Cursor getCursor(int filter) {
-        return database.rawQuery(
-                "SELECT * FROM " + TasksDatabaseHelper.TABLE_NAME +
-                        " WHERE " + TasksDatabaseHelper.COMPLETED + " = " + filter +
-                        " ORDER BY " + TasksDatabaseHelper.TTL + " ASC", null
+    public Cursor getCursor(TasksFilter filter) {
+        return database.query(
+                TasksDatabaseHelper.TABLE_NAME,
+                filter.getColumns(),
+                filter.getWhereClause(),
+                filter.getSelectionArgs(),
+                filter.getGroupBy(),
+                filter.getHaving(),
+                filter.getOrderBy()
         );
+
+//        return database.rawQuery(
+//                "SELECT * FROM " + TasksDatabaseHelper.TABLE_NAME +
+//                        " WHERE " + TasksDatabaseHelper.COMPLETED + " = " + filter +
+//                        " ORDER BY " + TasksDatabaseHelper.TTL + " ASC", null
+//        );
     }
 
     private ContentValues contentValuesFrom(TaskEntry entry)

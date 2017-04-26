@@ -10,10 +10,6 @@ import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
 
 public class AbstractTaskListAdapter extends SimpleCursorAdapter
 {
-    public static final int ACTIVE_TASKS = 1;
-
-    public static final int COMPLETED_TASKS = 2;
-
     protected static final String OVERDUE = "Просрочено";
 
     protected static final int LAYOUT = R.layout.task_list_item;

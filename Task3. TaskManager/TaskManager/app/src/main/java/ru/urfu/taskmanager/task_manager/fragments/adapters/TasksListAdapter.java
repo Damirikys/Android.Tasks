@@ -14,18 +14,19 @@ import java.util.Calendar;
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.utils.db.TasksDatabase;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
+import ru.urfu.taskmanager.utils.db.TasksFilter;
 import ru.urfu.taskmanager.utils.tools.TimeUtils;
 
 public class TasksListAdapter extends AbstractTaskListAdapter
 {
     private final String TAG = getClass().getSimpleName();
     private final TasksDatabase database;
-    private final int dataMode;
+    private final TasksFilter defaultFilter;
 
-    public TasksListAdapter(Context context, int dataMode) {
+    public TasksListAdapter(Context context, TasksFilter defaultFilter) {
         super(context, LAYOUT, null, FROM, TO, 0);
         this.database = TasksDatabase.getInstance();
-        this.dataMode = dataMode;
+        this.defaultFilter = defaultFilter;
         updateData();
     }
 
@@ -75,6 +76,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter
         String entryTitle = getTitleFromEntry(entry);
         if (entryTitle.equals(OVERDUE))
             holder.layout.setAlpha(0.4f);
+        else holder.layout.setAlpha(1f);
 
         if (prev != null) {
             String prevTitle = getTitleFromEntry(prev);
@@ -94,7 +96,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter
     }
 
     private String getTitleFromEntry(TaskEntry entry) {
-        if (System.currentTimeMillis() > entry.getTtl() & dataMode == ACTIVE_TASKS) {
+        if (System.currentTimeMillis() > entry.getTtl() & defaultFilter.getType() == TasksFilter.ACTIVE_TASK) {
             return OVERDUE;
         } else {
             Calendar entryDate = Calendar.getInstance();
@@ -106,10 +108,10 @@ public class TasksListAdapter extends AbstractTaskListAdapter
 
     private String getHeaderTitleByNum(int num, Calendar entryDate) {
         if (num < 3) {
-            switch (dataMode) {
-                case ACTIVE_TASKS:
+            switch (defaultFilter.getType()) {
+                case TasksFilter.ACTIVE_TASK:
                     return ACTIVE_DAYS[num];
-                case COMPLETED_TASKS:
+                case TasksFilter.COMPLETED_TASK:
                     return COMPLETED_DAYS[num];
             }
         }
@@ -118,14 +120,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter
     }
 
     public void updateData() {
-        switch (dataMode) {
-            case ACTIVE_TASKS:
-                changeCursor(database.getCursorActiveTasks());
-                break;
-            case COMPLETED_TASKS:
-                changeCursor(database.getCursorCompletedTasks());
-                break;
-        }
+        changeCursor(database.getCursor(defaultFilter));
     }
 
     private static class ViewHolder
