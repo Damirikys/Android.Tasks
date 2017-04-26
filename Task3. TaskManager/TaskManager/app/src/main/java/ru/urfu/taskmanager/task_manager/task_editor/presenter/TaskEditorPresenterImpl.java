@@ -1,6 +1,5 @@
 package ru.urfu.taskmanager.task_manager.task_editor.presenter;
 
-import ru.urfu.taskmanager.Application;
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
@@ -29,7 +28,7 @@ public class TaskEditorPresenterImpl implements TaskEditorPresenter
     private void init() {
         if (editor.getIntent().getAction().equals(TaskManagerActivity.ACTION_EDIT))
         {
-            editor.setToolbarTitle(Application.getContext().getString(R.string.editor_edit_title));
+            editor.setToolbarTitle(editor.getResources().getString(R.string.editor_edit_title));
             itemId = editor.getIntent().getIntExtra(TasksDatabaseHelper.ID, -1);
             if (itemId != -1) {
                 TaskEntry entryToEdit = database.getEntryById(itemId);

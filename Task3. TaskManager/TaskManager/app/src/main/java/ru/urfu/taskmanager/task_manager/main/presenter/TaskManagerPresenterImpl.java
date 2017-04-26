@@ -86,10 +86,10 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
 
             switch (requestCode) {
                 case REQUEST_CREATE:
-                    view.showAlert(Application.getContext().getString(R.string.task_was_created));
+                    view.showAlert(view.getResources().getString(R.string.task_was_created));
                     break;
                 case REQUEST_EDIT:
-                    view.showAlert(Application.getContext().getString(R.string.task_was_updated));
+                    view.showAlert(view.getResources().getString(R.string.task_was_updated));
                     break;
             }
         }

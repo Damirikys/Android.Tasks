@@ -11,7 +11,7 @@ import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 
 public class TasksDatabase
 {
-    private static final TasksDatabase instance = new TasksDatabase(Application.getContext());
+    private static TasksDatabase instance;
     private static final int ACTIVE_TASK = 0;
     private static final int COMPLETED_TASK = 1;
 
@@ -104,5 +104,9 @@ public class TasksDatabase
 
     public static TasksDatabase getInstance() {
         return instance;
+    }
+
+    public static void init(Context applicationContext) {
+        instance = new TasksDatabase(applicationContext);
     }
 }

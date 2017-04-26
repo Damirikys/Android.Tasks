@@ -5,8 +5,10 @@ import android.view.View;
 
 import ru.urfu.taskmanager.color_picker.listeners.PickerViewStateListener;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
+import ru.urfu.taskmanager.utils.interfaces.Resource;
 
-public interface TaskEditor extends View.OnClickListener, PickerViewStateListener {
+public interface TaskEditor extends View.OnClickListener, PickerViewStateListener, Resource
+{
     Intent getIntent();
     boolean isRestored();
     void setToolbarTitle(String title);

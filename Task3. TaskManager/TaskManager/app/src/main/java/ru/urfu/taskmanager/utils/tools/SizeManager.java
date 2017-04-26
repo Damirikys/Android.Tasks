@@ -4,10 +4,19 @@ import android.util.DisplayMetrics;
 
 import ru.urfu.taskmanager.Application;
 
-public class SizeManager
+public final class SizeManager
 {
+    private static SizeManager instance;
+    private DisplayMetrics displayMetrics;
+
+    private SizeManager(){}
+
     public static int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = Application.getContext().getResources().getDisplayMetrics();
-        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return Math.round(dp * (instance.displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    public static void init(DisplayMetrics metrics) {
+        instance = new SizeManager();
+        instance.displayMetrics = metrics;
     }
 }

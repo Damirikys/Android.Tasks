@@ -1,20 +1,14 @@
 package ru.urfu.taskmanager;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
+import ru.urfu.taskmanager.utils.db.TasksDatabase;
+import ru.urfu.taskmanager.utils.tools.SizeManager;
 
 public class Application extends android.app.Application
 {
-    @SuppressLint("StaticFieldLeak")
-    public static Context context;
-
     @Override
     public void onCreate() {
         super.onCreate();
-        context = getApplicationContext();
-    }
-
-    public static Context getContext() {
-        return context;
+        SizeManager.init(getResources().getDisplayMetrics());
+        TasksDatabase.init(this);
     }
 }
