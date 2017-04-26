@@ -11,7 +11,6 @@ import java.util.Date;
 
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.fragments.adapters.TasksListAdapter;
-import ru.urfu.taskmanager.utils.db.TasksDatabase;
 import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
 
@@ -22,7 +21,7 @@ public class TaskListCompleted extends TaskListFragment
         return new TasksListAdapter(getContext(),
                 TasksFilter.builder()
                         .setType(TasksFilter.COMPLETED_TASK)
-                        .setGroupBy(TasksDatabaseHelper.TTL)
+                        .sortBy(TasksDatabaseHelper.TTL)
                         .build()
         );
     }

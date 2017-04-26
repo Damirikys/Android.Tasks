@@ -18,7 +18,7 @@ public class TaskListActive extends TaskListFragment
         return new TasksListAdapter(getContext(),
                 TasksFilter.builder()
                         .setType(TasksFilter.ACTIVE_TASK)
-                        .setGroupBy(TasksDatabaseHelper.TTL)
+                        .sortBy(TasksDatabaseHelper.TTL)
                         .build()
         );
     }
