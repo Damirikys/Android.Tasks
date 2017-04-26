@@ -9,6 +9,6 @@ public class Application extends android.app.Application
     public void onCreate() {
         super.onCreate();
         SizeManager.init(getResources().getDisplayMetrics());
-        TasksDatabase.init(this);
+        TasksDatabase.init(getApplicationContext());
     }
 }
