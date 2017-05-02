@@ -4,6 +4,7 @@ import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditor;
+import ru.urfu.taskmanager.color_picker.recent.RecentColorsStorage;
 import ru.urfu.taskmanager.utils.db.TasksDatabase;
 import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
 import ru.urfu.taskmanager.utils.interfaces.Callback;
@@ -17,10 +18,12 @@ public class TaskEditorPresenterImpl implements TaskEditorPresenter
     private TaskEditor editor;
     private TaskValidator validator;
     private TasksDatabase database;
+    private RecentColorsStorage recentColorsStorage;
 
     public TaskEditorPresenterImpl(TaskEditor editor) {
         this.editor = editor;
         this.database = TasksDatabase.getInstance();
+        this.recentColorsStorage = RecentColorsStorage.getRepository();
         this.validator = new TaskValidator();
         init();
     }
@@ -43,13 +46,22 @@ public class TaskEditorPresenterImpl implements TaskEditorPresenter
         validator.validate(state, aVoid -> {
             switch (editor.getIntent().getAction()) {
                 case TaskManagerActivity.ACTION_CREATE:
-                    database.insertEntry(state.setId(itemId));
+                    database.insertEntry(state.
+                            setId(itemId)
+                            .setCreated(System.currentTimeMillis())
+                            .setEdited(System.currentTimeMillis())
+                    );
                     break;
                 case TaskManagerActivity.ACTION_EDIT:
-                    database.updateEntry(state.setId(itemId));
+                    database.updateEntry(state.
+                            setId(itemId)
+                            .setEdited(System.currentTimeMillis())
+                            .setCreated(database.getEntryById(itemId).getCreatedTimestamp())
+                    );
                     break;
             }
 
+            recentColorsStorage.putItem(state.getColorInt());
             editor.exit(RESULT_OK);
         });
     }

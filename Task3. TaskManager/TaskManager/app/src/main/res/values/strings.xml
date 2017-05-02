@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">TaskManager</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_filter">Фильтр</string>
     <string name="editor_create_title">Новая задача</string>
     <string name="editor_edit_title">Редактирование</string>
     <string name="active_tasks_title">В планах</string>
@@ -12,4 +12,17 @@
     <string name="restore_the_task">Восстановить задачу</string>
     <string name="task_was_created">Новая задача создана</string>
     <string name="task_was_updated">Задача обновлена</string>
+    <string name="search_hint">Введите название …</string>
+
+    <string-array name="sorting">
+        <item>Выполнения</item>
+        <item>Создания</item>
+        <item>Редактирования</item>
+    </string-array>
+
+    <string-array name="searching">
+        <item>По названию</item>
+        <item>По описанию</item>
+    </string-array>
+
 </resources>

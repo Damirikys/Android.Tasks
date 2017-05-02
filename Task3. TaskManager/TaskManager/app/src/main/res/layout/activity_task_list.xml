@@ -18,23 +18,21 @@
             android:theme="@style/AppTheme.AppBarOverlay"
             app:elevation="0dp">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                app:layout_scrollFlags="scroll|enterAlways"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
+            <include layout="@layout/toolbar" />
 
         </android.support.design.widget.AppBarLayout>
 
+        <include layout="@layout/activity_task_filter"/>
+
         <android.support.design.widget.TabLayout
             android:id="@+id/tablayout"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:elevation="1dp"
+            app:tabGravity="fill"
             app:tabSelectedTextColor="#ffffff"
-            app:tabTextColor="#e7abab"
+            app:tabTextColor="#b4ffffff"
             app:tabIndicatorColor="#ffffff"
             app:tabIndicatorHeight="2dp"/>
 
@@ -53,5 +51,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_plus"/>
+
+    <include layout="@layout/activity_task_filter" />
 
 </android.support.design.widget.CoordinatorLayout>

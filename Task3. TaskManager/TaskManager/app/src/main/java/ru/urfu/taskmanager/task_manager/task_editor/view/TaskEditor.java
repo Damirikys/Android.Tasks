@@ -5,9 +5,9 @@ import android.view.View;
 
 import ru.urfu.taskmanager.color_picker.listeners.PickerViewStateListener;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
-import ru.urfu.taskmanager.utils.interfaces.Resource;
+import ru.urfu.taskmanager.utils.interfaces.ActivityWindow;
 
-public interface TaskEditor extends View.OnClickListener, PickerViewStateListener, Resource
+public interface TaskEditor extends View.OnClickListener, PickerViewStateListener, ActivityWindow
 {
     Intent getIntent();
     boolean isRestored();

@@ -19,21 +19,18 @@ import ru.urfu.taskmanager.utils.tools.TimeUtils;
 
 public class TasksListAdapter extends AbstractTaskListAdapter
 {
-    private final String TAG = getClass().getSimpleName();
     private final TasksDatabase database;
-    private final TasksFilter defaultFilter;
+    private TasksFilter tasksFilter;
 
-    public TasksListAdapter(Context context, TasksFilter defaultFilter) {
+    public TasksListAdapter(Context context, TasksFilter tasksFilter) {
         super(context, LAYOUT, null, FROM, TO, 0);
         this.database = TasksDatabase.getInstance();
-        this.defaultFilter = defaultFilter;
+        this.tasksFilter = tasksFilter;
         updateData();
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        Log.d(TAG, "newView " + cursor.getPosition());
-
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(LAYOUT, parent, false);
 
@@ -51,22 +48,20 @@ public class TasksListAdapter extends AbstractTaskListAdapter
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        Log.d(TAG, "bindView " + cursor.getPosition());
-
         TaskEntry entry = database.getCurrentEntryFromCursor(cursor);
         TaskEntry prev = (cursor.moveToPrevious())
                 ? database.getCurrentEntryFromCursor(cursor)
                 : null;
 
         GradientDrawable gd = new GradientDrawable();
-        gd.setColor(entry.getColor());
+        gd.setColor(entry.getColorInt());
         gd.setCornerRadius(100f);
 
         ViewHolder holder = (ViewHolder) view.getTag();
 
         holder.title.setText(entry.getTitle());
         holder.description.setText(entry.getDescription());
-        holder.ttl.setText(TimeUtils.getHoursAndMinutesFromUnix(entry.getTtl()).toString());
+        holder.ttl.setText(TimeUtils.getHoursAndMinutesFromUnix(entry.getTtlTimestamp()).toString());
         holder.ttl.setBackground(gd);
         attachHeader(holder, entry, prev);
     }
@@ -96,11 +91,11 @@ public class TasksListAdapter extends AbstractTaskListAdapter
     }
 
     private String getTitleFromEntry(TaskEntry entry) {
-        if (System.currentTimeMillis() > entry.getTtl() & defaultFilter.getType() == TasksFilter.ACTIVE_TASK) {
+        if (System.currentTimeMillis() > entry.getTtlTimestamp() & tasksFilter.getType() == TasksFilter.ACTIVE_TASK) {
             return OVERDUE;
         } else {
             Calendar entryDate = Calendar.getInstance();
-            entryDate.setTimeInMillis(entry.getTtl());
+            entryDate.setTimeInMillis(entry.getTtlTimestamp());
             int diffDay = Math.abs(entryDate.get(Calendar.DAY_OF_YEAR) - Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
             return getHeaderTitleByNum(diffDay, entryDate);
         }
@@ -108,7 +103,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter
 
     private String getHeaderTitleByNum(int num, Calendar entryDate) {
         if (num < 3) {
-            switch (defaultFilter.getType()) {
+            switch (tasksFilter.getType()) {
                 case TasksFilter.ACTIVE_TASK:
                     return ACTIVE_DAYS[num];
                 case TasksFilter.COMPLETED_TASK:
@@ -119,8 +114,19 @@ public class TasksListAdapter extends AbstractTaskListAdapter
         return TimeUtils.format(entryDate);
     }
 
-    public void updateData() {
-        changeCursor(database.getCursor(defaultFilter));
+    public void updateData(TasksFilter.Builder builder) {
+        if (builder.isDefault()) {
+            updateData();
+        } else {
+            changeCursor(database.getCursor(
+                    tasksFilter = builder.setType(tasksFilter.getType())
+                            .build()
+            ));
+        }
+    }
+
+    private void updateData() {
+        changeCursor(database.getCursor(tasksFilter));
     }
 
     private static class ViewHolder

@@ -15,6 +15,7 @@ import ru.urfu.taskmanager.task_manager.fragments.adapters.TasksListAdapter;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenter;
 import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity;
 import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
+import ru.urfu.taskmanager.utils.db.TasksFilter;
 
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.ACTION_EDIT;
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQUEST_EDIT;
@@ -57,8 +58,8 @@ public abstract class TaskListFragment extends Fragment
     }
 
     @Override
-    public void onUpdate() {
-        adapter.updateData();
+    public void onUpdate(TasksFilter.Builder filter) {
+        adapter.updateData(filter);
     }
 
     @Override
@@ -75,7 +76,7 @@ public abstract class TaskListFragment extends Fragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        presenter.onResult(requestCode, resultCode);
+        presenter.onResult(requestCode, resultCode, data);
     }
 
     @Override

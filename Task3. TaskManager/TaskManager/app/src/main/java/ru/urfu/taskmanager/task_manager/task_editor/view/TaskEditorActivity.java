@@ -19,9 +19,10 @@ import java.util.GregorianCalendar;
 
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.color_picker.PickerView;
+import ru.urfu.taskmanager.color_picker.recent.RecentColors;
+import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 import ru.urfu.taskmanager.task_manager.task_editor.presenter.TaskEditorPresenter;
 import ru.urfu.taskmanager.task_manager.task_editor.presenter.TaskEditorPresenterImpl;
-import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 
 public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
 {
@@ -79,9 +80,14 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
         if (savedInstanceState != null)
             isRestored = true;
 
-        cardColorView.setCardBackgroundColor(pickerView.getCurrentColor());
         pickerView.setCellCount(CELL_COUNT);
         pickerView.subscribe(this);
+
+        cardColorView.setCardBackgroundColor(pickerView.getCurrentColor());
+        cardColorView.setOnClickListener(v -> RecentColors.showRecent(this, color -> {
+            pickerView.setCurrentColor(color);
+            cardColorView.setCardBackgroundColor(color);
+        }));
 
         presenter = new TaskEditorPresenterImpl(this);
     }
@@ -92,13 +98,13 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
 
     public void initializeEditor(TaskEntry entry) {
         Calendar calendar = new GregorianCalendar();
-        calendar.setTimeInMillis(entry.getTtl());
+        calendar.setTimeInMillis(entry.getTtlTimestamp());
 
         dateAndTimePicker.selectDate(calendar);
         dateAndTimePicker.setSelectorColor(Color.BLACK);
         title_edit_field.setText(entry.getTitle());
         desc_edit_field.setText(entry.getDescription());
-        pickerView.setCurrentColor(entry.getColor());
+        pickerView.setCurrentColor(entry.getColorInt());
         cardColorView.setCardBackgroundColor(pickerView.getCurrentColor());
     }
 

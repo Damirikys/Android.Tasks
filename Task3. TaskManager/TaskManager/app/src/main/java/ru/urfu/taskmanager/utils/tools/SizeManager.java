@@ -2,8 +2,6 @@ package ru.urfu.taskmanager.utils.tools;
 
 import android.util.DisplayMetrics;
 
-import ru.urfu.taskmanager.Application;
-
 public final class SizeManager
 {
     private static SizeManager instance;

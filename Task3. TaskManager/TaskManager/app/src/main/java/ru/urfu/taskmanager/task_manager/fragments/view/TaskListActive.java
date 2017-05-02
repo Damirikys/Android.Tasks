@@ -44,7 +44,7 @@ public class TaskListActive extends TaskListFragment
                             (int) id, (date, entry) ->
                                     new SingleDateAndTimePickerDialog.Builder(getContext())
                                             .mainColor(getResources().getColor(R.color.colorAccent))
-                                            .defaultDate(new Date(entry.getTtl()))
+                                            .defaultDate(new Date(entry.getTtlTimestamp()))
                                             .listener(date::call)
                                             .mustBeOnFuture()
                                             .bottomSheet()
