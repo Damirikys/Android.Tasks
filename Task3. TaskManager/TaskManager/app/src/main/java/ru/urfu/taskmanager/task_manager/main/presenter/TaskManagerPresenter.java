@@ -10,7 +10,8 @@ import ru.urfu.taskmanager.utils.db.TasksFilter;
 import ru.urfu.taskmanager.utils.interfaces.Callback;
 import ru.urfu.taskmanager.utils.interfaces.Coupler;
 
-public interface TaskManagerPresenter {
+public interface TaskManagerPresenter
+{
     TaskListView bindView(TaskListView view);
 
     void taskIsCompleted(int id);

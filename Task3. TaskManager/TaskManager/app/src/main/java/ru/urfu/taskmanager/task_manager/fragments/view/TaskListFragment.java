@@ -21,11 +21,12 @@ import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.ACT
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQUEST_EDIT;
 
 public abstract class TaskListFragment extends Fragment
-        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, TaskListView {
-    protected TaskManagerPresenter presenter;
+        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, TaskListView
+{
+    protected TaskManagerPresenter mPresenter;
 
-    ListView tasksListView;
-    TasksListAdapter adapter;
+    ListView mTaskListView;
+    TasksListAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -34,10 +35,10 @@ public abstract class TaskListFragment extends Fragment
     }
 
     protected View initView(View root) {
-        tasksListView = (ListView) root.findViewById(R.id.task_list);
-        tasksListView.setAdapter(adapter = getAdapter());
-        tasksListView.setOnItemClickListener(this);
-        tasksListView.setOnItemLongClickListener(this);
+        mTaskListView = (ListView) root.findViewById(R.id.task_list);
+        mTaskListView.setAdapter(mAdapter = getAdapter());
+        mTaskListView.setOnItemClickListener(this);
+        mTaskListView.setOnItemLongClickListener(this);
 
         return root;
     }
@@ -57,7 +58,7 @@ public abstract class TaskListFragment extends Fragment
 
     @Override
     public void onUpdate(TasksFilter.Builder filter) {
-        adapter.updateData(filter);
+        mAdapter.updateData(filter);
     }
 
     @Override
@@ -67,14 +68,14 @@ public abstract class TaskListFragment extends Fragment
 
     @Override
     public TaskListView bindPresenter(TaskManagerPresenter presenter) {
-        this.presenter = presenter;
+        this.mPresenter = presenter;
         return this;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        presenter.onResult(requestCode, resultCode, data);
+        mPresenter.onResult(requestCode, resultCode, data);
     }
 
     @Override

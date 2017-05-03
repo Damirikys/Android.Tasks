@@ -16,14 +16,15 @@ import ru.urfu.taskmanager.utils.db.TasksDatabase;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
 import ru.urfu.taskmanager.utils.tools.TimeUtils;
 
-public class TasksListAdapter extends AbstractTaskListAdapter {
-    private final TasksDatabase database;
-    private TasksFilter tasksFilter;
+public class TasksListAdapter extends AbstractTaskListAdapter
+{
+    private final TasksDatabase mDatabase;
+    private TasksFilter mTaskFilter;
 
     public TasksListAdapter(Context context, TasksFilter tasksFilter) {
         super(context, LAYOUT, null, FROM, TO, 0);
-        this.database = TasksDatabase.getInstance();
-        this.tasksFilter = tasksFilter;
+        this.mDatabase = TasksDatabase.getInstance();
+        this.mTaskFilter = tasksFilter;
         updateData();
     }
 
@@ -46,9 +47,9 @@ public class TasksListAdapter extends AbstractTaskListAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TaskEntry entry = database.getCurrentEntryFromCursor(cursor);
+        TaskEntry entry = mDatabase.getCurrentEntryFromCursor(cursor);
         TaskEntry prev = (cursor.moveToPrevious())
-                ? database.getCurrentEntryFromCursor(cursor)
+                ? mDatabase.getCurrentEntryFromCursor(cursor)
                 : null;
 
         GradientDrawable gd = new GradientDrawable();
@@ -88,7 +89,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter {
     }
 
     private String getTitleFromEntry(TaskEntry entry) {
-        if (System.currentTimeMillis() > entry.getTtlTimestamp() & tasksFilter.getType() == TasksFilter.ACTIVE_TASK) {
+        if (System.currentTimeMillis() > entry.getTtlTimestamp() & mTaskFilter.getType() == TasksFilter.ACTIVE_TASK) {
             return OVERDUE;
         } else {
             Calendar entryDate = Calendar.getInstance();
@@ -100,7 +101,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter {
 
     private String getHeaderTitleByNum(int num, Calendar entryDate) {
         if (num < 3) {
-            switch (tasksFilter.getType()) {
+            switch (mTaskFilter.getType()) {
                 case TasksFilter.ACTIVE_TASK:
                     return ACTIVE_DAYS[num];
                 case TasksFilter.COMPLETED_TASK:
@@ -115,15 +116,15 @@ public class TasksListAdapter extends AbstractTaskListAdapter {
         if (builder.isDefault()) {
             updateData();
         } else {
-            changeCursor(database.getCursor(
-                    tasksFilter = builder.setType(tasksFilter.getType())
+            changeCursor(mDatabase.getCursor(
+                    mTaskFilter = builder.setType(mTaskFilter.getType())
                             .build()
             ));
         }
     }
 
     private void updateData() {
-        changeCursor(database.getCursor(tasksFilter));
+        changeCursor(mDatabase.getCursor(mTaskFilter));
     }
 
     private static class ViewHolder {

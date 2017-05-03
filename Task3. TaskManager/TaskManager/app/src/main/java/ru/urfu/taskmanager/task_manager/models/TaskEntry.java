@@ -8,9 +8,10 @@ import java.text.ParseException;
 
 import ru.urfu.taskmanager.utils.tools.ISO8601;
 
-public class TaskEntry implements Parcelable {
-    private int id;
-    private int isCompleted;
+public class TaskEntry implements Parcelable
+{
+    private int mId;
+    private int mComplete;
 
     private String title;
     private String description;
@@ -23,7 +24,7 @@ public class TaskEntry implements Parcelable {
     }
 
     public TaskEntry(int id) {
-        this.id = id;
+        this.mId = id;
     }
 
     private TaskEntry(Parcel in) {
@@ -31,7 +32,7 @@ public class TaskEntry implements Parcelable {
         description = in.readString();
         ttl = in.readString();
         color = in.readString();
-        isCompleted = in.readInt();
+        mComplete = in.readInt();
     }
 
     public static final Creator<TaskEntry> CREATOR = new Creator<TaskEntry>() {
@@ -47,12 +48,12 @@ public class TaskEntry implements Parcelable {
     };
 
     public TaskEntry setId(int id) {
-        this.id = id;
+        this.mId = id;
         return this;
     }
 
     public int getId() {
-        return id;
+        return mId;
     }
 
     public String getTitle() {
@@ -141,11 +142,11 @@ public class TaskEntry implements Parcelable {
     }
 
     public boolean isCompleted() {
-        return (isCompleted == 1);
+        return (mComplete == 1);
     }
 
     public TaskEntry setCompleted(boolean bool) {
-        isCompleted = (bool) ? 1 : 0;
+        mComplete = (bool) ? 1 : 0;
         return this;
     }
 
@@ -164,7 +165,7 @@ public class TaskEntry implements Parcelable {
     public boolean equals(Object obj) {
         try {
             TaskEntry other = (TaskEntry) obj;
-            return this.id == other.id;
+            return this.mId == other.mId;
         } catch (ClassCastException e) {
             return false;
         }
@@ -177,12 +178,12 @@ public class TaskEntry implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
+        dest.writeInt(mId);
         dest.writeString(title);
         dest.writeString(description);
         dest.writeString(ttl);
         dest.writeString(color);
-        dest.writeInt(isCompleted);
+        dest.writeInt(mComplete);
     }
 
     @Override

@@ -14,7 +14,8 @@ import ru.urfu.taskmanager.task_manager.fragments.adapters.TasksListAdapter;
 import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
 
-public class TaskListCompleted extends TaskListFragment {
+public class TaskListCompleted extends TaskListFragment
+{
     @Override
     protected TasksListAdapter getAdapter() {
         return new TasksListAdapter(getContext(),
@@ -34,7 +35,7 @@ public class TaskListCompleted extends TaskListFragment {
         popup.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.restore_the_task: {
-                    presenter.restoreTheTask(
+                    mPresenter.restoreTheTask(
                             (int) id, (date, entry) ->
                                     new SingleDateAndTimePickerDialog.Builder(getContext())
                                             .mainColor(getResources().getColor(R.color.colorAccent))

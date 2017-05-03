@@ -15,30 +15,32 @@ import java.util.Arrays;
 import ru.urfu.taskmanager.color_picker.states.Action;
 import ru.urfu.taskmanager.utils.tools.SizeManager;
 
-public class CellColorView extends View implements View.OnTouchListener {
-    private static LinearLayout.LayoutParams defaultParams;
-    private static LinearLayout.LayoutParams scaledParams;
+public class CellColorView extends View implements View.OnTouchListener
+{
     public static final int CELL_SIZE = SizeManager.dpToPx(45);
     public static final int CELL_MARGIN = (int) (CELL_SIZE * 0.25);
 
+    private static LinearLayout.LayoutParams sDefaultParams;
+    private static LinearLayout.LayoutParams sScaledParams;
+
     static {
-        defaultParams = new LinearLayout.LayoutParams(CELL_SIZE, CELL_SIZE);
-        defaultParams.setMargins(CELL_MARGIN, CELL_MARGIN, CELL_MARGIN, CELL_MARGIN);
-        scaledParams = new LinearLayout.LayoutParams(CELL_SIZE + CELL_SIZE / 2, CELL_SIZE + CELL_SIZE / 2);
+        sDefaultParams = new LinearLayout.LayoutParams(CELL_SIZE, CELL_SIZE);
+        sDefaultParams.setMargins(CELL_MARGIN, CELL_MARGIN, CELL_MARGIN, CELL_MARGIN);
+        sScaledParams = new LinearLayout.LayoutParams(CELL_SIZE + CELL_SIZE / 2, CELL_SIZE + CELL_SIZE / 2);
     }
 
-    private GestureDetector gestureDetector;
-    private GestureListener gestureListener;
-    private PickerView parent;
-    private int position;
+    private GestureDetector mGestureDetector;
+    private GestureListener mGestureListener;
+    private PickerView mParent;
+    private int mPosition;
 
-    private int defaultColor;
-    private float[] defaultHsvColor = new float[3];
-    private float[] currentColor = new float[3];
-    private float[] colorBuffer = new float[3];
+    private int mDefaultColor;
+    private float[] mDefaultHsvColor = new float[3];
+    private float[] mCurrentColor = new float[3];
+    private float[] mColorBuffer = new float[3];
 
-    private float LEFT_HSV_BORDER;
-    private float RIGHT_HSV_BORDER;
+    private float mLeftHsvBorder;
+    private float mRightHsvBorder;
 
 
     private CellColorView(Context context) {
@@ -53,21 +55,24 @@ public class CellColorView extends View implements View.OnTouchListener {
         super(context, attrs, defStyleAttr);
     }
 
-
-    public CellColorView setDefaultColor(float[] hsvDefaultColor) {
-        this.defaultColor = Color.HSVToColor(hsvDefaultColor);
-        this.defaultHsvColor = Arrays.copyOf(hsvDefaultColor, 3);
-
-        return setCurrentColor(defaultHsvColor);
+    public static CellColorView create(AbstractPickerView pickerView) {
+        return new CellColorView(pickerView.getContext()).setDefaultLayoutParams(sDefaultParams).build(pickerView);
     }
 
-    public int getDefaultColor() {
-        return defaultColor;
+    public int getmDefaultColor() {
+        return mDefaultColor;
+    }
+
+    public CellColorView setmDefaultColor(float[] hsvDefaultColor) {
+        this.mDefaultColor = Color.HSVToColor(hsvDefaultColor);
+        this.mDefaultHsvColor = Arrays.copyOf(hsvDefaultColor, 3);
+
+        return setCurrentColor(mDefaultHsvColor);
     }
 
     public CellColorView setCurrentColor(float[] newColor) {
-        this.currentColor = Arrays.copyOf(newColor, 3);
-        this.colorBuffer = Arrays.copyOf(newColor, 3);
+        this.mCurrentColor = Arrays.copyOf(newColor, 3);
+        this.mColorBuffer = Arrays.copyOf(newColor, 3);
 
         setBackgroundColor(Color.HSVToColor(newColor));
         return this;
@@ -78,73 +83,71 @@ public class CellColorView extends View implements View.OnTouchListener {
         return this;
     }
 
-    public CellColorView setPosition(int position) {
-        this.position = position;
+    public int getmPosition() {
+        return mPosition;
+    }
+
+    public CellColorView setmPosition(int mPosition) {
+        this.mPosition = mPosition;
         return this;
     }
 
-    public int getPosition() {
-        return position;
-    }
-
     private CellColorView build(AbstractPickerView view) {
-        this.parent = (PickerView) view;
+        this.mParent = (PickerView) view;
         this.setOnTouchListener(this);
 
-        gestureDetector = new GestureDetector(
-                getContext(), gestureListener = new GestureListener()
-        );
+        mGestureDetector = new GestureDetector(getContext(), mGestureListener = new GestureListener());
 
         return this;
     }
 
     private void offsetColor(float x, float y) {
-        float fromX = gestureListener.tapX;
-        float fromY = gestureListener.tapY;
+        float fromX = mGestureListener.tapX;
+        float fromY = mGestureListener.tapY;
 
         float distanceX = (x - fromX);
         float distanceY = ((y - fromY) * 0.005f);
 
-        float[] hsvValue = Arrays.copyOf(currentColor, 3);
+        float[] hsvValue = Arrays.copyOf(mCurrentColor, 3);
 
         hsvValue[0] = hsvValue[0] + (distanceX / 10);
         hsvValue[1] = hsvValue[1] + distanceY;
         hsvValue[2] = hsvValue[2] - distanceY;
 
-        if (hsvValue[0] < LEFT_HSV_BORDER || hsvValue[0] > RIGHT_HSV_BORDER) {
-            parent.notifySubscribers(Action.theBoundaryIsReached);
-            hsvValue[0] = (hsvValue[0] < LEFT_HSV_BORDER) ? LEFT_HSV_BORDER : RIGHT_HSV_BORDER;
+        if (hsvValue[0] < mLeftHsvBorder || hsvValue[0] > mRightHsvBorder) {
+            mParent.notifySubscribers(Action.theBoundaryIsReached);
+            hsvValue[0] = (hsvValue[0] < mLeftHsvBorder) ? mLeftHsvBorder : mRightHsvBorder;
         }
 
-        colorBuffer = hsvValue;
+        mColorBuffer = hsvValue;
         setBackgroundColor(Color.HSVToColor(hsvValue));
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        return gestureDetector.onTouchEvent(e);
+        return mGestureDetector.onTouchEvent(e);
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                if (parent.isEnableEditMode()) {
-                    if (gestureListener.newTouch) {
-                        gestureListener.tapX = event.getX();
-                        gestureListener.tapY = event.getY();
-                        gestureListener.newTouch = false;
+                if (mParent.isEnableEditMode()) {
+                    if (mGestureListener.newTouch) {
+                        mGestureListener.tapX = event.getX();
+                        mGestureListener.tapY = event.getY();
+                        mGestureListener.newTouch = false;
                     }
 
                     offsetColor(event.getX(), event.getY());
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                gestureListener.newTouch = true;
-                parent.notifySubscribers(Action.editModeDisable);
-                setCurrentColor(colorBuffer);
-                parent.changeColorCache(position, colorBuffer);
-                setLayoutParams(defaultParams);
+                mGestureListener.newTouch = true;
+                mParent.notifySubscribers(Action.editModeDisable);
+                setCurrentColor(mColorBuffer);
+                mParent.changeColorCache(mPosition, mColorBuffer);
+                setLayoutParams(sDefaultParams);
                 invalidate();
                 break;
         }
@@ -152,7 +155,8 @@ public class CellColorView extends View implements View.OnTouchListener {
         return false;
     }
 
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener
+    {
         boolean newTouch = true;
         float tapX, tapY;
 
@@ -163,32 +167,26 @@ public class CellColorView extends View implements View.OnTouchListener {
 
         @Override
         public void onLongPress(MotionEvent e) {
-            float[] borders = parent.getHsvBorders(CellColorView.this);
-            LEFT_HSV_BORDER = borders[0];
-            RIGHT_HSV_BORDER = borders[1];
+            float[] borders = mParent.getHsvBorders(CellColorView.this);
+            mLeftHsvBorder = borders[0];
+            mRightHsvBorder = borders[1];
 
-            parent.notifySubscribers(Action.editModeEnable);
-            CellColorView.this.setLayoutParams(scaledParams);
+            mParent.notifySubscribers(Action.editModeEnable);
+            CellColorView.this.setLayoutParams(sScaledParams);
             CellColorView.this.invalidate();
             super.onLongPress(e);
         }
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            setDefaultColor(defaultHsvColor);
+            setmDefaultColor(mDefaultHsvColor);
             return true;
         }
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            parent.setCurrentColor(Color.HSVToColor(currentColor));
+            mParent.setCurrentColor(Color.HSVToColor(mCurrentColor));
             return super.onSingleTapConfirmed(e);
         }
-    }
-
-    public static CellColorView create(AbstractPickerView pickerView) {
-        return new CellColorView(pickerView.getContext())
-                .setDefaultLayoutParams(defaultParams)
-                .build(pickerView);
     }
 }

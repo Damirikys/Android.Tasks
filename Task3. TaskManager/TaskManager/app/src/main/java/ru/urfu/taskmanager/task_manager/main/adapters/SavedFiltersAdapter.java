@@ -18,8 +18,10 @@ import ru.urfu.taskmanager.task_manager.main.filter.FiltersStorage;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
 
 
-public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter {
-    private class ViewHolder {
+public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter
+{
+    private class ViewHolder
+    {
         TextView title;
 
         ViewHolder(View view) {
@@ -27,33 +29,33 @@ public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter {
         }
     }
 
-    private Context context;
+    private Context mContext;
 
 
-    private OnFilterSelected onFilterSelected;
-    private FiltersStorage storage = FiltersStorage.getStorage();
-    private List<String> keys;
+    private OnFilterSelected mFilterSelectedListener;
+    private FiltersStorage mStorage = FiltersStorage.getStorage();
+    private List<String> mKeys;
 
 
     public SavedFiltersAdapter(@NonNull Context context, @Nullable OnFilterSelected onFilterSelected) {
-        this.context = context;
-        this.onFilterSelected = onFilterSelected;
+        this.mContext = context;
+        this.mFilterSelectedListener = onFilterSelected;
         update();
     }
 
     @Override
     public int getCount() {
-        return keys.size();
+        return mKeys.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return storage.getBuilder(keys.get(position));
+        return mStorage.getBuilder(mKeys.get(position));
     }
 
     @Override
     public long getItemId(int position) {
-        return keys.get(position).hashCode();
+        return mKeys.get(position).hashCode();
     }
 
     @Override
@@ -62,7 +64,7 @@ public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter {
         final ViewHolder viewHolder;
 
         if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) context
+            LayoutInflater inflater = (LayoutInflater) mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.saved_filters_item, parent, false);
             viewHolder = new ViewHolder(convertView);
@@ -71,27 +73,27 @@ public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.title.setText(keys.get(position));
+        viewHolder.title.setText(mKeys.get(position));
         return convertView;
     }
 
     @Override
     public void addItem(String name, TasksFilter.Builder builder) {
-        storage.putBuilder(name, builder);
+        mStorage.putBuilder(name, builder);
         update();
     }
 
     @Override
     public void update() {
-        keys = new ArrayList<>(storage.getBuilders().keySet());
+        mKeys = new ArrayList<>(mStorage.getBuilders().keySet());
         notifyDataSetChanged();
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (onFilterSelected != null) {
-            TasksFilter.Builder builder = storage.getBuilder(keys.get(position));
-            onFilterSelected.onFilterSelected(builder);
+        if (mFilterSelectedListener != null) {
+            TasksFilter.Builder builder = mStorage.getBuilder(mKeys.get(position));
+            mFilterSelectedListener.onFilterSelected(builder);
         }
     }
 

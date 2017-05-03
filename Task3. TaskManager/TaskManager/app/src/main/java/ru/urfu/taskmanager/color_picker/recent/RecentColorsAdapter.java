@@ -11,13 +11,14 @@ import java.util.List;
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.utils.interfaces.Callback;
 
-class RecentColorsAdapter extends RecyclerView.Adapter<RecentColorsAdapter.ViewHolder> {
-    private List<Integer> data;
-    private Callback<Integer> onItemClick;
+class RecentColorsAdapter extends RecyclerView.Adapter<RecentColorsAdapter.ViewHolder>
+{
+    private List<Integer> mData;
+    private Callback<Integer> mCallback;
 
-    RecentColorsAdapter(Callback<Integer> onItemClick) {
-        this.data = RecentColorsStorage.getRepository().getItems();
-        this.onItemClick = onItemClick;
+    RecentColorsAdapter(Callback<Integer> mCallback) {
+        this.mData = RecentColorsStorage.getRepository().getItems();
+        this.mCallback = mCallback;
     }
 
     @Override
@@ -28,12 +29,12 @@ class RecentColorsAdapter extends RecyclerView.Adapter<RecentColorsAdapter.ViewH
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.colorView.setBackgroundColor(data.get(position));
+        holder.colorView.setBackgroundColor(mData.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return mData.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -47,7 +48,7 @@ class RecentColorsAdapter extends RecyclerView.Adapter<RecentColorsAdapter.ViewH
 
         @Override
         public void onClick(View v) {
-            RecentColorsAdapter.this.onItemClick.call(
+            RecentColorsAdapter.this.mCallback.call(
                     ((ColorDrawable) colorView.getBackground())
                             .getColor());
         }

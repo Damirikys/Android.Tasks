@@ -7,7 +7,8 @@ import ru.urfu.taskmanager.task_manager.models.OnDataUpdateListener;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
 import ru.urfu.taskmanager.utils.interfaces.Showable;
 
-public interface TaskListView extends OnDataUpdateListener<TasksFilter.Builder>, Showable {
+public interface TaskListView extends OnDataUpdateListener<TasksFilter.Builder>, Showable
+{
     TaskListView bindPresenter(TaskManagerPresenter presenter);
 
     Fragment getInstance();

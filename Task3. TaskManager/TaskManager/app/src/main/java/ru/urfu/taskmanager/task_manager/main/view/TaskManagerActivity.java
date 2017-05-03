@@ -48,7 +48,8 @@ import ru.urfu.taskmanager.utils.tools.DirectoryChooser;
 import ru.urfu.taskmanager.utils.tools.JSONFactory;
 
 public class TaskManagerActivity extends AppCompatActivity
-        implements TaskManager, MenuItemCompat.OnActionExpandListener, SearchView.OnQueryTextListener {
+        implements TaskManager, MenuItemCompat.OnActionExpandListener, SearchView.OnQueryTextListener
+{
     public static final String ACTION_CREATE = "ru.urfu.taskmanager.ACTION_CREATE";
     public static final String ACTION_EDIT = "ru.urfu.taskmanager.ACTION_EDIT";
 
@@ -58,25 +59,25 @@ public class TaskManagerActivity extends AppCompatActivity
 
     public static final String EXPORTED_FILE_NAME = "itemlist.ili";
 
-    private TaskManagerPresenter presenter;
+    private TaskManagerPresenter mPresenter;
 
     private enum ToolbarMode {
         NORMAL, SEARCH, FILTER
     }
 
-    private FilterLayoutWrapper filterLayoutWrapper;
-    private FiltersAdapter adapter;
+    private FilterLayoutWrapper mFilterLayoutWrapper;
+    private FiltersAdapter mAdapter;
 
-    private ViewPager viewPager;
-    private TabLayout tabLayout;
-    private Toolbar toolbar;
-    private Spinner searchBySpinner;
-    private View filterLayout;
+    private ViewPager mViewPager;
+    private TabLayout mTabLayout;
+    private Toolbar mToolbar;
+    private Spinner mSearchBySpinner;
+    private View mFilterLayout;
 
-    private MenuItem searchMenuItem;
-    private MenuItem filterMenuItem;
-    private MenuItem searchSpinnerItem;
-    private MenuItem filterCatalogMenuItem;
+    private MenuItem mSearchMenuItem;
+    private MenuItem mFilterMenuItem;
+    private MenuItem mSearchSpinnerItem;
+    private MenuItem mFilterCatalogMenuItem;
 
 
     @Override
@@ -85,7 +86,7 @@ public class TaskManagerActivity extends AppCompatActivity
         setContentView(R.layout.activity_task_list);
         setupPermissionController();
 
-        presenter = new TaskManagerPresenterImpl(this);
+        mPresenter = new TaskManagerPresenterImpl(this);
 
         initView();
     }
@@ -94,29 +95,29 @@ public class TaskManagerActivity extends AppCompatActivity
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        adapter = new SavedFiltersAdapter(this, this::onApplyFilter);
+        mAdapter = new SavedFiltersAdapter(this, this::onApplyFilter);
 
-        filterLayoutWrapper = new FilterLayoutWrapper(filterLayout)
-                .setFiltersAdapter(adapter)
+        mFilterLayoutWrapper = new FilterLayoutWrapper(mFilterLayout)
+                .setFiltersAdapter(mAdapter)
                 .onSaveButtonClick(this::onSaveFilter)
                 .onApplyButtonClick(this::onApplyFilter);
     }
 
 
     private void initView() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setOffscreenPageLimit(2);
-        setupViewPager(viewPager);
+        mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        mViewPager.setOffscreenPageLimit(2);
+        setupViewPager(mViewPager);
 
-        tabLayout = (TabLayout) findViewById(R.id.tablayout);
-        tabLayout.setupWithViewPager(viewPager);
+        mTabLayout = (TabLayout) findViewById(R.id.tablayout);
+        mTabLayout.setupWithViewPager(mViewPager);
 
         findViewById(R.id.fab).setOnClickListener(this);
 
-        filterLayout = findViewById(R.id.filter_layout);
+        mFilterLayout = findViewById(R.id.filter_layout);
     }
 
     private void setupPermissionController() {
@@ -141,8 +142,8 @@ public class TaskManagerActivity extends AppCompatActivity
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.add(presenter.bindView(new TaskListActive()), getString(R.string.active_tasks_title));
-        adapter.add(presenter.bindView(new TaskListCompleted()), getString(R.string.completed_tasks_title));
+        adapter.add(mPresenter.bindView(new TaskListActive()), getString(R.string.active_tasks_title));
+        adapter.add(mPresenter.bindView(new TaskListCompleted()), getString(R.string.completed_tasks_title));
 
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
@@ -152,45 +153,45 @@ public class TaskManagerActivity extends AppCompatActivity
         switch (startedToolbarMode) {
             case FILTER:
             {
-                searchMenuItem.setVisible(false);
-                searchSpinnerItem.setVisible(false);
-                filterCatalogMenuItem.setVisible(true);
+                mSearchMenuItem.setVisible(false);
+                mSearchSpinnerItem.setVisible(false);
+                mFilterCatalogMenuItem.setVisible(true);
 
-                viewPager.setVisibility(View.INVISIBLE);
-                tabLayout.setVisibility(View.INVISIBLE);
-                filterLayout.setVisibility(View.VISIBLE);
+                mViewPager.setVisibility(View.INVISIBLE);
+                mTabLayout.setVisibility(View.INVISIBLE);
+                mFilterLayout.setVisibility(View.VISIBLE);
 
-                toolbar.setTitle(getString(R.string.toolbar_filter_title));
-                filterMenuItem.setIcon(R.drawable.ic_undo);
+                mToolbar.setTitle(getString(R.string.toolbar_filter_title));
+                mFilterMenuItem.setIcon(R.drawable.ic_undo);
             }
             break;
             case SEARCH:
             {
-                searchMenuItem.setVisible(false);
-                filterMenuItem.setVisible(false);
-                searchSpinnerItem.setVisible(true);
+                mSearchMenuItem.setVisible(false);
+                mFilterMenuItem.setVisible(false);
+                mSearchSpinnerItem.setVisible(true);
             }
             break;
             default:
             {
-                searchMenuItem.setVisible(true);
-                filterMenuItem.setVisible(true);
-                searchSpinnerItem.setVisible(false);
-                filterCatalogMenuItem.setVisible(false);
+                mSearchMenuItem.setVisible(true);
+                mFilterMenuItem.setVisible(true);
+                mSearchSpinnerItem.setVisible(false);
+                mFilterCatalogMenuItem.setVisible(false);
 
-                viewPager.setVisibility(View.VISIBLE);
-                tabLayout.setVisibility(View.VISIBLE);
-                filterLayout.setVisibility(View.GONE);
+                mViewPager.setVisibility(View.VISIBLE);
+                mTabLayout.setVisibility(View.VISIBLE);
+                mFilterLayout.setVisibility(View.GONE);
 
-                filterMenuItem.setIcon(R.drawable.ic_sort);
-                toolbar.setTitle(getString(R.string.app_name));
+                mFilterMenuItem.setIcon(R.drawable.ic_sort);
+                mToolbar.setTitle(getString(R.string.app_name));
             }
             break;
         }
     }
 
     private void swapFilterLayout() {
-        if (filterLayout.getVisibility() == View.GONE) {
+        if (mFilterLayout.getVisibility() == View.GONE) {
             startToolbarMode(ToolbarMode.FILTER);
         } else {
             startToolbarMode(ToolbarMode.NORMAL);
@@ -233,7 +234,7 @@ public class TaskManagerActivity extends AppCompatActivity
                 .onPositive(bottomDialog ->
                 {
                     String name = filterNameEditText.getText().toString();
-                    adapter.addItem(name, builder);
+                    mAdapter.addItem(name, builder);
 
                     Toast.makeText(TaskManagerActivity.this,
                             getString(R.string.filter_was_saved), Toast.LENGTH_SHORT).show();
@@ -241,7 +242,7 @@ public class TaskManagerActivity extends AppCompatActivity
     }
 
     private void onApplyFilter(TasksFilter.Builder builder) {
-        presenter.applyFilter(builder);
+        mPresenter.applyFilter(builder);
         swapFilterLayout();
     }
 
@@ -250,13 +251,13 @@ public class TaskManagerActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_task_list, menu);
 
-        filterCatalogMenuItem = menu.findItem(R.id.action_saved_filters);
-        searchSpinnerItem = menu.findItem(R.id.search_spinner);
-        searchBySpinner = (Spinner) searchSpinnerItem.getActionView();
-        searchMenuItem = menu.findItem(R.id.action_search);
-        filterMenuItem = menu.findItem(R.id.action_filter);
+        mFilterCatalogMenuItem = menu.findItem(R.id.action_saved_filters);
+        mSearchSpinnerItem = menu.findItem(R.id.search_spinner);
+        mSearchBySpinner = (Spinner) mSearchSpinnerItem.getActionView();
+        mSearchMenuItem = menu.findItem(R.id.action_search);
+        mFilterMenuItem = menu.findItem(R.id.action_filter);
 
-        SearchView searchView = (SearchView) searchMenuItem.getActionView();
+        SearchView searchView = (SearchView) mSearchMenuItem.getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         searchView.setQueryHint(getString(R.string.search_hint));
@@ -270,7 +271,7 @@ public class TaskManagerActivity extends AppCompatActivity
         } catch (Exception ignored) {
         }
 
-        MenuItemCompat.setOnActionExpandListener(searchMenuItem, this);
+        MenuItemCompat.setOnActionExpandListener(mSearchMenuItem, this);
         startToolbarMode(ToolbarMode.NORMAL);
         return true;
     }
@@ -288,7 +289,7 @@ public class TaskManagerActivity extends AppCompatActivity
                 sendImportRequest();
                 break;
             case R.id.action_saved_filters:
-                filterLayoutWrapper.swapFilterList();
+                mFilterLayoutWrapper.swapFilterList();
                 break;
         }
 
@@ -297,9 +298,9 @@ public class TaskManagerActivity extends AppCompatActivity
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        filterLayoutWrapper.onCompileFilter(builder -> {
+        mFilterLayoutWrapper.onCompileFilter(builder -> {
             if (!newText.isEmpty()) {
-                switch (searchBySpinner.getSelectedItemPosition()) {
+                switch (mSearchBySpinner.getSelectedItemPosition()) {
                     case 0:
                         builder.startsWith(TasksDatabaseHelper.TITLE, newText);
                         break;
@@ -309,7 +310,7 @@ public class TaskManagerActivity extends AppCompatActivity
                 }
             }
 
-            presenter.applyFilter(builder);
+            mPresenter.applyFilter(builder);
         });
 
         return true;
@@ -351,7 +352,7 @@ public class TaskManagerActivity extends AppCompatActivity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        presenter.onResult(requestCode, resultCode, data);
+        mPresenter.onResult(requestCode, resultCode, data);
     }
 
     @Override

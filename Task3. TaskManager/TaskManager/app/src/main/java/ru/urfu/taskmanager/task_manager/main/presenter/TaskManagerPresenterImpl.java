@@ -29,21 +29,22 @@ import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQ
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQUEST_EDIT;
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQUEST_IMPORT;
 
-public class TaskManagerPresenterImpl implements TaskManagerPresenter {
-    private final TaskManager view;
-    private final TasksDatabase database;
-    private final List<TaskListView> taskLists;
+public class TaskManagerPresenterImpl implements TaskManagerPresenter
+{
+    private final TaskManager mManager;
+    private final TasksDatabase mDatabase;
+    private final List<TaskListView> mTasksList;
 
     public TaskManagerPresenterImpl(TaskManager view) {
-        this.view = view;
-        this.taskLists = new ArrayList<>();
-        this.database = TasksDatabase.getInstance();
+        this.mManager = view;
+        this.mTasksList = new ArrayList<>();
+        this.mDatabase = TasksDatabase.getInstance();
     }
 
     @Override
     public void taskIsCompleted(int id) {
-        database.updateEntry(
-                database.getEntryById(id)
+        mDatabase.updateEntry(
+                mDatabase.getEntryById(id)
                         .setTtl(System.currentTimeMillis())
                         .setCompleted(true)
         );
@@ -53,40 +54,40 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter {
 
     @Override
     public void postponeTheTask(int id, Coupler<Callback<Date>, TaskEntry> coupler) {
-        TaskEntry task = database.getEntryById(id);
+        TaskEntry task = mDatabase.getEntryById(id);
         coupler.bind(date -> {
             task.setTtl(date.getTime());
-            database.updateEntry(task);
+            mDatabase.updateEntry(task);
             notifyDataUpdate();
         }, task);
     }
 
     @Override
     public void deleteTheTask(int id) {
-        database.removeEntryById(id);
+        mDatabase.removeEntryById(id);
         notifyDataUpdate();
     }
 
     @Override
     public void restoreTheTask(int id, Coupler<Callback<Date>, TaskEntry> coupler) {
-        TaskEntry task = database.getEntryById(id)
+        TaskEntry task = mDatabase.getEntryById(id)
                 .setCompleted(false);
 
         coupler.bind(date -> {
             task.setTtl(date.getTime());
-            database.updateEntry(task);
+            mDatabase.updateEntry(task);
             notifyDataUpdate();
         }, task);
     }
 
     @Override
     public void editTheTask(int id) {
-        view.startEditor(id);
+        mManager.startEditor(id);
     }
 
     @Override
     public TaskListView bindView(TaskListView view) {
-        taskLists.add(view);
+        mTasksList.add(view);
         return view.bindPresenter(this);
     }
 
@@ -100,10 +101,10 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CREATE:
-                    view.showAlert(view.getResources().getString(R.string.task_was_created));
+                    mManager.showAlert(mManager.getResources().getString(R.string.task_was_created));
                     break;
                 case REQUEST_EDIT:
-                    view.showAlert(view.getResources().getString(R.string.task_was_updated));
+                    mManager.showAlert(mManager.getResources().getString(R.string.task_was_updated));
                     break;
                 case REQUEST_IMPORT:
                     importFrom(data.getData());
@@ -117,7 +118,7 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter {
     private void importFrom(Uri uri) {
         StringBuilder builder = new StringBuilder();
         try {
-            InputStream inputStream = view.getBaseContext()
+            InputStream inputStream = mManager.getBaseContext()
                     .getContentResolver()
                     .openInputStream(uri);
 
@@ -139,11 +140,11 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter {
             List<TaskEntry> entries = JSONFactory.fromJson(builder.toString(),
                     Types.newParameterizedType(List.class, TaskEntry.class));
 
-            database.replaceAll(entries);
-            view.showAlert(view.getResources().getString(R.string.task_successful_import));
+            mDatabase.replaceAll(entries);
+            mManager.showAlert(mManager.getResources().getString(R.string.task_successful_import));
         } catch (IOException e) {
             e.printStackTrace();
-            view.showAlert(view.getResources().getString(R.string.task_import_failed));
+            mManager.showAlert(mManager.getResources().getString(R.string.task_import_failed));
         }
     }
 
@@ -152,7 +153,7 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter {
     }
 
     private void notifyDataUpdate(TasksFilter.Builder builder) {
-        for (TaskListView taskList : taskLists) {
+        for (TaskListView taskList : mTasksList) {
             taskList.onUpdate(builder.copy());
         }
     }

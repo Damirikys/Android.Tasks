@@ -1,44 +1,44 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".task_manager.main.view.TaskManagerActivity">
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".task_manager.main.view.TaskManagerActivity">
 
     <item
         android:id="@+id/action_search"
-        android:title="@android:string/search_go"
         android:icon="@drawable/ic_search"
-        app:showAsAction="always|collapseActionView"
-        app:actionViewClass="android.support.v7.widget.SearchView" />
+        android:title="@android:string/search_go"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="always|collapseActionView"/>
 
     <item
         android:id="@+id/action_saved_filters"
-        android:title="Сохраненные фильтры"
         android:icon="@drawable/ic_grade"
+        android:title="Сохраненные фильтры"
         android:visible="false"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_filter"
-        android:title="@string/action_filter"
         android:icon="@drawable/ic_sort"
-        app:showAsAction="always" />
+        android:title="@string/action_filter"
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/search_spinner"
         android:title="Фильтр поиска"
-        app:actionLayout="@layout/toolbar_search_spinner"
         android:visible="false"
-        app:showAsAction="always" />
+        app:actionLayout="@layout/toolbar_search_spinner"
+        app:showAsAction="always"/>
 
 
     <item
         android:id="@+id/action_export"
         android:title="Экспорт"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_import"
         android:title="Импорт"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
 
 </menu>

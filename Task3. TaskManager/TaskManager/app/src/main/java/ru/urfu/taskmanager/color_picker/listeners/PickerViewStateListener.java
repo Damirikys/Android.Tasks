@@ -1,6 +1,7 @@
 package ru.urfu.taskmanager.color_picker.listeners;
 
-public interface PickerViewStateListener {
+public interface PickerViewStateListener
+{
     void onColorChanged(int color);
 
     void editModeEnable();

@@ -6,38 +6,39 @@ import android.view.View;
 import ru.urfu.taskmanager.task_manager.main.adapters.FiltersAdapter;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
 
-public class FilterLayoutWrapper {
-    private final FilterViewHolder holder;
+public class FilterLayoutWrapper
+{
+    private final FilterViewHolder mHolder;
 
     public FilterLayoutWrapper(@NonNull View filterLayout) {
-        this.holder = new FilterViewHolder(filterLayout);
+        this.mHolder = new FilterViewHolder(filterLayout);
     }
 
     public FilterLayoutWrapper setFiltersAdapter(FiltersAdapter adapter) {
-        holder.savedFiltersList.setAdapter(adapter);
-        holder.savedFiltersList.setOnItemClickListener(adapter);
+        mHolder.mSavedFiltersList.setAdapter(adapter);
+        mHolder.mSavedFiltersList.setOnItemClickListener(adapter);
         return this;
     }
 
     public FilterLayoutWrapper onApplyButtonClick(OnFilterAction onFilterAction) {
-        holder.filterApplyButton.setOnClickListener(v -> onCompileFilter(onFilterAction));
+        mHolder.mFilterApplyButton.setOnClickListener(v -> onCompileFilter(onFilterAction));
         return this;
     }
 
     public FilterLayoutWrapper onSaveButtonClick(OnFilterAction onFilterAction) {
-        holder.filterSaveButton.setOnClickListener(v -> onCompileFilter(onFilterAction));
+        mHolder.mFilterSaveButton.setOnClickListener(v -> onCompileFilter(onFilterAction));
         return this;
     }
 
     public void onCompileFilter(OnFilterAction onFilterAction) {
-        onFilterAction.onAction(holder.compileFilterBuilder());
+        onFilterAction.onAction(mHolder.compileFilterBuilder());
     }
 
     public void swapFilterList() {
-        if (holder.savedFiltersList.getVisibility() == View.GONE) {
-            holder.savedFiltersList.setVisibility(View.VISIBLE);
+        if (mHolder.mSavedFiltersList.getVisibility() == View.GONE) {
+            mHolder.mSavedFiltersList.setVisibility(View.VISIBLE);
         } else {
-            holder.savedFiltersList.setVisibility(View.GONE);
+            mHolder.mSavedFiltersList.setVisibility(View.GONE);
         }
     }
 

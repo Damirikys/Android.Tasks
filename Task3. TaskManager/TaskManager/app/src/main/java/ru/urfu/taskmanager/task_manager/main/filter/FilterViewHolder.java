@@ -20,92 +20,92 @@ import ru.urfu.taskmanager.utils.db.TasksFilter;
 import ru.urfu.taskmanager.utils.tools.TimeUtils;
 
 
-class FilterViewHolder {
-    ListView savedFiltersList;
-    Button filterApplyButton;
-    Button filterSaveButton;
+class FilterViewHolder
+{
+    ListView mSavedFiltersList;
+    Button mFilterApplyButton;
+    Button mFilterSaveButton;
 
-    private Context context;
+    private Context mContext;
 
-    private RadioGroup dateRadioGroup, orderRadioGroup;
-    private EditText startDateEditText, endDateEditText;
-    private Spinner sortBySpinner;
-    private Switch datePickerSwitcher, alphabeticallySwitcher, colorPickSwitcher;
-    private View colorPickedArea;
-    private View datePickerLayout;
+    private RadioGroup mDateRadioGroup, mOrderRadioGroup;
+    private EditText mStartDateEditText, mEndDateEditText;
+    private Spinner mSortBySpinner;
+    private Switch mDatePickerSwitcher, mAlphabeticallySwitcher, mColorPickSwitcher;
+    private View mColorPickedArea, mDatePickerLayout;
 
     FilterViewHolder(View view) {
-        this.context = view.getContext();
+        this.mContext = view.getContext();
 
         initView(view);
         setupBehavior();
     }
 
     private void initView(View view) {
-        savedFiltersList = (ListView) view.findViewById(R.id.saved_filters_list);
+        mSavedFiltersList = (ListView) view.findViewById(R.id.saved_filters_list);
 
-        alphabeticallySwitcher = (Switch) view.findViewById(R.id.alphabetically_switch);
-        datePickerSwitcher = (Switch) view.findViewById(R.id.switch_date_picker);
-        colorPickSwitcher = (Switch) view.findViewById(R.id.switch_color_picker);
+        mAlphabeticallySwitcher = (Switch) view.findViewById(R.id.alphabetically_switch);
+        mDatePickerSwitcher = (Switch) view.findViewById(R.id.switch_date_picker);
+        mColorPickSwitcher = (Switch) view.findViewById(R.id.switch_color_picker);
 
-        startDateEditText = (EditText) view.findViewById(R.id.start_date);
-        endDateEditText = (EditText) view.findViewById(R.id.end_date);
+        mStartDateEditText = (EditText) view.findViewById(R.id.start_date);
+        mEndDateEditText = (EditText) view.findViewById(R.id.end_date);
 
-        filterApplyButton = (Button) view.findViewById(R.id.filter_apply_button);
-        filterSaveButton = (Button) view.findViewById(R.id.filter_save_button);
+        mFilterApplyButton = (Button) view.findViewById(R.id.filter_apply_button);
+        mFilterSaveButton = (Button) view.findViewById(R.id.filter_save_button);
 
-        orderRadioGroup = (RadioGroup) view.findViewById(R.id.order_radio_group);
-        dateRadioGroup = (RadioGroup) view.findViewById(R.id.radio_date_picker);
+        mOrderRadioGroup = (RadioGroup) view.findViewById(R.id.order_radio_group);
+        mDateRadioGroup = (RadioGroup) view.findViewById(R.id.radio_date_picker);
 
-        datePickerLayout = view.findViewById(R.id.date_picker_layout);
-        colorPickedArea = view.findViewById(R.id.selected_color_area);
+        mDatePickerLayout = view.findViewById(R.id.date_picker_layout);
+        mColorPickedArea = view.findViewById(R.id.selected_color_area);
 
-        sortBySpinner = (Spinner) view.findViewById(R.id.sort_by_spinner);
+        mSortBySpinner = (Spinner) view.findViewById(R.id.sort_by_spinner);
     }
 
     private void setupBehavior() {
         String dateString = TimeUtils.format(new Date());
-        startDateEditText.setText(dateString);
-        endDateEditText.setText(dateString);
+        mStartDateEditText.setText(dateString);
+        mEndDateEditText.setText(dateString);
 
-        datePickerSwitcher.setOnCheckedChangeListener((buttonView, isChecked) ->
+        mDatePickerSwitcher.setOnCheckedChangeListener((buttonView, isChecked) ->
         {
             if (isChecked) {
-                dateRadioGroup.setVisibility(View.VISIBLE);
-                datePickerLayout.setVisibility(View.VISIBLE);
+                mDateRadioGroup.setVisibility(View.VISIBLE);
+                mDatePickerLayout.setVisibility(View.VISIBLE);
             } else {
-                dateRadioGroup.setVisibility(View.GONE);
-                datePickerLayout.setVisibility(View.GONE);
+                mDateRadioGroup.setVisibility(View.GONE);
+                mDatePickerLayout.setVisibility(View.GONE);
             }
         });
 
-        dateRadioGroup.setOnCheckedChangeListener((group, checkedId) ->
+        mDateRadioGroup.setOnCheckedChangeListener((group, checkedId) ->
         {
             switch (checkedId) {
                 case R.id.by_single_date_radio:
-                    endDateEditText.setEnabled(false);
+                    mEndDateEditText.setEnabled(false);
                     break;
                 case R.id.by_range_date_radio:
-                    endDateEditText.setEnabled(true);
+                    mEndDateEditText.setEnabled(true);
                     break;
             }
         });
 
-        colorPickSwitcher.setOnCheckedChangeListener((buttonView, isChecked) ->
+        mColorPickSwitcher.setOnCheckedChangeListener((buttonView, isChecked) ->
         {
             if (isChecked) {
-                colorPickedArea.setAlpha(1f);
-                RecentColors.showRecent(context,
-                        color -> colorPickedArea.setBackgroundColor(color));
+                mColorPickedArea.setAlpha(1f);
+                RecentColors.showRecent(mContext,
+                        color -> mColorPickedArea.setBackgroundColor(color));
             } else {
-                colorPickedArea.setAlpha(0.3f);
+                mColorPickedArea.setAlpha(0.3f);
             }
         });
 
-        colorPickedArea.setOnClickListener(v ->
+        mColorPickedArea.setOnClickListener(v ->
         {
-            if (colorPickSwitcher.isChecked()) {
-                RecentColors.showRecent(context, v::setBackgroundColor);
+            if (mColorPickSwitcher.isChecked()) {
+                RecentColors.showRecent(mContext, v::setBackgroundColor);
             }
         });
     }
@@ -113,7 +113,7 @@ class FilterViewHolder {
     TasksFilter.Builder compileFilterBuilder() {
         TasksFilter.Builder builder = TasksFilter.builder();
 
-        switch (sortBySpinner.getSelectedItemPosition()) {
+        switch (mSortBySpinner.getSelectedItemPosition()) {
             case 0:
                 builder.sortBy(TasksDatabaseHelper.TTL);
                 break;
@@ -126,11 +126,11 @@ class FilterViewHolder {
         }
 
 
-        if (datePickerSwitcher.isChecked()) {
+        if (mDatePickerSwitcher.isChecked()) {
             try {
-                Date startDate = TimeUtils.parse(startDateEditText.getText().toString());
-                if (endDateEditText.isEnabled()) {
-                    Date endDate = TimeUtils.parse(endDateEditText.getText().toString());
+                Date startDate = TimeUtils.parse(mStartDateEditText.getText().toString());
+                if (mEndDateEditText.isEnabled()) {
+                    Date endDate = TimeUtils.parse(mEndDateEditText.getText().toString());
                     builder.fromDateRange(startDate.getTime(), endDate.getTime());
                 } else {
                     builder.fromDate(startDate.getTime());
@@ -139,15 +139,15 @@ class FilterViewHolder {
             }
         }
 
-        if (colorPickSwitcher.isChecked()) {
-            builder.fromColor(((ColorDrawable) colorPickedArea.getBackground()).getColor());
+        if (mColorPickSwitcher.isChecked()) {
+            builder.fromColor(((ColorDrawable) mColorPickedArea.getBackground()).getColor());
         }
 
-        if (alphabeticallySwitcher.isChecked()) {
+        if (mAlphabeticallySwitcher.isChecked()) {
             builder.sortBy(TasksDatabaseHelper.TITLE);
         }
 
-        switch (orderRadioGroup.getCheckedRadioButtonId()) {
+        switch (mOrderRadioGroup.getCheckedRadioButtonId()) {
             case R.id.order_front_radio:
                 builder.setOrientation(TasksFilter.FRONT);
                 break;

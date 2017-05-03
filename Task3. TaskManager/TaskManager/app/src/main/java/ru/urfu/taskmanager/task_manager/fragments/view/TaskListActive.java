@@ -14,7 +14,8 @@ import ru.urfu.taskmanager.task_manager.fragments.adapters.TasksListAdapter;
 import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
 
-public class TaskListActive extends TaskListFragment {
+public class TaskListActive extends TaskListFragment
+{
     @Override
     protected TasksListAdapter getAdapter() {
         return new TasksListAdapter(getContext(),
@@ -34,13 +35,13 @@ public class TaskListActive extends TaskListFragment {
         popup.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.task_is_complete:
-                    presenter.taskIsCompleted((int) id);
+                    mPresenter.taskIsCompleted((int) id);
                     break;
                 case R.id.edit_the_task:
-                    presenter.editTheTask((int) id);
+                    mPresenter.editTheTask((int) id);
                     break;
                 case R.id.postpone_the_task: {
-                    presenter.postponeTheTask(
+                    mPresenter.postponeTheTask(
                             (int) id, (date, entry) ->
                                     new SingleDateAndTimePickerDialog.Builder(getContext())
                                             .mainColor(getResources().getColor(R.color.colorAccent))
@@ -54,7 +55,7 @@ public class TaskListActive extends TaskListFragment {
                 }
                 break;
                 case R.id.delete_the_task:
-                    presenter.deleteTheTask((int) id);
+                    mPresenter.deleteTheTask((int) id);
                     break;
             }
             return true;

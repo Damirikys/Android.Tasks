@@ -4,7 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class TasksDatabaseHelper extends SQLiteOpenHelper {
+public class TasksDatabaseHelper extends SQLiteOpenHelper
+{
     public static final String DATABASE_NAME = "TasksDatabase";
     public static final String TABLE_NAME = "tasks";
     public static final int DATABASE_VERSION = 1;
@@ -24,16 +25,15 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase database) {
-        database.execSQL("create table " + TABLE_NAME + "("
-                + ID + " integer primary key,"
-                + TITLE + " text,"
-                + DESCRIPTION + " text,"
-                + TTL + " text,"
-                + TIME_CREATED + " text,"
-                + TIME_EDITED + " text,"
-                + DECORATE_COLOR + " integer,"
-                + COMPLETED + " integer"
-                + ")"
+        database.execSQL("create table " + TABLE_NAME + "(" +
+                ID + " integer primary key," +
+                TITLE + " text," +
+                DESCRIPTION + " text," +
+                TTL + " text," +
+                TIME_CREATED + " text," +
+                TIME_EDITED + " text," +
+                DECORATE_COLOR + " integer," +
+                COMPLETED + " integer" + ")"
         );
     }
 

@@ -9,19 +9,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-public final class TimeUtils {
-    private static final Locale locale = new Locale("ru");
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy", locale);
-
-    public static class HoursAndMinutes {
-        int hours, minutes;
-
-        @Override
-        public String toString() {
-            return (hours < 10 ? "0" + hours : hours) + ":" +
-                    (minutes < 10 ? "0" + minutes : minutes);
-        }
-    }
+public final class TimeUtils
+{
+    private static final Locale sLocale = new Locale("ru");
+    private static final SimpleDateFormat sFormatter = new SimpleDateFormat("dd.MM.yyyy", sLocale);
 
     public static HoursAndMinutes getHoursAndMinutesFromUnix(long timestamp) {
         Calendar calendar = new GregorianCalendar();
@@ -35,19 +26,17 @@ public final class TimeUtils {
     }
 
     public static String format(Calendar date) {
-        String[] newMonths = {
-                "января", "февраля", "марта", "апреля", "мая", "июня",
-                "июля", "августа", "сентября", "октября", "ноября", "декабря"};
-        DateFormatSymbols dfs = DateFormatSymbols.getInstance(locale);
+        String[] newMonths = {"января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"};
+        DateFormatSymbols dfs = DateFormatSymbols.getInstance(sLocale);
         dfs.setMonths(newMonths);
 
-        DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, locale);
+        DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, sLocale);
         SimpleDateFormat sdf = (SimpleDateFormat) df;
         sdf.setDateFormatSymbols(dfs);
 
         Date jud = null;
         try {
-            jud = formatter.parse(formatter.format(date.getTime()));
+            jud = sFormatter.parse(sFormatter.format(date.getTime()));
         } catch (ParseException ignored) {
         }
 
@@ -55,10 +44,20 @@ public final class TimeUtils {
     }
 
     public static Date parse(String text) throws ParseException {
-        return formatter.parse(text);
+        return sFormatter.parse(text);
     }
 
     public static String format(Date date) {
-        return formatter.format(date);
+        return sFormatter.format(date);
+    }
+
+    public static class HoursAndMinutes
+    {
+        int hours, minutes;
+
+        @Override
+        public String toString() {
+            return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes);
+        }
     }
 }

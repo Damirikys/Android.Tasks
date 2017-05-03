@@ -8,7 +8,8 @@ import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
 
 
-public class AbstractTaskListAdapter extends SimpleCursorAdapter {
+public class AbstractTaskListAdapter extends SimpleCursorAdapter
+{
     protected static final String OVERDUE = "Просрочено";
 
     protected static final int LAYOUT = R.layout.task_list_item;

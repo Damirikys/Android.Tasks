@@ -11,8 +11,9 @@ import ru.urfu.taskmanager.color_picker.listeners.PickerViewStateListener;
 import ru.urfu.taskmanager.color_picker.states.Action;
 
 
-public class PickerView extends AbstractPickerView {
-    protected List<PickerViewStateListener> listeners = new ArrayList<>();
+public class PickerView extends AbstractPickerView
+{
+    protected List<PickerViewStateListener> mListeners = new ArrayList<>();
 
     public PickerView(Context context) {
         super(context);
@@ -27,18 +28,18 @@ public class PickerView extends AbstractPickerView {
     }
 
     @Override
-    public void setCurrentColor(int currentColor) {
-        super.setCurrentColor(currentColor);
+    public void setCurrentColor(int mCurrentColor) {
+        super.setCurrentColor(mCurrentColor);
         notifySubscribers(Action.onColorChange);
     }
 
 
     public void subscribe(PickerViewStateListener listener) {
-        listeners.add(listener);
+        mListeners.add(listener);
     }
 
     public void unsubscribe(PickerViewStateListener listener) {
-        listeners.remove(listener);
+        mListeners.remove(listener);
     }
 
 
@@ -50,14 +51,14 @@ public class PickerView extends AbstractPickerView {
             case editModeEnable:
                 if (!isEnableEditMode()) {
                     setEnableEditMode(true);
-                    setEnableScrolling(false);
+                    setScrollingEnable(false);
                     notify(PickerViewStateListener::editModeEnable);
                 }
                 break;
             case editModeDisable:
                 if (isEnableEditMode()) {
                     setEnableEditMode(false);
-                    setEnableScrolling(true);
+                    setScrollingEnable(true);
                     notify(PickerViewStateListener::editModeDisable);
                 }
                 break;
@@ -68,7 +69,7 @@ public class PickerView extends AbstractPickerView {
     }
 
     private void notify(PickerView.Callback callback) {
-        for (PickerViewStateListener observer : listeners)
+        for (PickerViewStateListener observer : mListeners)
             callback.call(observer);
     }
 }

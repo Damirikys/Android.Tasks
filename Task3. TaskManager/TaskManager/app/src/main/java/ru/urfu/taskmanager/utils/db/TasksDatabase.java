@@ -13,17 +13,23 @@ import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 
 import static ru.urfu.taskmanager.utils.db.TasksFilter.COMPLETED_TASK;
 
-public class TasksDatabase {
-    private static TasksDatabase instance;
-
-    private final String TAG = getClass().getSimpleName();
-
-    private SQLiteDatabase database;
+public class TasksDatabase
+{
+    private static TasksDatabase sInstance;
+    private SQLiteDatabase mDatabase;
 
     private TasksDatabase(Context c) {
         super();
         TasksDatabaseHelper dbHelper = new TasksDatabaseHelper(c);
-        this.database = dbHelper.getWritableDatabase();
+        this.mDatabase = dbHelper.getWritableDatabase();
+    }
+
+    public static TasksDatabase getInstance() {
+        return sInstance;
+    }
+
+    public static void init(Context applicationContext) {
+        sInstance = new TasksDatabase(applicationContext);
     }
 
     public List<TaskEntry> getAllEntries() {
@@ -39,22 +45,18 @@ public class TasksDatabase {
     }
 
     public void insertEntry(TaskEntry entry) {
-        Log.d(TAG, "insertEntry: " + entry.toString());
-        database.insert(TasksDatabaseHelper.TABLE_NAME, null, contentValuesFrom(entry));
+        mDatabase.insert(TasksDatabaseHelper.TABLE_NAME, null, contentValuesFrom(entry));
     }
 
     public void removeEntryById(int id) {
-        Log.d(TAG, "removeEntryById: " + id);
-        database.delete(TasksDatabaseHelper.TABLE_NAME, TasksDatabaseHelper.ID + " = " + id, null);
+        mDatabase.delete(TasksDatabaseHelper.TABLE_NAME, TasksDatabaseHelper.ID + " = " + id, null);
     }
 
     public void updateEntry(TaskEntry entry) {
-        Log.d(TAG, "updateEntry: " + entry.toString());
-        database.update(TasksDatabaseHelper.TABLE_NAME, contentValuesFrom(entry), TasksDatabaseHelper.ID + " = " + entry.getId(), null);
+        mDatabase.update(TasksDatabaseHelper.TABLE_NAME, contentValuesFrom(entry), TasksDatabaseHelper.ID + " = " + entry.getId(), null);
     }
 
     public void replaceAll(List<TaskEntry> entries) {
-        database.execSQL("delete from " + TasksDatabaseHelper.TABLE_NAME);
         for (TaskEntry entry : entries) {
             insertEntry(entry);
         }
@@ -82,22 +84,16 @@ public class TasksDatabase {
     }
 
     public TaskEntry getEntryById(int id) {
-        Log.d(TAG, "getEntryById " + id);
-        Cursor cursor = database.rawQuery(
-                "SELECT * FROM " + TasksDatabaseHelper.TABLE_NAME +
-                        " WHERE " + TasksDatabaseHelper.ID + "=" + id, null
-        );
+        Cursor cursor = mDatabase.rawQuery("SELECT * FROM " + TasksDatabaseHelper.TABLE_NAME + " WHERE " + TasksDatabaseHelper.ID + "=" + id, null);
 
-        if (cursor.getCount() == 0)
-            return null;
+        if (cursor.getCount() == 0) return null;
 
         cursor.moveToFirst();
         return getCurrentEntryFromCursor(cursor);
     }
 
     public Cursor getCursor(TasksFilter filter) {
-        return database.query(
-                TasksDatabaseHelper.TABLE_NAME,
+        return mDatabase.query(TasksDatabaseHelper.TABLE_NAME,
                 filter.getColumns(),
                 filter.getWhereClause(),
                 filter.getSelectionArgs(),
@@ -118,13 +114,5 @@ public class TasksDatabase {
         contentValues.put(TasksDatabaseHelper.DECORATE_COLOR, entry.getColorInt());
 
         return contentValues;
-    }
-
-    public static TasksDatabase getInstance() {
-        return instance;
-    }
-
-    public static void init(Context applicationContext) {
-        instance = new TasksDatabase(applicationContext);
     }
 }
