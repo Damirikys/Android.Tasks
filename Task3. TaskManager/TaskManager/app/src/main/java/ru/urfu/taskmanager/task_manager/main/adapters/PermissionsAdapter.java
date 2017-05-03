@@ -7,8 +7,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.List;
 
-public abstract class PermissionsAdapter implements MultiplePermissionsListener
-{
+public abstract class PermissionsAdapter implements MultiplePermissionsListener {
     @Override
     public void onPermissionsChecked(MultiplePermissionsReport report) {
 

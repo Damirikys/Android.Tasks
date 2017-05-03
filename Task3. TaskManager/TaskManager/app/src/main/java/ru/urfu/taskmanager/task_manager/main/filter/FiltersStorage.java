@@ -11,8 +11,7 @@ import java.util.Map;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
 import ru.urfu.taskmanager.utils.tools.JSONFactory;
 
-public final class FiltersStorage
-{
+public final class FiltersStorage {
     private static final String REPOSITORY_NAME = "ru.urfu.taskmanager.filters_storages";
     private static final FiltersStorage repository = new FiltersStorage();
     private SharedPreferences storage;
@@ -37,7 +36,8 @@ public final class FiltersStorage
         for (String key : storage.getAll().keySet()) {
             try {
                 items.put(key, JSONFactory.fromJson(storage.getString(key, ""), TasksFilter.Builder.class));
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
 
         return items;

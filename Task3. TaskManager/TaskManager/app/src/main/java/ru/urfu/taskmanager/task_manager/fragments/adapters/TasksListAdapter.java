@@ -3,7 +3,6 @@ package ru.urfu.taskmanager.task_manager.fragments.adapters;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.GradientDrawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +11,12 @@ import android.widget.TextView;
 import java.util.Calendar;
 
 import ru.urfu.taskmanager.R;
-import ru.urfu.taskmanager.utils.db.TasksDatabase;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
+import ru.urfu.taskmanager.utils.db.TasksDatabase;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
 import ru.urfu.taskmanager.utils.tools.TimeUtils;
 
-public class TasksListAdapter extends AbstractTaskListAdapter
-{
+public class TasksListAdapter extends AbstractTaskListAdapter {
     private final TasksDatabase database;
     private TasksFilter tasksFilter;
 
@@ -66,8 +64,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter
         attachHeader(holder, entry, prev);
     }
 
-    private ViewHolder attachHeader(ViewHolder holder, TaskEntry entry, TaskEntry prev)
-    {
+    private ViewHolder attachHeader(ViewHolder holder, TaskEntry entry, TaskEntry prev) {
         String entryTitle = getTitleFromEntry(entry);
         if (entryTitle.equals(OVERDUE))
             holder.layout.setAlpha(0.4f);
@@ -129,8 +126,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter
         changeCursor(database.getCursor(tasksFilter));
     }
 
-    private static class ViewHolder
-    {
+    private static class ViewHolder {
         View layout;
         View header;
         TextView header_text;

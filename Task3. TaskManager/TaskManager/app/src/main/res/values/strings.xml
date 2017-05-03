@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">TaskManager</string>
+    <string name="toolbar_filter_title">Параметры</string>
     <string name="action_filter">Фильтр</string>
     <string name="editor_create_title">Новая задача</string>
     <string name="editor_edit_title">Редактирование</string>
@@ -12,7 +13,18 @@
     <string name="restore_the_task">Восстановить задачу</string>
     <string name="task_was_created">Новая задача создана</string>
     <string name="task_was_updated">Задача обновлена</string>
-    <string name="search_hint">Введите название …</string>
+    <string name="search_hint">Введите название</string>
+    <string name="entry_filter_name">Введите название фильтра</string>
+    <string name="filter_was_saved">Фильтр сохранен</string>
+    <string name="need_permission_external">Предоставьте разрешения на работу с External Storage</string>
+    <string name="task_successful_export">Ваши задачи успешно экспортированы</string>
+    <string name="task_export_failed">Не удалось сохранить данные</string>
+    <string name="incorrect_length">Длина не должна превышать</string>
+    <string name="entry_description">Введите описание</string>
+    <string name="select">Выбрать</string>
+    <string name="select_directory">Выбрать директорию</string>
+    <string name="cancel">Отмена</string>
+    <string name="save">Сохранить</string>
 
     <string-array name="sorting">
         <item>Выполнения</item>

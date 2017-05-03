@@ -11,8 +11,7 @@ import com.github.javiersantos.bottomdialogs.BottomDialog;
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.utils.interfaces.Callback;
 
-public final class RecentColors
-{
+public final class RecentColors {
     public static void showRecent(Context context, Callback<Integer> selectedColor) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View customView = inflater.inflate(R.layout.recent_colors, null);

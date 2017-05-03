@@ -13,16 +13,14 @@ import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 
 import static ru.urfu.taskmanager.utils.db.TasksFilter.COMPLETED_TASK;
 
-public class TasksDatabase
-{
+public class TasksDatabase {
     private static TasksDatabase instance;
 
     private final String TAG = getClass().getSimpleName();
 
     private SQLiteDatabase database;
 
-    private TasksDatabase(Context c)
-    {
+    private TasksDatabase(Context c) {
         super();
         TasksDatabaseHelper dbHelper = new TasksDatabaseHelper(c);
         this.database = dbHelper.getWritableDatabase();
@@ -40,8 +38,7 @@ public class TasksDatabase
         return entries;
     }
 
-    public void insertEntry(TaskEntry entry)
-    {
+    public void insertEntry(TaskEntry entry) {
         Log.d(TAG, "insertEntry: " + entry.toString());
         database.insert(TasksDatabaseHelper.TABLE_NAME, null, contentValuesFrom(entry));
     }
@@ -57,14 +54,13 @@ public class TasksDatabase
     }
 
     public void replaceAll(List<TaskEntry> entries) {
-        database.execSQL("delete from "+ TasksDatabaseHelper.TABLE_NAME);
+        database.execSQL("delete from " + TasksDatabaseHelper.TABLE_NAME);
         for (TaskEntry entry : entries) {
             insertEntry(entry);
         }
     }
 
-    public TaskEntry getCurrentEntryFromCursor(Cursor cursor)
-    {
+    public TaskEntry getCurrentEntryFromCursor(Cursor cursor) {
         int id = cursor.getColumnIndex(TasksDatabaseHelper.ID);
         int title = cursor.getColumnIndex(TasksDatabaseHelper.TITLE);
         int timetolive = cursor.getColumnIndex(TasksDatabaseHelper.TTL);
@@ -85,16 +81,15 @@ public class TasksDatabase
                 .setCompleted(cursor.getInt(isCompleted) == COMPLETED_TASK);
     }
 
-    public TaskEntry getEntryById(int id)
-    {
+    public TaskEntry getEntryById(int id) {
         Log.d(TAG, "getEntryById " + id);
-        Cursor cursor =  database.rawQuery(
+        Cursor cursor = database.rawQuery(
                 "SELECT * FROM " + TasksDatabaseHelper.TABLE_NAME +
-                        " WHERE " + TasksDatabaseHelper.ID + "=" + id , null
+                        " WHERE " + TasksDatabaseHelper.ID + "=" + id, null
         );
 
         if (cursor.getCount() == 0)
-            return  null;
+            return null;
 
         cursor.moveToFirst();
         return getCurrentEntryFromCursor(cursor);
@@ -112,8 +107,7 @@ public class TasksDatabase
         );
     }
 
-    private ContentValues contentValuesFrom(TaskEntry entry)
-    {
+    private ContentValues contentValuesFrom(TaskEntry entry) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(TasksDatabaseHelper.TTL, entry.getTtlTimestamp());
         contentValues.put(TasksDatabaseHelper.TITLE, entry.getTitle());

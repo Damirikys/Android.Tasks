@@ -1,10 +1,13 @@
 package ru.urfu.taskmanager.utils.db;
 
+import android.icu.util.TimeUnit;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class TasksFilter
-{
+import static android.text.format.DateUtils.DAY_IN_MILLIS;
+
+public class TasksFilter {
     private static final int ALL_TASK = -1;
 
     public static final int ACTIVE_TASK = 0;
@@ -80,9 +83,7 @@ public class TasksFilter
     }
 
     /* TaskFilter.Builder class */
-    public static class Builder
-    {
-        private static final int DAY_IN_MILLIS = 86400 * 1000;
+    public static class Builder {
         private TasksFilter filter;
         private boolean isDefault;
 

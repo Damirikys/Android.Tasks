@@ -17,10 +17,10 @@ import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.color_picker.recent.RecentColors;
 import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
+import ru.urfu.taskmanager.utils.tools.TimeUtils;
 
 
-class FilterViewHolder
-{
+class FilterViewHolder {
     ListView savedFiltersList;
     Button filterApplyButton;
     Button filterSaveButton;
@@ -34,16 +34,14 @@ class FilterViewHolder
     private View colorPickedArea;
     private View datePickerLayout;
 
-    FilterViewHolder(View view)
-    {
+    FilterViewHolder(View view) {
         this.context = view.getContext();
 
         initView(view);
         setupBehavior();
     }
 
-    private void initView(View view)
-    {
+    private void initView(View view) {
         savedFiltersList = (ListView) view.findViewById(R.id.saved_filters_list);
 
         alphabeticallySwitcher = (Switch) view.findViewById(R.id.alphabetically_switch);
@@ -65,9 +63,8 @@ class FilterViewHolder
         sortBySpinner = (Spinner) view.findViewById(R.id.sort_by_spinner);
     }
 
-    private void setupBehavior()
-    {
-        String dateString = FilterLayoutWrapper.formatter.format(new Date());
+    private void setupBehavior() {
+        String dateString = TimeUtils.format(new Date());
         startDateEditText.setText(dateString);
         endDateEditText.setText(dateString);
 
@@ -113,8 +110,7 @@ class FilterViewHolder
         });
     }
 
-    TasksFilter.Builder compileFilterBuilder()
-    {
+    TasksFilter.Builder compileFilterBuilder() {
         TasksFilter.Builder builder = TasksFilter.builder();
 
         switch (sortBySpinner.getSelectedItemPosition()) {
@@ -132,14 +128,15 @@ class FilterViewHolder
 
         if (datePickerSwitcher.isChecked()) {
             try {
-                Date startDate = FilterLayoutWrapper.formatter.parse(startDateEditText.getText().toString());
+                Date startDate = TimeUtils.parse(startDateEditText.getText().toString());
                 if (endDateEditText.isEnabled()) {
-                    Date endDate = FilterLayoutWrapper.formatter.parse(endDateEditText.getText().toString());
+                    Date endDate = TimeUtils.parse(endDateEditText.getText().toString());
                     builder.fromDateRange(startDate.getTime(), endDate.getTime());
                 } else {
                     builder.fromDate(startDate.getTime());
                 }
-            } catch (ParseException ignored) {}
+            } catch (ParseException ignored) {
+            }
         }
 
         if (colorPickSwitcher.isChecked()) {

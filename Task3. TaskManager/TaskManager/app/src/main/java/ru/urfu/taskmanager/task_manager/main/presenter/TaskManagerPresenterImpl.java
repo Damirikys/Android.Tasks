@@ -3,8 +3,6 @@ package ru.urfu.taskmanager.task_manager.main.presenter;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 
 import java.io.BufferedReader;
@@ -12,13 +10,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-import ru.urfu.taskmanager.Application;
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.fragments.view.TaskListView;
 import ru.urfu.taskmanager.task_manager.main.view.TaskManager;
@@ -34,8 +29,7 @@ import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQ
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQUEST_EDIT;
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQUEST_IMPORT;
 
-public class TaskManagerPresenterImpl implements TaskManagerPresenter
-{
+public class TaskManagerPresenterImpl implements TaskManagerPresenter {
     private final TaskManager view;
     private final TasksDatabase database;
     private final List<TaskListView> taskLists;
@@ -123,7 +117,7 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
     private void importFrom(Uri uri) {
         StringBuilder builder = new StringBuilder();
         try {
-            InputStream inputStream = Application.getContext()
+            InputStream inputStream = view.getBaseContext()
                     .getContentResolver()
                     .openInputStream(uri);
 
@@ -147,8 +141,7 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
 
             database.replaceAll(entries);
             view.showAlert("Задачи успешно импортированы");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             view.showAlert("Не удалось импортировать задачи");
         }

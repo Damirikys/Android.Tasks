@@ -10,8 +10,7 @@ import java.util.List;
 import ru.urfu.taskmanager.task_manager.fragments.view.TaskListView;
 
 
-public class ViewPagerAdapter extends FragmentStatePagerAdapter
-{
+public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private final List<String> mFragmentTitleList = new ArrayList<>();
 

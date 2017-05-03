@@ -6,8 +6,7 @@ import com.squareup.moshi.Moshi;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-public class JSONFactory
-{
+public class JSONFactory {
     private static final Moshi moshi = new Moshi.Builder().build();
 
     public static <T> String toJson(T object, Class<T> _class) {

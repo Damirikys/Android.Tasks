@@ -18,10 +18,10 @@ import ru.urfu.taskmanager.task_manager.main.filter.FiltersStorage;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
 
 
-public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter
-{
+public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter {
     private class ViewHolder {
         TextView title;
+
         ViewHolder(View view) {
             title = (TextView) view.findViewById(R.id.title);
         }
@@ -73,6 +73,12 @@ public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter
 
         viewHolder.title.setText(keys.get(position));
         return convertView;
+    }
+
+    @Override
+    public void addItem(String name, TasksFilter.Builder builder) {
+        storage.putBuilder(name, builder);
+        update();
     }
 
     @Override

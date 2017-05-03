@@ -31,7 +31,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import ru.urfu.taskmanager.R;
-import ru.urfu.taskmanager.task_manager.main.filter.FiltersStorage;
 import ru.urfu.taskmanager.task_manager.fragments.view.TaskListActive;
 import ru.urfu.taskmanager.task_manager.fragments.view.TaskListCompleted;
 import ru.urfu.taskmanager.task_manager.main.adapters.FiltersAdapter;
@@ -42,14 +41,14 @@ import ru.urfu.taskmanager.task_manager.main.filter.FilterLayoutWrapper;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenter;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenterImpl;
 import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity;
-import ru.urfu.taskmanager.utils.tools.DirectoryChooser;
 import ru.urfu.taskmanager.utils.db.TasksDatabase;
 import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
+import ru.urfu.taskmanager.utils.db.TasksFilter;
+import ru.urfu.taskmanager.utils.tools.DirectoryChooser;
 import ru.urfu.taskmanager.utils.tools.JSONFactory;
 
 public class TaskManagerActivity extends AppCompatActivity
-        implements TaskManager, MenuItemCompat.OnActionExpandListener, SearchView.OnQueryTextListener
-{
+        implements TaskManager, MenuItemCompat.OnActionExpandListener, SearchView.OnQueryTextListener {
     public static final String ACTION_CREATE = "ru.urfu.taskmanager.ACTION_CREATE";
     public static final String ACTION_EDIT = "ru.urfu.taskmanager.ACTION_EDIT";
 
@@ -66,6 +65,7 @@ public class TaskManagerActivity extends AppCompatActivity
     }
 
     private FilterLayoutWrapper filterLayoutWrapper;
+    private FiltersAdapter adapter;
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
@@ -80,8 +80,7 @@ public class TaskManagerActivity extends AppCompatActivity
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_list);
         setupPermissionController();
@@ -95,38 +94,12 @@ public class TaskManagerActivity extends AppCompatActivity
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        FiltersAdapter adapter = new SavedFiltersAdapter(this, builder -> {
-            presenter.applyFilter(builder);
-            swapFilterLayout();
-        });
+        adapter = new SavedFiltersAdapter(this, this::onApplyFilter);
 
-        filterLayoutWrapper =
-                new FilterLayoutWrapper(filterLayout)
-                    .setFiltersAdapter(adapter)
-                    .onApplyButtonClick(builder -> {
-                        presenter.applyFilter(builder);
-                        swapFilterLayout();
-                    })
-                    .onSaveButtonClick(builder ->
-                    {
-                        EditText filterNameEditText = new EditText(TaskManagerActivity.this);
-                        new BottomDialog.Builder(TaskManagerActivity.this)
-                                .setTitle("Введите название фильтра")
-                                .setCustomView(filterNameEditText)
-                                .setNegativeText("Отмена")
-                                .setPositiveText("Сохранить")
-                                .onPositive(bottomDialog -> {
-                                    FiltersStorage.getStorage().putBuilder(
-                                            filterNameEditText.getText().toString(),
-                                            builder
-                                    );
-
-                                    adapter.update();
-
-                                    Toast.makeText(TaskManagerActivity.this,
-                                            "Фильтр сохранен", Toast.LENGTH_SHORT).show();
-                                }).show();
-                    });
+        filterLayoutWrapper = new FilterLayoutWrapper(filterLayout)
+                .setFiltersAdapter(adapter)
+                .onSaveButtonClick(this::onSaveFilter)
+                .onApplyButtonClick(this::onApplyFilter);
     }
 
 
@@ -158,7 +131,7 @@ public class TaskManagerActivity extends AppCompatActivity
                         super.onPermissionsChecked(report);
                         if (!report.areAllPermissionsGranted()) {
                             Toast.makeText(TaskManagerActivity.this,
-                                    "Предоставьте разрешения на работу с External Storage",
+                                    getString(R.string.need_permission_external),
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -187,15 +160,17 @@ public class TaskManagerActivity extends AppCompatActivity
                 tabLayout.setVisibility(View.INVISIBLE);
                 filterLayout.setVisibility(View.VISIBLE);
 
-                toolbar.setTitle("Параметры");
+                toolbar.setTitle(getString(R.string.toolbar_filter_title));
                 filterMenuItem.setIcon(R.drawable.ic_undo);
-            } break;
+            }
+            break;
             case SEARCH:
             {
                 searchMenuItem.setVisible(false);
                 filterMenuItem.setVisible(false);
                 searchSpinnerItem.setVisible(true);
-            } break;
+            }
+            break;
             default:
             {
                 searchMenuItem.setVisible(true);
@@ -209,7 +184,8 @@ public class TaskManagerActivity extends AppCompatActivity
 
                 filterMenuItem.setIcon(R.drawable.ic_sort);
                 toolbar.setTitle(getString(R.string.app_name));
-            } break;
+            }
+            break;
         }
     }
 
@@ -232,11 +208,11 @@ public class TaskManagerActivity extends AppCompatActivity
                         fos.write(json.getBytes());
                         fos.close();
                         Snackbar.make(getWindow().getDecorView(),
-                                "Ваши задачи успешно экспортированы в " + itemList.getAbsolutePath(), 2000)
+                                getString(R.string.task_successful_export) + " " + itemList.getAbsolutePath(), 2000)
                                 .show();
                     } catch (IOException e) {
                         e.printStackTrace();
-                        Snackbar.make(getWindow().getDecorView(), "Не удалось сохранить данные", 2000).show();
+                        Snackbar.make(getWindow().getDecorView(), getString(R.string.task_export_failed), 2000).show();
                     }
                 }, null);
     }
@@ -245,6 +221,28 @@ public class TaskManagerActivity extends AppCompatActivity
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         startActivityForResult(intent, REQUEST_IMPORT);
+    }
+
+    private void onSaveFilter(TasksFilter.Builder builder) {
+        EditText filterNameEditText = new EditText(this);
+        new BottomDialog.Builder(this)
+                .setTitle(getString(R.string.entry_filter_name))
+                .setCustomView(filterNameEditText)
+                .setNegativeText(getString(R.string.cancel))
+                .setPositiveText(getString(R.string.save))
+                .onPositive(bottomDialog ->
+                {
+                    String name = filterNameEditText.getText().toString();
+                    adapter.addItem(name, builder);
+
+                    Toast.makeText(TaskManagerActivity.this,
+                            getString(R.string.filter_was_saved), Toast.LENGTH_SHORT).show();
+                }).show();
+    }
+
+    private void onApplyFilter(TasksFilter.Builder builder) {
+        presenter.applyFilter(builder);
+        swapFilterLayout();
     }
 
 
@@ -261,7 +259,7 @@ public class TaskManagerActivity extends AppCompatActivity
         SearchView searchView = (SearchView) searchMenuItem.getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        searchView.setQueryHint("Введите название");
+        searchView.setQueryHint(getString(R.string.search_hint));
 
         AutoCompleteTextView searchTextView = (AutoCompleteTextView)
                 searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
@@ -269,7 +267,8 @@ public class TaskManagerActivity extends AppCompatActivity
             Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
             mCursorDrawableRes.setAccessible(true);
             mCursorDrawableRes.set(searchTextView, R.drawable.white_cursor);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         MenuItemCompat.setOnActionExpandListener(searchMenuItem, this);
         startToolbarMode(ToolbarMode.NORMAL);

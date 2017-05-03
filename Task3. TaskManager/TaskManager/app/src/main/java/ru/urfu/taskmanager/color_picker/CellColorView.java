@@ -15,8 +15,7 @@ import java.util.Arrays;
 import ru.urfu.taskmanager.color_picker.states.Action;
 import ru.urfu.taskmanager.utils.tools.SizeManager;
 
-public class CellColorView extends View implements View.OnTouchListener
-{
+public class CellColorView extends View implements View.OnTouchListener {
     private static LinearLayout.LayoutParams defaultParams;
     private static LinearLayout.LayoutParams scaledParams;
     public static final int CELL_SIZE = SizeManager.dpToPx(45);
@@ -25,7 +24,7 @@ public class CellColorView extends View implements View.OnTouchListener
     static {
         defaultParams = new LinearLayout.LayoutParams(CELL_SIZE, CELL_SIZE);
         defaultParams.setMargins(CELL_MARGIN, CELL_MARGIN, CELL_MARGIN, CELL_MARGIN);
-        scaledParams = new LinearLayout.LayoutParams(CELL_SIZE + CELL_SIZE /2, CELL_SIZE + CELL_SIZE /2);
+        scaledParams = new LinearLayout.LayoutParams(CELL_SIZE + CELL_SIZE / 2, CELL_SIZE + CELL_SIZE / 2);
     }
 
     private GestureDetector gestureDetector;
@@ -55,8 +54,7 @@ public class CellColorView extends View implements View.OnTouchListener
     }
 
 
-    public CellColorView setDefaultColor(float[] hsvDefaultColor)
-    {
+    public CellColorView setDefaultColor(float[] hsvDefaultColor) {
         this.defaultColor = Color.HSVToColor(hsvDefaultColor);
         this.defaultHsvColor = Arrays.copyOf(hsvDefaultColor, 3);
 
@@ -67,8 +65,7 @@ public class CellColorView extends View implements View.OnTouchListener
         return defaultColor;
     }
 
-    public CellColorView setCurrentColor(float[] newColor)
-    {
+    public CellColorView setCurrentColor(float[] newColor) {
         this.currentColor = Arrays.copyOf(newColor, 3);
         this.colorBuffer = Arrays.copyOf(newColor, 3);
 
@@ -76,8 +73,7 @@ public class CellColorView extends View implements View.OnTouchListener
         return this;
     }
 
-    private CellColorView setDefaultLayoutParams(ViewGroup.LayoutParams params)
-    {
+    private CellColorView setDefaultLayoutParams(ViewGroup.LayoutParams params) {
         setLayoutParams(params);
         return this;
     }
@@ -91,8 +87,7 @@ public class CellColorView extends View implements View.OnTouchListener
         return position;
     }
 
-    private CellColorView build(AbstractPickerView view)
-    {
+    private CellColorView build(AbstractPickerView view) {
         this.parent = (PickerView) view;
         this.setOnTouchListener(this);
 
@@ -103,10 +98,9 @@ public class CellColorView extends View implements View.OnTouchListener
         return this;
     }
 
-    private void offsetColor(float x, float y)
-    {
+    private void offsetColor(float x, float y) {
         float fromX = gestureListener.tapX;
-        float fromY = gestureListener.tapY ;
+        float fromY = gestureListener.tapY;
 
         float distanceX = (x - fromX);
         float distanceY = ((y - fromY) * 0.005f);
@@ -117,8 +111,7 @@ public class CellColorView extends View implements View.OnTouchListener
         hsvValue[1] = hsvValue[1] + distanceY;
         hsvValue[2] = hsvValue[2] - distanceY;
 
-        if (hsvValue[0] < LEFT_HSV_BORDER || hsvValue[0] > RIGHT_HSV_BORDER)
-        {
+        if (hsvValue[0] < LEFT_HSV_BORDER || hsvValue[0] > RIGHT_HSV_BORDER) {
             parent.notifySubscribers(Action.theBoundaryIsReached);
             hsvValue[0] = (hsvValue[0] < LEFT_HSV_BORDER) ? LEFT_HSV_BORDER : RIGHT_HSV_BORDER;
         }
@@ -133,22 +126,19 @@ public class CellColorView extends View implements View.OnTouchListener
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event)
-    {
-        switch (event.getAction())
-        {
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                if (parent.isEnableEditMode())
-                {
-                    if (gestureListener.newTouch)
-                    {
+                if (parent.isEnableEditMode()) {
+                    if (gestureListener.newTouch) {
                         gestureListener.tapX = event.getX();
                         gestureListener.tapY = event.getY();
                         gestureListener.newTouch = false;
                     }
 
                     offsetColor(event.getX(), event.getY());
-                } break;
+                }
+                break;
             case MotionEvent.ACTION_UP:
                 gestureListener.newTouch = true;
                 parent.notifySubscribers(Action.editModeDisable);
@@ -162,8 +152,7 @@ public class CellColorView extends View implements View.OnTouchListener
         return false;
     }
 
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener
-    {
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
         boolean newTouch = true;
         float tapX, tapY;
 
@@ -197,8 +186,7 @@ public class CellColorView extends View implements View.OnTouchListener
         }
     }
 
-    public static CellColorView create(AbstractPickerView pickerView)
-    {
+    public static CellColorView create(AbstractPickerView pickerView) {
         return new CellColorView(pickerView.getContext())
                 .setDefaultLayoutParams(defaultParams)
                 .build(pickerView);

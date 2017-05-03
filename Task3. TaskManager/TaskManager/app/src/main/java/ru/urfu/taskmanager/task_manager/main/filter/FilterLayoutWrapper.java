@@ -3,16 +3,10 @@ package ru.urfu.taskmanager.task_manager.main.filter;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-
 import ru.urfu.taskmanager.task_manager.main.adapters.FiltersAdapter;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
 
-public class FilterLayoutWrapper
-{
-    static SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy", new Locale("ru"));
-
+public class FilterLayoutWrapper {
     private final FilterViewHolder holder;
 
     public FilterLayoutWrapper(@NonNull View filterLayout) {
@@ -39,8 +33,7 @@ public class FilterLayoutWrapper
         onFilterAction.onAction(holder.compileFilterBuilder());
     }
 
-    public void swapFilterList()
-    {
+    public void swapFilterList() {
         if (holder.savedFiltersList.getVisibility() == View.GONE) {
             holder.savedFiltersList.setVisibility(View.VISIBLE);
         } else {

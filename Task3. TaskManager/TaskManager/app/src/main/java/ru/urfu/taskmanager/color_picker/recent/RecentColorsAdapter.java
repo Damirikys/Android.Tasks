@@ -11,14 +11,13 @@ import java.util.List;
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.utils.interfaces.Callback;
 
-class RecentColorsAdapter extends RecyclerView.Adapter<RecentColorsAdapter.ViewHolder>
-{
+class RecentColorsAdapter extends RecyclerView.Adapter<RecentColorsAdapter.ViewHolder> {
     private List<Integer> data;
     private Callback<Integer> onItemClick;
 
     RecentColorsAdapter(Callback<Integer> onItemClick) {
         this.data = RecentColorsStorage.getRepository().getItems();
-        this.onItemClick= onItemClick;
+        this.onItemClick = onItemClick;
     }
 
     @Override

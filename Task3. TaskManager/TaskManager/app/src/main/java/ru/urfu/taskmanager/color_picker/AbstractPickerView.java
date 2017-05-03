@@ -18,8 +18,7 @@ import java.util.Arrays;
 
 import ru.urfu.taskmanager.color_picker.listeners.PickerViewStateListener;
 
-public abstract class AbstractPickerView extends HorizontalScrollView
-{
+public abstract class AbstractPickerView extends HorizontalScrollView {
     private static final int DEFAULT_CELL_COUNT = 10;
     private static final int DEFAULT_CELL_COLOR = Color.WHITE;
 
@@ -37,7 +36,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
         return colorCache;
     }
 
-    public void setColorCache (float[][] cache) {
+    public void setColorCache(float[][] cache) {
         colorCache = cache;
     }
 
@@ -84,8 +83,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
     }
 
 
-    public void setCellCount(int count)
-    {
+    public void setCellCount(int count) {
         removeAllViews();
         root = new LinearLayout(getContext());
         root.setLayoutParams(new LinearLayout.LayoutParams(
@@ -103,23 +101,20 @@ public abstract class AbstractPickerView extends HorizontalScrollView
         addView(root);
     }
 
-    protected void init()
-    {
+    protected void init() {
         this.setBackgroundColor(Color.BLACK);
         root.setBackground(getHueGradientDrawable());
         calculateColors();
     }
 
-    protected void calculateColors()
-    {
+    protected void calculateColors() {
         boolean restoreCache = (colorCache != null && colorCache.length == cellCount);
         System.out.println("RESTORE CACHE: " + restoreCache);
         if (!restoreCache) colorCache = new float[cellCount][3];
 
-        float[] hsv = new float[] {0f, 1f, 1f};
+        float[] hsv = new float[]{0f, 1f, 1f};
 
-        for (int i = 0; i < root.getChildCount(); i++)
-        {
+        for (int i = 0; i < root.getChildCount(); i++) {
             CellColorView view = (CellColorView) root.getChildAt(i);
 
             float offset = ((getWidth() / root.getChildCount()) * i);
@@ -137,8 +132,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
     }
 
 
-    public float[] getHsvBorders(CellColorView cellColorView)
-    {
+    public float[] getHsvBorders(CellColorView cellColorView) {
         float[] borders = new float[2];
         float[] defaultColorHsv = new float[3];
         Color.colorToHSV(cellColorView.getDefaultColor(), defaultColorHsv);
@@ -178,13 +172,12 @@ public abstract class AbstractPickerView extends HorizontalScrollView
         return borders;
     }
 
-    private PaintDrawable getHueGradientDrawable()
-    {
+    private PaintDrawable getHueGradientDrawable() {
         ShapeDrawable.ShaderFactory shaderFactory = new ShapeDrawable.ShaderFactory() {
             @Override
             public Shader resize(int width, int height) {
                 return new LinearGradient(0, 0, width, height,
-                        new int[] {
+                        new int[]{
                                 0xFFFF0D00,
                                 0xFFFBFF00,
                                 0xFF04FF00,
@@ -217,8 +210,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh)
-    {
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         if (root != null && root.getChildCount() == cellCount)
             init();

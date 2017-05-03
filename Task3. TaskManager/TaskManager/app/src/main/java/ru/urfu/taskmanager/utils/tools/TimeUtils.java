@@ -9,13 +9,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-public final class TimeUtils
-{
+public final class TimeUtils {
     private static final Locale locale = new Locale("ru");
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", locale);
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd", locale);
 
-    public static class HoursAndMinutes
-    {
+    public static class HoursAndMinutes {
         int hours, minutes;
 
         @Override
@@ -25,8 +23,7 @@ public final class TimeUtils
         }
     }
 
-    public static HoursAndMinutes getHoursAndMinutesFromUnix(long timestamp)
-    {
+    public static HoursAndMinutes getHoursAndMinutesFromUnix(long timestamp) {
         Calendar calendar = new GregorianCalendar();
         calendar.setTimeInMillis(timestamp);
 
@@ -52,8 +49,17 @@ public final class TimeUtils
         try {
             jud = new SimpleDateFormat("yyyy-MM-dd", locale)
                     .parse(formatter.format(date.getTime()));
-        } catch (ParseException ignored) {}
+        } catch (ParseException ignored) {
+        }
 
         return sdf.format(jud); // output: 28 февраля 2014 г.
+    }
+
+    public static Date parse(String text) throws ParseException {
+        return formatter.parse(text);
+    }
+
+    public static String format(Date date) {
+        return formatter.format(date);
     }
 }

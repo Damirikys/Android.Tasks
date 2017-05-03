@@ -21,8 +21,7 @@ import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.ACT
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQUEST_EDIT;
 
 public abstract class TaskListFragment extends Fragment
-        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, TaskListView
-{
+        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, TaskListView {
     protected TaskManagerPresenter presenter;
 
     ListView tasksListView;
@@ -34,8 +33,7 @@ public abstract class TaskListFragment extends Fragment
         return initView(view);
     }
 
-    protected View initView(View root)
-    {
+    protected View initView(View root) {
         tasksListView = (ListView) root.findViewById(R.id.task_list);
         tasksListView.setAdapter(adapter = getAdapter());
         tasksListView.setOnItemClickListener(this);

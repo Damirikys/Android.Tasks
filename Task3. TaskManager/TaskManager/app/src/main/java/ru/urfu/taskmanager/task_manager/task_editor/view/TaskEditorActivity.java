@@ -24,8 +24,7 @@ import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 import ru.urfu.taskmanager.task_manager.task_editor.presenter.TaskEditorPresenter;
 import ru.urfu.taskmanager.task_manager.task_editor.presenter.TaskEditorPresenterImpl;
 
-public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
-{
+public class TaskEditorActivity extends AppCompatActivity implements TaskEditor {
     private static final String CACHE_KEY = "color_cache";
     private static final String COLOR_KEY = "current_color";
     private static final String DATE_KEY = "selected_date";
@@ -126,10 +125,10 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
 
         presenter.saveState(
                 new TaskEntry()
-                    .setTitle(title_edit_field.getText().toString())
-                    .setDescription(desc_edit_field.getText().toString())
-                    .setTtl(dateAndTimePicker.getDate().getTime())
-                    .setColor(pickerView.getCurrentColor())
+                        .setTitle(title_edit_field.getText().toString())
+                        .setDescription(desc_edit_field.getText().toString())
+                        .setTtl(dateAndTimePicker.getDate().getTime())
+                        .setColor(pickerView.getCurrentColor())
         );
     }
 

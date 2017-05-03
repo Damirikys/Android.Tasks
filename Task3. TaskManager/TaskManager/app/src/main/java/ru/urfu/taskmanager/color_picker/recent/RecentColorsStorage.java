@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public final class RecentColorsStorage
-{
+public final class RecentColorsStorage {
     private static final String REPOSITORY_NAME = "ru.urfu.taskmanager.colors_repository";
     private static final RecentColorsStorage repository = new RecentColorsStorage();
     private SharedPreferences storage;

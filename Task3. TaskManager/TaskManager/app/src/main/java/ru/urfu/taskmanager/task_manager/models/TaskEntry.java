@@ -7,10 +7,8 @@ import android.os.Parcelable;
 import java.text.ParseException;
 
 import ru.urfu.taskmanager.utils.tools.ISO8601;
-import ru.urfu.taskmanager.utils.tools.JSONFactory;
 
-public class TaskEntry implements Parcelable
-{
+public class TaskEntry implements Parcelable {
     private int id;
     private int isCompleted;
 
@@ -21,9 +19,10 @@ public class TaskEntry implements Parcelable
     private String edited;
     private String color;
 
-    public TaskEntry() {}
+    public TaskEntry() {
+    }
 
-    public TaskEntry(int id){
+    public TaskEntry(int id) {
         this.id = id;
     }
 
@@ -146,13 +145,12 @@ public class TaskEntry implements Parcelable
     }
 
     public TaskEntry setCompleted(boolean bool) {
-        isCompleted = (bool) ? 1: 0;
+        isCompleted = (bool) ? 1 : 0;
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 5;
 
         hash = 89 * hash + (title != null ? title.hashCode() : 0);
@@ -163,14 +161,11 @@ public class TaskEntry implements Parcelable
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        try
-        {
+    public boolean equals(Object obj) {
+        try {
             TaskEntry other = (TaskEntry) obj;
             return this.id == other.id;
-        }
-        catch (ClassCastException e) {
+        } catch (ClassCastException e) {
             return false;
         }
     }
@@ -181,8 +176,7 @@ public class TaskEntry implements Parcelable
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
+    public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(title);
         dest.writeString(description);

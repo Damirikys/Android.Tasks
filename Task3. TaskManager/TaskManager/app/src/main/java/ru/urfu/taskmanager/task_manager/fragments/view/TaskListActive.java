@@ -4,15 +4,17 @@ import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
+
 import com.github.florent37.singledateandtimepicker.dialog.SingleDateAndTimePickerDialog;
+
 import java.util.Date;
+
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.fragments.adapters.TasksListAdapter;
 import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
 import ru.urfu.taskmanager.utils.db.TasksFilter;
 
-public class TaskListActive extends TaskListFragment
-{
+public class TaskListActive extends TaskListFragment {
     @Override
     protected TasksListAdapter getAdapter() {
         return new TasksListAdapter(getContext(),
@@ -30,16 +32,14 @@ public class TaskListActive extends TaskListFragment
         popup.getMenuInflater().inflate(R.menu.active_task_option_menu, popup.getMenu());
 
         popup.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId())
-            {
+            switch (item.getItemId()) {
                 case R.id.task_is_complete:
                     presenter.taskIsCompleted((int) id);
                     break;
                 case R.id.edit_the_task:
                     presenter.editTheTask((int) id);
                     break;
-                case R.id.postpone_the_task:
-                {
+                case R.id.postpone_the_task: {
                     presenter.postponeTheTask(
                             (int) id, (date, entry) ->
                                     new SingleDateAndTimePickerDialog.Builder(getContext())
@@ -51,7 +51,8 @@ public class TaskListActive extends TaskListFragment
                                             .build()
                                             .display()
                     );
-                } break;
+                }
+                break;
                 case R.id.delete_the_task:
                     presenter.deleteTheTask((int) id);
                     break;
