@@ -11,7 +11,7 @@ import java.util.Locale;
 
 public final class TimeUtils {
     private static final Locale locale = new Locale("ru");
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd", locale);
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy", locale);
 
     public static class HoursAndMinutes {
         int hours, minutes;
@@ -47,8 +47,7 @@ public final class TimeUtils {
 
         Date jud = null;
         try {
-            jud = new SimpleDateFormat("yyyy-MM-dd", locale)
-                    .parse(formatter.format(date.getTime()));
+            jud = formatter.parse(formatter.format(date.getTime()));
         } catch (ParseException ignored) {
         }
 
