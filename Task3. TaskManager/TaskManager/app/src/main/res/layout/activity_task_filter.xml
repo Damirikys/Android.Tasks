@@ -21,7 +21,7 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -33,7 +33,7 @@
                     android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Сортировать по дате"/>
+                    android:text="@string/sort_by_date"/>
 
                 <Spinner
                     android:id="@+id/sort_by_spinner"
@@ -54,7 +54,7 @@
                     android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Вывод по дате"/>
+                    android:text="@string/filter_by_date"/>
 
                 <Switch
                     android:id="@+id/switch_date_picker"
@@ -80,13 +80,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="8dp"
-                    android:text="по дате"/>
+                    android:text="@string/by_date"/>
 
                 <RadioButton
                     android:id="@+id/by_range_date_radio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="по диапазону"/>
+                    android:text="@string/by_range"/>
 
             </RadioGroup>
 
@@ -111,7 +111,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="—"/>
+                    android:text="@string/dash"/>
 
                 <EditText
                     android:id="@+id/end_date"
@@ -133,7 +133,7 @@
                     android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Вывод по цвету"/>
+                    android:text="@string/filter_by_color"/>
 
                 <View
                     android:id="@+id/selected_color_area"
@@ -162,7 +162,7 @@
                     android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="В алфавитном порядке"/>
+                    android:text="@string/by_alphabetically"/>
 
                 <Switch
                     android:id="@+id/alphabetically_switch"
@@ -182,7 +182,7 @@
                     android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Порядок по"/>
+                    android:text="@string/order_by"/>
 
                 <RadioGroup
                     android:id="@+id/order_radio_group"
@@ -195,13 +195,13 @@
                         android:id="@+id/order_reverse_radio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Убыванию"/>
+                        android:text="@string/descendyngly"/>
 
                     <RadioButton
                         android:id="@+id/order_front_radio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Возрастанию"/>
+                        android:text="@string/ascending"/>
 
                 </RadioGroup>
 

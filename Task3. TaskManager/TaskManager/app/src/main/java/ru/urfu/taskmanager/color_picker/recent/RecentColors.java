@@ -25,7 +25,7 @@ public final class RecentColors {
         recyclerView.setLayoutManager(manager);
 
         new BottomDialog.Builder(context)
-                .setTitle("Последние цвета")
+                .setTitle(context.getString(R.string.recent_colors))
                 .setCustomView(customView)
                 .show();
     }

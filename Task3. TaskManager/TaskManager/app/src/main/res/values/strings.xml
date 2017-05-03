@@ -23,10 +23,25 @@
     <string name="entry_description">Введите описание</string>
     <string name="task_successful_import">Задачи успешно импортированы</string>
     <string name="task_import_failed">Не удалось импортировать задачи</string>
+    <string name="recent_colors">Последние цвета</string>
     <string name="select">Выбрать</string>
     <string name="select_directory">Выбрать директорию</string>
     <string name="cancel">Отмена</string>
     <string name="save">Сохранить</string>
+    <string name="name_title">Название</string>
+    <string name="description">Примечание</string>
+    <string name="complete">Готово</string>
+    <string name="sort_by_date">Сортировать по дате</string>
+    <string name="filter_by_date">Вывод по дате</string>
+    <string name="by_date">по дате</string>
+    <string name="by_range">по диапазону</string>
+    <string name="dash">—</string>
+    <string name="filter_by_color">Вывод по цвету</string>
+    <string name="by_alphabetically">В алфавитном порядке</string>
+    <string name="order_by">Порядок по</string>
+    <string name="descendyngly">Убыванию</string>
+    <string name="ascending">Возрастанию</string>
+    <string name="today">Сегодня</string>
 
     <string-array name="sorting">
         <item>Выполнения</item>

@@ -54,7 +54,7 @@
                     android:id="@+id/title_edit_field"
                     android:maxLines="1"
                     android:inputType="textCapSentences|textAutoCorrect"
-                    android:hint="Название"
+                    android:hint="@string/name_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
@@ -72,7 +72,7 @@
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/descr_edit_field"
                 android:inputType="textCapSentences|textAutoCorrect"
-                android:hint="Примечание"
+                android:hint="@string/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
@@ -97,7 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:textSize="18sp"
-        android:text="Готово"
+        android:text="@string/complete"
         style="@style/Widget.AppCompat.Button.Borderless.Colored" />
 
 </FrameLayout>
