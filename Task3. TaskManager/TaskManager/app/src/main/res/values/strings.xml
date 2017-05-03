@@ -21,6 +21,8 @@
     <string name="task_export_failed">Не удалось сохранить данные</string>
     <string name="incorrect_length">Длина не должна превышать</string>
     <string name="entry_description">Введите описание</string>
+    <string name="task_successful_import">Задачи успешно импортированы</string>
+    <string name="task_import_failed">Не удалось импортировать задачи</string>
     <string name="select">Выбрать</string>
     <string name="select_directory">Выбрать директорию</string>
     <string name="cancel">Отмена</string>

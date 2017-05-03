@@ -140,10 +140,10 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter {
                     Types.newParameterizedType(List.class, TaskEntry.class));
 
             database.replaceAll(entries);
-            view.showAlert("Задачи успешно импортированы");
+            view.showAlert(view.getResources().getString(R.string.task_successful_import));
         } catch (IOException e) {
             e.printStackTrace();
-            view.showAlert("Не удалось импортировать задачи");
+            view.showAlert(view.getResources().getString(R.string.task_import_failed));
         }
     }
 
