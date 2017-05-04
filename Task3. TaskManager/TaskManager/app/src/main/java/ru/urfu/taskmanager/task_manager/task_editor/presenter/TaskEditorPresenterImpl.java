@@ -1,6 +1,7 @@
 package ru.urfu.taskmanager.task_manager.task_editor.presenter;
 
 import ru.urfu.taskmanager.R;
+import ru.urfu.taskmanager.color_picker.recent.RecentColorsStorage;
 import ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditor;
@@ -12,50 +13,63 @@ import static android.app.Activity.RESULT_OK;
 
 public class TaskEditorPresenterImpl implements TaskEditorPresenter
 {
-    private int itemId;
+    private final int INVALID_ID = -1;
 
-    private TaskEditor editor;
-    private TaskValidator validator;
-    private TasksDatabase database;
+    private int mItemId;
+
+    private TaskEditor mEditor;
+    private TaskValidator mValidator;
+    private TasksDatabase mDatabase;
+    private RecentColorsStorage mRecentColorsStorage;
 
     public TaskEditorPresenterImpl(TaskEditor editor) {
-        this.editor = editor;
-        this.database = TasksDatabase.getInstance();
-        this.validator = new TaskValidator();
+        this.mEditor = editor;
+        this.mDatabase = TasksDatabase.getInstance();
+        this.mRecentColorsStorage = RecentColorsStorage.getRepository();
+        this.mValidator = new TaskValidator();
         init();
     }
 
     private void init() {
-        if (editor.getIntent().getAction().equals(TaskManagerActivity.ACTION_EDIT))
-        {
-            editor.setToolbarTitle(editor.getResources().getString(R.string.editor_edit_title));
-            itemId = editor.getIntent().getIntExtra(TasksDatabaseHelper.ID, -1);
-            if (itemId != -1) {
-                TaskEntry entryToEdit = database.getEntryById(itemId);
-                if(!editor.isRestored())
-                    editor.initializeEditor(entryToEdit);
+        if (mEditor.getIntent().getAction().equals(TaskManagerActivity.ACTION_EDIT)) {
+            mEditor.setToolbarTitle(mEditor.getResources().getString(R.string.editor_edit_title));
+            mItemId = mEditor.getIntent().getIntExtra(TasksDatabaseHelper.ID, INVALID_ID);
+            if (mItemId != INVALID_ID) {
+                TaskEntry entryToEdit = mDatabase.getEntryById(mItemId);
+                if (!mEditor.isRestored())
+                    mEditor.initializeEditor(entryToEdit);
             }
         }
     }
 
     @Override
     public void saveState(TaskEntry state) {
-        validator.validate(state, aVoid -> {
-            switch (editor.getIntent().getAction()) {
+        mValidator.validate(state, aVoid -> {
+            long timestamp = System.currentTimeMillis();
+
+            switch (mEditor.getIntent().getAction()) {
                 case TaskManagerActivity.ACTION_CREATE:
-                    database.insertEntry(state.setId(itemId));
+                    mDatabase.insertEntry(state.
+                            setId(mItemId)
+                            .setCreated(timestamp)
+                            .setEdited(timestamp)
+                    );
                     break;
                 case TaskManagerActivity.ACTION_EDIT:
-                    database.updateEntry(state.setId(itemId));
+                    mDatabase.updateEntry(state.
+                            setId(mItemId)
+                            .setEdited(timestamp)
+                            .setCreated(mDatabase.getEntryById(mItemId).getCreatedTimestamp())
+                    );
                     break;
             }
 
-            editor.exit(RESULT_OK);
+            mRecentColorsStorage.putItem(state.getColorInt());
+            mEditor.exit(RESULT_OK);
         });
     }
 
-    private class TaskValidator
-    {
+    private class TaskValidator {
         private static final int TITLE_MAX_LENGTH = 20;
         private static final int DESCRIPTION_MAX_LENGTH = 50;
 
@@ -66,22 +80,22 @@ public class TaskEditorPresenterImpl implements TaskEditorPresenter
 
             if (entry.getTitle().isEmpty()) {
                 isValid = false;
-                editor.showTitleError("Введите название");
+                mEditor.showTitleError(mEditor.getResources().getString(R.string.search_hint));
             }
 
             if (entry.getTitle().length() > TITLE_MAX_LENGTH) {
                 isValid = false;
-                editor.showTitleError("Длина название не должна превышать " + TITLE_MAX_LENGTH);
+                mEditor.showTitleError(mEditor.getResources().getString(R.string.incorrect_length) + " " + TITLE_MAX_LENGTH);
             }
 
             if (entry.getDescription().isEmpty()) {
                 isValid = false;
-                editor.showDescriptionError("Введите примечание");
+                mEditor.showDescriptionError(mEditor.getResources().getString(R.string.entry_description));
             }
 
             if (entry.getDescription().length() > DESCRIPTION_MAX_LENGTH) {
                 isValid = false;
-                editor.showTitleError("Длина примечания не должна превышать " + DESCRIPTION_MAX_LENGTH);
+                mEditor.showTitleError(mEditor.getResources().getString(R.string.incorrect_length) + " " + DESCRIPTION_MAX_LENGTH);
             }
 
             if (isValid) callback.call(null);

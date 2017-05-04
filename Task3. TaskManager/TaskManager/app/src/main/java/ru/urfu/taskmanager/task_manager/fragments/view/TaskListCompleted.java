@@ -33,22 +33,21 @@ public class TaskListCompleted extends TaskListFragment
         popup.getMenuInflater().inflate(R.menu.completed_task_option_menu, popup.getMenu());
 
         popup.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId())
-            {
-                case R.id.restore_the_task:
-                {
-                    presenter.restoreTheTask(
+            switch (item.getItemId()) {
+                case R.id.restore_the_task: {
+                    mPresenter.restoreTheTask(
                             (int) id, (date, entry) ->
                                     new SingleDateAndTimePickerDialog.Builder(getContext())
                                             .mainColor(getResources().getColor(R.color.colorAccent))
-                                            .defaultDate(new Date(entry.getTtl()))
+                                            .defaultDate(new Date(entry.getTtlTimestamp()))
                                             .listener(date::call)
                                             .mustBeOnFuture()
                                             .bottomSheet()
                                             .build()
                                             .display()
                     );
-                } break;
+                }
+                break;
             }
 
             return true;

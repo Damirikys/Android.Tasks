@@ -1,29 +1,38 @@
 package ru.urfu.taskmanager.task_manager.models;
 
+import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.ParseException;
+
+import ru.urfu.taskmanager.utils.tools.ISO8601;
+
 public class TaskEntry implements Parcelable
 {
-    private int id;
+    private int mId;
+    private int mComplete;
+
     private String title;
     private String description;
-    private long ttl;
-    private int color;
-    private int isCompleted;
+    private String ttl;
+    private String created;
+    private String edited;
+    private String color;
 
-    public TaskEntry() {}
+    public TaskEntry() {
+    }
 
-    public TaskEntry(int id){
-        this.id = id;
+    public TaskEntry(int id) {
+        this.mId = id;
     }
 
     private TaskEntry(Parcel in) {
         title = in.readString();
         description = in.readString();
-        ttl = in.readLong();
-        color = in.readInt();
-        isCompleted = in.readInt();
+        ttl = in.readString();
+        color = in.readString();
+        mComplete = in.readInt();
     }
 
     public static final Creator<TaskEntry> CREATOR = new Creator<TaskEntry>() {
@@ -39,12 +48,12 @@ public class TaskEntry implements Parcelable
     };
 
     public TaskEntry setId(int id) {
-        this.id = id;
+        this.mId = id;
         return this;
     }
 
     public int getId() {
-        return id;
+        return mId;
     }
 
     public String getTitle() {
@@ -65,55 +74,99 @@ public class TaskEntry implements Parcelable
         return this;
     }
 
-    public long getTtl() {
+    public String getTtl() {
         return ttl;
     }
 
+    public long getTtlTimestamp() {
+        try {
+            return ISO8601.toTimestamp(ttl);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return Long.MIN_VALUE;
+        }
+    }
+
     public TaskEntry setTtl(long ttl) {
-        this.ttl = ttl;
+        this.ttl = ISO8601.fromTimestamp(ttl);
         return this;
     }
 
-    public int getColor() {
+    public TaskEntry setCreated(long created) {
+        this.created = ISO8601.fromTimestamp(created);
+        return this;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public long getCreatedTimestamp() {
+        try {
+            return ISO8601.toTimestamp(created);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Long.MIN_VALUE;
+        }
+    }
+
+    public TaskEntry setEdited(long edited) {
+        this.edited = ISO8601.fromTimestamp(edited);
+        return this;
+    }
+
+    public String getEdited() {
+        return edited;
+    }
+
+    public long getEditedTimestamp() {
+        try {
+            return ISO8601.toTimestamp(edited);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return Long.MIN_VALUE;
+        }
+    }
+
+    public String getColor() {
         return color;
     }
 
+    public int getColorInt() {
+        return Color.parseColor(color);
+    }
+
     public TaskEntry setColor(int color) {
-        this.color = color;
+        this.color = String.format("#%06X", (0xFFFFFF & color));
         return this;
     }
 
     public boolean isCompleted() {
-        return (isCompleted == 1);
+        return (mComplete == 1);
     }
 
     public TaskEntry setCompleted(boolean bool) {
-        isCompleted = (bool) ? 1: 0;
+        mComplete = (bool) ? 1 : 0;
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 5;
 
         hash = 89 * hash + (title != null ? title.hashCode() : 0);
         hash = 89 * hash + (description != null ? description.hashCode() : 0);
-        hash = 89 * hash + (int) (ttl ^ (ttl >>> 32));
-        hash = 89 * hash + color;
+        hash = 89 * hash + color.hashCode();
 
         return hash;
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        try
-        {
+    public boolean equals(Object obj) {
+        try {
             TaskEntry other = (TaskEntry) obj;
-            return this.id == other.id;
-        }
-        catch (ClassCastException e) {
+            return this.mId == other.mId;
+        } catch (ClassCastException e) {
             return false;
         }
     }
@@ -124,14 +177,13 @@ public class TaskEntry implements Parcelable
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
-        dest.writeInt(id);
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mId);
         dest.writeString(title);
         dest.writeString(description);
-        dest.writeLong(ttl);
-        dest.writeInt(color);
-        dest.writeInt(isCompleted);
+        dest.writeString(ttl);
+        dest.writeString(color);
+        dest.writeInt(mComplete);
     }
 
     @Override

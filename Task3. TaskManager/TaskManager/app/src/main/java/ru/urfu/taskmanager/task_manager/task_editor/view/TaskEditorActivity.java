@@ -19,9 +19,10 @@ import java.util.GregorianCalendar;
 
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.color_picker.PickerView;
+import ru.urfu.taskmanager.color_picker.recent.RecentColors;
+import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 import ru.urfu.taskmanager.task_manager.task_editor.presenter.TaskEditorPresenter;
 import ru.urfu.taskmanager.task_manager.task_editor.presenter.TaskEditorPresenterImpl;
-import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 
 public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
 {
@@ -30,16 +31,16 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
     private static final String DATE_KEY = "selected_date";
     private static final int CELL_COUNT = 16;
 
-    TaskEditorPresenter presenter;
+    TaskEditorPresenter mPresenter;
 
-    SingleDateAndTimePicker dateAndTimePicker;
-    TextInputLayout titleInputLayout, descriptionInputLayout;
-    PickerView pickerView;
-    CardView cardColorView;
-    EditText title_edit_field, desc_edit_field;
-    Button save_button;
+    SingleDateAndTimePicker mDateTimePicker;
+    TextInputLayout mTitleInputLayout, mDescInputLayout;
+    PickerView mPickerView;
+    CardView mCardColorView;
+    EditText mTitleEditField, mDescEditField;
+    Button mButtonSave;
 
-    boolean isRestored = false;
+    boolean mRestored = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,75 +62,78 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
     }
 
     private void initView() {
-        descriptionInputLayout = (TextInputLayout) findViewById(R.id.description_input_layout);
-        dateAndTimePicker = (SingleDateAndTimePicker) findViewById(R.id.datetime_picker);
-        dateAndTimePicker.setMustBeOnFuture(true);
-        titleInputLayout = (TextInputLayout) findViewById(R.id.title_input_layout);
-        cardColorView = (CardView) findViewById(R.id.cardColor);
-        desc_edit_field = (EditText) findViewById(R.id.descr_edit_field);
-        title_edit_field = (EditText) findViewById(R.id.title_edit_field);
-        save_button = (Button) findViewById(R.id.save_button);
-        save_button.setOnClickListener(this);
-        pickerView = (PickerView) findViewById(R.id.pickerView);
+        mDescInputLayout = (TextInputLayout) findViewById(R.id.description_input_layout);
+        mDateTimePicker = (SingleDateAndTimePicker) findViewById(R.id.datetime_picker);
+        mDateTimePicker.setMustBeOnFuture(true);
+        mTitleInputLayout = (TextInputLayout) findViewById(R.id.title_input_layout);
+        mCardColorView = (CardView) findViewById(R.id.cardColor);
+        mDescEditField = (EditText) findViewById(R.id.descr_edit_field);
+        mTitleEditField = (EditText) findViewById(R.id.title_edit_field);
+        mButtonSave = (Button) findViewById(R.id.save_button);
+        mButtonSave.setOnClickListener(this);
+        mPickerView = (PickerView) findViewById(R.id.pickerView);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if (savedInstanceState != null)
-            isRestored = true;
+        if (savedInstanceState != null) mRestored = true;
 
-        cardColorView.setCardBackgroundColor(pickerView.getCurrentColor());
-        pickerView.setCellCount(CELL_COUNT);
-        pickerView.subscribe(this);
+        mPickerView.setCellCount(CELL_COUNT);
+        mPickerView.subscribe(this);
 
-        presenter = new TaskEditorPresenterImpl(this);
+        mCardColorView.setCardBackgroundColor(mPickerView.getCurrentColor());
+        mCardColorView.setOnClickListener(v -> RecentColors.showRecent(this, color -> {
+            mPickerView.setCurrentColor(color);
+            mCardColorView.setCardBackgroundColor(color);
+        }));
+
+        mPresenter = new TaskEditorPresenterImpl(this);
     }
 
     public boolean isRestored() {
-        return isRestored;
+        return mRestored;
     }
 
     public void initializeEditor(TaskEntry entry) {
         Calendar calendar = new GregorianCalendar();
-        calendar.setTimeInMillis(entry.getTtl());
+        calendar.setTimeInMillis(entry.getTtlTimestamp());
 
-        dateAndTimePicker.selectDate(calendar);
-        dateAndTimePicker.setSelectorColor(Color.BLACK);
-        title_edit_field.setText(entry.getTitle());
-        desc_edit_field.setText(entry.getDescription());
-        pickerView.setCurrentColor(entry.getColor());
-        cardColorView.setCardBackgroundColor(pickerView.getCurrentColor());
+        mDateTimePicker.selectDate(calendar);
+        mDateTimePicker.setSelectorColor(Color.BLACK);
+        mTitleEditField.setText(entry.getTitle());
+        mDescEditField.setText(entry.getDescription());
+        mPickerView.setCurrentColor(entry.getColorInt());
+        mCardColorView.setCardBackgroundColor(mPickerView.getCurrentColor());
     }
 
     @Override
     public void showTitleError(String string) {
-        titleInputLayout.setError(string);
+        mTitleInputLayout.setError(string);
     }
 
 
     @Override
     public void showDescriptionError(String string) {
-        descriptionInputLayout.setError(string);
+        mDescInputLayout.setError(string);
     }
 
     @Override
     public void onClick(View v) {
-        titleInputLayout.setErrorEnabled(false);
-        descriptionInputLayout.setErrorEnabled(false);
+        mTitleInputLayout.setErrorEnabled(false);
+        mDescInputLayout.setErrorEnabled(false);
 
-        presenter.saveState(
+        mPresenter.saveState(
                 new TaskEntry()
-                    .setTitle(title_edit_field.getText().toString())
-                    .setDescription(desc_edit_field.getText().toString())
-                    .setTtl(dateAndTimePicker.getDate().getTime())
-                    .setColor(pickerView.getCurrentColor())
-        );
+                        .setTitle(mTitleEditField.getText().toString())
+                        .setDescription(mDescEditField.getText().toString())
+                        .setTtl(mDateTimePicker.getDate().getTime())
+                        .setColor(mPickerView.getCurrentColor()));
     }
 
     @Override
     public void onColorChanged(int color) {
-        cardColorView.setCardBackgroundColor(color);
+        mCardColorView.setCardBackgroundColor(color);
     }
 
     @Override
@@ -160,10 +164,10 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        pickerView.getColorCache();
-        outState.putSerializable(CACHE_KEY, pickerView.getColorCache());
-        outState.putInt(COLOR_KEY, pickerView.getCurrentColor());
-        outState.putSerializable(DATE_KEY, dateAndTimePicker.getDate());
+        mPickerView.getColorCache();
+        outState.putSerializable(CACHE_KEY, mPickerView.getColorCache());
+        outState.putInt(COLOR_KEY, mPickerView.getCurrentColor());
+        outState.putSerializable(DATE_KEY, mDateTimePicker.getDate());
         super.onSaveInstanceState(outState);
     }
 
@@ -174,11 +178,11 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
         calendar.setTime((Date) savedInstanceState.getSerializable(DATE_KEY));
         float[][] cache = (float[][]) savedInstanceState.getSerializable(CACHE_KEY);
         int currentColor = savedInstanceState.getInt(COLOR_KEY);
-        pickerView.setColorCache(cache);
-        pickerView.setCellCount(CELL_COUNT);
-        pickerView.setCurrentColor(currentColor);
-        cardColorView.setCardBackgroundColor(pickerView.getCurrentColor());
-        dateAndTimePicker.selectDate(calendar);
+        mPickerView.setColorCache(cache);
+        mPickerView.setCellCount(CELL_COUNT);
+        mPickerView.setCurrentColor(currentColor);
+        mCardColorView.setCardBackgroundColor(mPickerView.getCurrentColor());
+        mDateTimePicker.selectDate(calendar);
     }
 
     @Override

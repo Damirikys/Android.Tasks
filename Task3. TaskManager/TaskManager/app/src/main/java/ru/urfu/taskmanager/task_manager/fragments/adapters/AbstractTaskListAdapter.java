@@ -14,25 +14,25 @@ public class AbstractTaskListAdapter extends SimpleCursorAdapter
 
     protected static final int LAYOUT = R.layout.task_list_item;
 
-    protected static final String[] FROM = new String[] {
+    protected static final String[] FROM = new String[]{
             TasksDatabaseHelper.TITLE,
             TasksDatabaseHelper.DESCRIPTION,
             TasksDatabaseHelper.TTL,
             TasksDatabaseHelper.DECORATE_COLOR,
     };
 
-    protected static final int[] TO = new int[] {
+    protected static final int[] TO = new int[]{
             R.id.task_item_title,
             R.id.task_item_description,
             R.id.task_item_deadline,
             R.id.task_item_color
     };
 
-    protected static final String[] ACTIVE_DAYS = new String[] {
+    protected static final String[] ACTIVE_DAYS = new String[]{
             "Сегодня", "Завтра", "Послезавтра"
     };
 
-    protected static final String[] COMPLETED_DAYS = new String[] {
+    protected static final String[] COMPLETED_DAYS = new String[]{
             "Сегодня", "Вчера", "Позавчера"
     };
 

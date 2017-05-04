@@ -15,6 +15,7 @@ import ru.urfu.taskmanager.task_manager.fragments.adapters.TasksListAdapter;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenter;
 import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity;
 import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
+import ru.urfu.taskmanager.utils.db.TasksFilter;
 
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.ACTION_EDIT;
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQUEST_EDIT;
@@ -22,10 +23,10 @@ import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQ
 public abstract class TaskListFragment extends Fragment
         implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, TaskListView
 {
-    protected TaskManagerPresenter presenter;
+    protected TaskManagerPresenter mPresenter;
 
-    ListView tasksListView;
-    TasksListAdapter adapter;
+    ListView mTaskListView;
+    TasksListAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -33,12 +34,11 @@ public abstract class TaskListFragment extends Fragment
         return initView(view);
     }
 
-    protected View initView(View root)
-    {
-        tasksListView = (ListView) root.findViewById(R.id.task_list);
-        tasksListView.setAdapter(adapter = getAdapter());
-        tasksListView.setOnItemClickListener(this);
-        tasksListView.setOnItemLongClickListener(this);
+    protected View initView(View root) {
+        mTaskListView = (ListView) root.findViewById(R.id.task_list);
+        mTaskListView.setAdapter(mAdapter = getAdapter());
+        mTaskListView.setOnItemClickListener(this);
+        mTaskListView.setOnItemLongClickListener(this);
 
         return root;
     }
@@ -57,8 +57,8 @@ public abstract class TaskListFragment extends Fragment
     }
 
     @Override
-    public void onUpdate() {
-        adapter.updateData();
+    public void onUpdate(TasksFilter.Builder filter) {
+        mAdapter.updateData(filter);
     }
 
     @Override
@@ -68,14 +68,14 @@ public abstract class TaskListFragment extends Fragment
 
     @Override
     public TaskListView bindPresenter(TaskManagerPresenter presenter) {
-        this.presenter = presenter;
+        this.mPresenter = presenter;
         return this;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        presenter.onResult(requestCode, resultCode);
+        mPresenter.onResult(requestCode, resultCode, data);
     }
 
     @Override
