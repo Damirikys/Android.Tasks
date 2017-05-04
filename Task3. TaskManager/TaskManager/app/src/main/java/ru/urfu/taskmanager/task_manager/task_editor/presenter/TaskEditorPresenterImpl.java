@@ -13,6 +13,8 @@ import static android.app.Activity.RESULT_OK;
 
 public class TaskEditorPresenterImpl implements TaskEditorPresenter
 {
+    private final int INVALID_ID = -1;
+
     private int mItemId;
 
     private TaskEditor mEditor;
@@ -31,8 +33,8 @@ public class TaskEditorPresenterImpl implements TaskEditorPresenter
     private void init() {
         if (mEditor.getIntent().getAction().equals(TaskManagerActivity.ACTION_EDIT)) {
             mEditor.setToolbarTitle(mEditor.getResources().getString(R.string.editor_edit_title));
-            mItemId = mEditor.getIntent().getIntExtra(TasksDatabaseHelper.ID, -1);
-            if (mItemId != -1) {
+            mItemId = mEditor.getIntent().getIntExtra(TasksDatabaseHelper.ID, INVALID_ID);
+            if (mItemId != INVALID_ID) {
                 TaskEntry entryToEdit = mDatabase.getEntryById(mItemId);
                 if (!mEditor.isRestored())
                     mEditor.initializeEditor(entryToEdit);

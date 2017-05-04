@@ -57,6 +57,8 @@ public class TaskManagerActivity extends AppCompatActivity
     public static final int REQUEST_EDIT = 2;
     public static final int REQUEST_IMPORT = 3;
 
+    public static final int SNACKBAR_SHOW_TIME = 2000;
+
     public static final String EXPORTED_FILE_NAME = "itemlist.ili";
 
     private TaskManagerPresenter mPresenter;
@@ -78,7 +80,6 @@ public class TaskManagerActivity extends AppCompatActivity
     private MenuItem mFilterMenuItem;
     private MenuItem mSearchSpinnerItem;
     private MenuItem mFilterCatalogMenuItem;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,11 +210,11 @@ public class TaskManagerActivity extends AppCompatActivity
                         fos.write(json.getBytes());
                         fos.close();
                         Snackbar.make(getWindow().getDecorView(),
-                                getString(R.string.task_successful_export) + " " + itemList.getAbsolutePath(), 2000)
+                                getString(R.string.task_successful_export) + " " + itemList.getAbsolutePath(), SNACKBAR_SHOW_TIME)
                                 .show();
                     } catch (IOException e) {
                         e.printStackTrace();
-                        Snackbar.make(getWindow().getDecorView(), getString(R.string.task_export_failed), 2000).show();
+                        Snackbar.make(getWindow().getDecorView(), getString(R.string.task_export_failed), SNACKBAR_SHOW_TIME).show();
                     }
                 }, null);
     }
@@ -357,6 +358,6 @@ public class TaskManagerActivity extends AppCompatActivity
 
     @Override
     public void showAlert(String message) {
-        Snackbar.make(getWindow().getDecorView(), message, 2000).show();
+        Snackbar.make(getWindow().getDecorView(), message, SNACKBAR_SHOW_TIME).show();
     }
 }

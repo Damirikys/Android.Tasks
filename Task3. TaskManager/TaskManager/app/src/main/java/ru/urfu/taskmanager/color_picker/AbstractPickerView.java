@@ -20,8 +20,9 @@ import ru.urfu.taskmanager.color_picker.listeners.PickerViewStateListener;
 
 public abstract class AbstractPickerView extends HorizontalScrollView
 {
-    private static final int DEFAULT_CELL_COUNT = 10;
-    private static final int DEFAULT_CELL_COLOR = Color.WHITE;
+    public static final int HSV_ARRAY_LENGTH = 3;
+    protected static final int DEFAULT_CELL_COUNT = 10;
+    protected static final int DEFAULT_CELL_COLOR = Color.WHITE;
 
     private LinearLayout mRoot;
 
@@ -80,7 +81,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
     }
 
     protected void changeColorCache(int position, float[] value) {
-        mColorCache[position] = Arrays.copyOf(value, 3);
+        mColorCache[position] = Arrays.copyOf(value, value.length);
     }
 
 
@@ -110,7 +111,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
 
     protected void calculateColors() {
         boolean restoreCache = (mColorCache != null && mColorCache.length == mCellCount);
-        if (!restoreCache) mColorCache = new float[mCellCount][3];
+        if (!restoreCache) mColorCache = new float[mCellCount][HSV_ARRAY_LENGTH];
 
         float[] hsv = new float[]{0f, 1f, 1f};
 
@@ -124,7 +125,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
             if (restoreCache) {
                 view.setCurrentColor(mColorCache[i]);
             } else {
-                mColorCache[i] = Arrays.copyOf(hsv, 3);
+                mColorCache[i] = Arrays.copyOf(hsv, hsv.length);
             }
         }
     }
@@ -132,7 +133,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
 
     public float[] getHsvBorders(CellColorView cellColorView) {
         float[] borders = new float[2];
-        float[] defaultColorHsv = new float[3];
+        float[] defaultColorHsv = new float[HSV_ARRAY_LENGTH];
         Color.colorToHSV(cellColorView.getmDefaultColor(), defaultColorHsv);
 
         int position = cellColorView.getmPosition();

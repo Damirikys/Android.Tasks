@@ -22,6 +22,7 @@ import ru.urfu.taskmanager.R;
 
 public class DirectoryChooser implements AdapterView.OnItemClickListener, DialogInterface.OnClickListener
 {
+    private static final String BACKWARD = ". . .";
     private Context mContext;
 
     private List<File> mEntries = new ArrayList<>();
@@ -61,7 +62,7 @@ public class DirectoryChooser implements AdapterView.OnItemClickListener, Dialog
 
         File[] files = mCurrentDir.listFiles();
 
-        if (mCurrentDir.getParent() != null) mEntries.add(new File(". . ."));
+        if (mCurrentDir.getParent() != null) mEntries.add(new File(BACKWARD));
 
         if (files != null) {
             for (File file : files) {
@@ -77,7 +78,7 @@ public class DirectoryChooser implements AdapterView.OnItemClickListener, Dialog
     public void onItemClick(AdapterView<?> arg0, View list, int pos, long id) {
         if (pos < 0 || pos >= mEntries.size()) return;
 
-        if (mEntries.get(pos).getName().equals(". . .")) mCurrentDir = mCurrentDir.getParentFile();
+        if (mEntries.get(pos).getName().equals(BACKWARD)) mCurrentDir = mCurrentDir.getParentFile();
         else mCurrentDir = mEntries.get(pos);
 
         listDirs();
@@ -105,7 +106,7 @@ public class DirectoryChooser implements AdapterView.OnItemClickListener, Dialog
             TextView textview = (TextView) super.getView(position, convertView, parent);
 
             if (mEntries.get(position) == null) {
-                textview.setText(". . .");
+                textview.setText(BACKWARD);
             } else {
                 textview.setText(mEntries.get(position).getName());
             }

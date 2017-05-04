@@ -15,6 +15,8 @@ import java.util.Arrays;
 import ru.urfu.taskmanager.color_picker.states.Action;
 import ru.urfu.taskmanager.utils.tools.SizeManager;
 
+import static ru.urfu.taskmanager.color_picker.AbstractPickerView.HSV_ARRAY_LENGTH;
+
 public class CellColorView extends View implements View.OnTouchListener
 {
     public static final int CELL_SIZE = SizeManager.dpToPx(45);
@@ -35,9 +37,9 @@ public class CellColorView extends View implements View.OnTouchListener
     private int mPosition;
 
     private int mDefaultColor;
-    private float[] mDefaultHsvColor = new float[3];
-    private float[] mCurrentColor = new float[3];
-    private float[] mColorBuffer = new float[3];
+    private float[] mDefaultHsvColor = new float[HSV_ARRAY_LENGTH];
+    private float[] mCurrentColor = new float[HSV_ARRAY_LENGTH];
+    private float[] mColorBuffer = new float[HSV_ARRAY_LENGTH];
 
     private float mLeftHsvBorder;
     private float mRightHsvBorder;
@@ -65,14 +67,14 @@ public class CellColorView extends View implements View.OnTouchListener
 
     public CellColorView setmDefaultColor(float[] hsvDefaultColor) {
         this.mDefaultColor = Color.HSVToColor(hsvDefaultColor);
-        this.mDefaultHsvColor = Arrays.copyOf(hsvDefaultColor, 3);
+        this.mDefaultHsvColor = Arrays.copyOf(hsvDefaultColor, HSV_ARRAY_LENGTH);
 
         return setCurrentColor(mDefaultHsvColor);
     }
 
     public CellColorView setCurrentColor(float[] newColor) {
-        this.mCurrentColor = Arrays.copyOf(newColor, 3);
-        this.mColorBuffer = Arrays.copyOf(newColor, 3);
+        this.mCurrentColor = Arrays.copyOf(newColor, HSV_ARRAY_LENGTH);
+        this.mColorBuffer = Arrays.copyOf(newColor, HSV_ARRAY_LENGTH);
 
         setBackgroundColor(Color.HSVToColor(newColor));
         return this;
@@ -108,7 +110,7 @@ public class CellColorView extends View implements View.OnTouchListener
         float distanceX = (x - fromX);
         float distanceY = ((y - fromY) * 0.005f);
 
-        float[] hsvValue = Arrays.copyOf(mCurrentColor, 3);
+        float[] hsvValue = Arrays.copyOf(mCurrentColor, HSV_ARRAY_LENGTH);
 
         hsvValue[0] = hsvValue[0] + (distanceX / 10);
         hsvValue[1] = hsvValue[1] + distanceY;
