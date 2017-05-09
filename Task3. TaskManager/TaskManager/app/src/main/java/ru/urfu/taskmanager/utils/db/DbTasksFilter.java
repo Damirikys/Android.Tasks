@@ -5,14 +5,14 @@ import java.util.List;
 
 import static android.text.format.DateUtils.DAY_IN_MILLIS;
 
-public class TasksFilter
+public class DbTasksFilter implements DbFilter
 {
     private static final int ALL_TASK = -1;
     public static final int ACTIVE_TASK = 0;
     public static final int COMPLETED_TASK = 1;
     public static final String FRONT = "ASC";
     public static final String REVERSE = "DESC";
-    public static final TasksFilter.Builder DEFAULT_BUILDER = new Builder(new TasksFilter(), true);
+    public static final DbTasksFilter.Builder DEFAULT_BUILDER = new Builder(new DbTasksFilter(), true);
 
     private int mType;
     private List<String> mWhereClause;
@@ -20,15 +20,15 @@ public class TasksFilter
     private String mOrderBy;
     private String mOrientation;
 
-    private TasksFilter() {
+    private DbTasksFilter() {
         this.mType = ALL_TASK;
         this.mWhereClause = new ArrayList<>();
         this.mGroupBy = new ArrayList<>();
-        this.mOrderBy = TasksDatabaseHelper.TTL;
+        this.mOrderBy = DbTasksHelper.TTL;
         this.mOrientation = FRONT;
     }
 
-    private TasksFilter(TasksFilter other) {
+    private DbTasksFilter(DbTasksFilter other) {
         this.mType = other.mType;
         this.mWhereClause = new ArrayList<>(other.mWhereClause);
         this.mGroupBy = new ArrayList<>(other.mGroupBy);
@@ -37,14 +37,14 @@ public class TasksFilter
     }
 
     public static Builder builder() {
-        return new Builder(new TasksFilter());
+        return new Builder(new DbTasksFilter());
     }
 
-    String[] getColumns() {
+    public String[] getColumns() {
         return null;
     }
 
-    String getWhereClause() {
+    public String getWhereClause() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < mWhereClause.size(); i++) {
             builder.append(mWhereClause.get(i));
@@ -54,11 +54,11 @@ public class TasksFilter
         return (mWhereClause.isEmpty()) ? null : builder.toString();
     }
 
-    String[] getSelectionArgs() {
+    public String[] getSelectionArgs() {
         return null;
     }
 
-    String getGroupBy() {
+    public String getGroupBy() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < mGroupBy.size(); i++) {
             builder.append(mGroupBy.get(i));
@@ -68,11 +68,11 @@ public class TasksFilter
         return (mGroupBy.isEmpty()) ? null : builder.toString();
     }
 
-    String getHaving() {
+    public String getHaving() {
         return null;
     }
 
-    String getOrderBy() {
+    public String getOrderBy() {
         return mOrderBy + " " + mOrientation;
     }
 
@@ -83,15 +83,15 @@ public class TasksFilter
     /* TaskFilter.Builder class */
     public static class Builder
     {
-        private TasksFilter mFilter;
+        private DbTasksFilter mFilter;
         private boolean mDefault;
 
-        private Builder(TasksFilter filter, boolean isDefault) {
+        private Builder(DbTasksFilter filter, boolean isDefault) {
             this.mFilter = filter;
             this.mDefault = isDefault;
         }
 
-        private Builder(TasksFilter filter) {
+        private Builder(DbTasksFilter filter) {
             this.mFilter = filter;
             this.mDefault = false;
         }
@@ -103,7 +103,7 @@ public class TasksFilter
         public Builder setType(int type) {
             mFilter.mType = type;
             if (type != ALL_TASK) {
-                mFilter.mWhereClause.add(TasksDatabaseHelper.COMPLETED + "=" + String.valueOf(type));
+                mFilter.mWhereClause.add(DbTasksHelper.COMPLETED + "=" + String.valueOf(type));
             }
             return this;
         }
@@ -123,14 +123,14 @@ public class TasksFilter
         }
 
         public Builder fromDateRange(long start, long end) {
-            mFilter.mWhereClause.add(TasksDatabaseHelper.TTL + ">" + String.valueOf(start));
-            mFilter.mWhereClause.add(TasksDatabaseHelper.TTL + "<" + String.valueOf(end + DAY_IN_MILLIS));
+            mFilter.mWhereClause.add(DbTasksHelper.TTL + ">" + String.valueOf(start));
+            mFilter.mWhereClause.add(DbTasksHelper.TTL + "<" + String.valueOf(end + DAY_IN_MILLIS));
 
             return this;
         }
 
         public Builder fromColor(int color) {
-            mFilter.mWhereClause.add(TasksDatabaseHelper.DECORATE_COLOR + "=" + String.valueOf(color));
+            mFilter.mWhereClause.add(DbTasksHelper.DECORATE_COLOR + "=" + String.valueOf(color));
 
             return this;
         }
@@ -140,18 +140,18 @@ public class TasksFilter
             return this;
         }
 
-        public Builder startsWith(String column, String query) {
-            mFilter.mWhereClause.add(column + " LIKE '" + query + "%'");
+        public Builder match(String column, String query) {
+            mFilter.mWhereClause.add(column + " LIKE '%" + query + "%'");
 
             return this;
         }
 
-        public TasksFilter build() {
+        public DbTasksFilter build() {
             return mFilter;
         }
 
         public Builder copy() {
-            return (mDefault) ? new Builder(new TasksFilter(), true) : new Builder(new TasksFilter(mFilter));
+            return (mDefault) ? new Builder(new DbTasksFilter(), true) : new Builder(new DbTasksFilter(mFilter));
         }
     }
 }

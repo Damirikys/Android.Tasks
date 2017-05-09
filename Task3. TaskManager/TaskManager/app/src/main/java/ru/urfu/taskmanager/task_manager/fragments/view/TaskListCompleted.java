@@ -11,17 +11,17 @@ import java.util.Date;
 
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.fragments.adapters.TasksListAdapter;
-import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
-import ru.urfu.taskmanager.utils.db.TasksFilter;
+import ru.urfu.taskmanager.utils.db.DbTasksHelper;
+import ru.urfu.taskmanager.utils.db.DbTasksFilter;
 
 public class TaskListCompleted extends TaskListFragment
 {
     @Override
     protected TasksListAdapter getAdapter() {
         return new TasksListAdapter(getContext(),
-                TasksFilter.builder()
-                        .setType(TasksFilter.COMPLETED_TASK)
-                        .sortBy(TasksDatabaseHelper.TTL)
+                DbTasksFilter.builder()
+                        .setType(DbTasksFilter.COMPLETED_TASK)
+                        .sortBy(DbTasksHelper.TTL)
                         .build()
         );
     }

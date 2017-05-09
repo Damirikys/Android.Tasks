@@ -19,6 +19,7 @@ public class TaskEntry implements Parcelable
     private String created;
     private String edited;
     private String color;
+    private String imageUrl;
 
     public TaskEntry() {
     }
@@ -72,6 +73,15 @@ public class TaskEntry implements Parcelable
     public TaskEntry setDescription(String description) {
         this.description = description;
         return this;
+    }
+
+    public TaskEntry setImageUrl(String url) {
+        this.imageUrl = url;
+        return this;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public String getTtl() {
@@ -143,6 +153,10 @@ public class TaskEntry implements Parcelable
 
     public boolean isCompleted() {
         return (mComplete == 1);
+    }
+
+    public String getCompleted() {
+        return String.valueOf(mComplete);
     }
 
     public TaskEntry setCompleted(boolean bool) {

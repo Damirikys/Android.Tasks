@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.widget.SimpleCursorAdapter;
 
 import ru.urfu.taskmanager.R;
-import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
+import ru.urfu.taskmanager.utils.db.DbTasksHelper;
 
 
 public class AbstractTaskListAdapter extends SimpleCursorAdapter
@@ -15,10 +15,10 @@ public class AbstractTaskListAdapter extends SimpleCursorAdapter
     protected static final int LAYOUT = R.layout.task_list_item;
 
     protected static final String[] FROM = new String[]{
-            TasksDatabaseHelper.TITLE,
-            TasksDatabaseHelper.DESCRIPTION,
-            TasksDatabaseHelper.TTL,
-            TasksDatabaseHelper.DECORATE_COLOR,
+            DbTasksHelper.TITLE,
+            DbTasksHelper.DESCRIPTION,
+            DbTasksHelper.TTL,
+            DbTasksHelper.DECORATE_COLOR,
     };
 
     protected static final int[] TO = new int[]{

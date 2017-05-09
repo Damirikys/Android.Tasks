@@ -24,6 +24,15 @@
 
         <include layout="@layout/activity_task_filter"/>
 
+
+        <com.daasuu.ahp.AnimateHorizontalProgressBar
+            android:id="@+id/animate_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:visibility="gone"
+            app:ahp_backgroundColor="@color/colorPrimaryDark"
+            app:ahp_progressColor="@color/lite_gray" />
+
         <android.support.design.widget.TabLayout
             android:id="@+id/tablayout"
             android:layout_width="match_parent"
@@ -35,6 +44,14 @@
             app:tabIndicatorHeight="2dp"
             app:tabSelectedTextColor="#ffffff"
             app:tabTextColor="#b4ffffff"/>
+
+        <ProgressBar
+            android:id="@+id/circleProgressBar"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"/>
+
 
         <android.support.v4.view.ViewPager
             android:id="@+id/viewpager"

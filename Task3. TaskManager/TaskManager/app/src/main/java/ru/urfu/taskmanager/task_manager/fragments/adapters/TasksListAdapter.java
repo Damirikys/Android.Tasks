@@ -12,20 +12,22 @@ import java.util.Calendar;
 
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
-import ru.urfu.taskmanager.utils.db.TasksDatabase;
-import ru.urfu.taskmanager.utils.db.TasksFilter;
+import ru.urfu.taskmanager.utils.db.DbTasks;
+import ru.urfu.taskmanager.utils.db.DbTasksFilter;
 import ru.urfu.taskmanager.utils.tools.TimeUtils;
 
 public class TasksListAdapter extends AbstractTaskListAdapter
 {
-    private final TasksDatabase mDatabase;
-    private TasksFilter mTaskFilter;
+    private final Context mContext;
+    private final DbTasksFilter defaultFilter;
+    private final DbTasks mDatabase;
 
-    public TasksListAdapter(Context context, TasksFilter tasksFilter) {
+    public TasksListAdapter(Context context, DbTasksFilter tasksFilter) {
         super(context, LAYOUT, null, FROM, TO, 0);
-        this.mDatabase = TasksDatabase.getInstance();
-        this.mTaskFilter = tasksFilter;
-        updateData();
+        this.mContext = context;
+        this.defaultFilter = tasksFilter;
+        this.mDatabase = DbTasks.getInstance();
+        updateData(mDatabase.getCursor(defaultFilter));
     }
 
     @Override
@@ -89,7 +91,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter
     }
 
     private String getTitleFromEntry(TaskEntry entry) {
-        if (System.currentTimeMillis() > entry.getTtlTimestamp() & mTaskFilter.getType() == TasksFilter.ACTIVE_TASK) {
+        if (System.currentTimeMillis() > entry.getTtlTimestamp() & defaultFilter.getType() == DbTasksFilter.ACTIVE_TASK) {
             return OVERDUE;
         } else {
             Calendar entryDate = Calendar.getInstance();
@@ -101,10 +103,10 @@ public class TasksListAdapter extends AbstractTaskListAdapter
 
     private String getHeaderTitleByNum(int num, Calendar entryDate) {
         if (num < 3) {
-            switch (mTaskFilter.getType()) {
-                case TasksFilter.ACTIVE_TASK:
+            switch (defaultFilter.getType()) {
+                case DbTasksFilter.ACTIVE_TASK:
                     return ACTIVE_DAYS[num];
-                case TasksFilter.COMPLETED_TASK:
+                case DbTasksFilter.COMPLETED_TASK:
                     return COMPLETED_DAYS[num];
             }
         }
@@ -112,19 +114,20 @@ public class TasksListAdapter extends AbstractTaskListAdapter
         return TimeUtils.format(entryDate);
     }
 
-    public void updateData(TasksFilter.Builder builder) {
-        if (builder.isDefault()) {
-            updateData();
+    public void updateData(Cursor... cursor) {
+        if (cursor.length == 0) {
+            updateCursor(mDatabase.getCursor(defaultFilter));
         } else {
-            changeCursor(mDatabase.getCursor(
-                    mTaskFilter = builder.setType(mTaskFilter.getType())
-                            .build()
-            ));
+            updateCursor(cursor[0]);
         }
     }
 
-    private void updateData() {
-        changeCursor(mDatabase.getCursor(mTaskFilter));
+    private void updateCursor(Cursor cursor) {
+        changeCursor(cursor);
+    }
+
+    public int getDataType() {
+        return defaultFilter.getType();
     }
 
     private static class ViewHolder {
