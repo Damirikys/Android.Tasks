@@ -12,18 +12,20 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ru.urfu.taskmanager.R;
+import ru.urfu.taskmanager.auth.models.User;
 import ru.urfu.taskmanager.task_manager.fragments.view.TaskListView;
-import ru.urfu.taskmanager.task_manager.main.tools.DataExportController;
-import ru.urfu.taskmanager.task_manager.main.tools.DataImportController;
-import ru.urfu.taskmanager.task_manager.main.tools.BackupManager;
+import ru.urfu.taskmanager.data.backup.DataExportController;
+import ru.urfu.taskmanager.data.backup.DataImportController;
+import ru.urfu.taskmanager.data.backup.BackupManager;
 import ru.urfu.taskmanager.task_manager.main.view.TaskManager;
-import ru.urfu.taskmanager.task_manager.main.tools.TasksGenerator;
+import ru.urfu.taskmanager.data.backup.TasksGenerator;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
-import ru.urfu.taskmanager.utils.db.async.DbAsyncExecutor;
-import ru.urfu.taskmanager.utils.db.DbFilter;
-import ru.urfu.taskmanager.utils.db.DbTasks;
-import ru.urfu.taskmanager.utils.db.DbTasksFilter;
-import ru.urfu.taskmanager.utils.db.async.ExecuteControllerAdapter;
+import ru.urfu.taskmanager.data.network.APIServiceExecutor;
+import ru.urfu.taskmanager.data.db.DbFilter;
+import ru.urfu.taskmanager.data.db.DbTasks;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
+import ru.urfu.taskmanager.data.db.async.DbAsyncExecutor;
+import ru.urfu.taskmanager.data.db.async.ExecuteControllerAdapter;
 import ru.urfu.taskmanager.utils.interfaces.Callback;
 import ru.urfu.taskmanager.utils.interfaces.Coupler;
 
@@ -37,24 +39,28 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
     private static final String EXPORTED_FILENAME = "itemlist.ili";
 
     private final TaskManager mManager;
-    private final DbAsyncExecutor<TaskEntry> dbAsyncExecutor;
+    private final APIServiceExecutor mAPIServiceExecutor;
+    private final DbAsyncExecutor<TaskEntry> mDbAsyncExecutor;
     private final BackupManager mDataExporter;
     private final List<TaskListView> mTasksList;
 
     public TaskManagerPresenterImpl(TaskManager view) {
         this.mManager = view;
         this.mTasksList = new ArrayList<>();
-        this.dbAsyncExecutor = DbTasks.getInstance().getAsyncExecutor();
+        this.mAPIServiceExecutor = User.getActiveUser().getExecutor();
         this.mDataExporter = new BackupManager();
+        this.mDbAsyncExecutor = DbTasks.getInstance().getAsyncExecutor();
     }
 
     @Override
     public void taskIsCompleted(int id) {
-        TaskEntry updatedEntry = new TaskEntry(id)
-                .setTtl(System.currentTimeMillis())
-                .setCompleted(true);
+        long timestamp = System.currentTimeMillis();
 
-        dbAsyncExecutor.updateEntry(updatedEntry, new ExecuteControllerAdapter<TaskEntry>() {
+        TaskEntry updatedEntry = new TaskEntry(id)
+                .setTtl(timestamp)
+                .setEdited(timestamp);
+
+        mAPIServiceExecutor.updateEntry(updatedEntry, new ExecuteControllerAdapter<TaskEntry>() {
             @Override
             public void onFinish() {
                 notifyDataUpdate();
@@ -64,25 +70,28 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
 
     @Override
     public void postponeTheTask(int id, Coupler<Callback<Date>, TaskEntry> coupler) {
-        dbAsyncExecutor.getEntryById(id, new ExecuteControllerAdapter<TaskEntry>() {
+        mDbAsyncExecutor.getEntryById(id, new ExecuteControllerAdapter<TaskEntry>()
+        {
             @Override
             public void onFinish(TaskEntry entry) {
-                coupler.bind(date -> {
-                    entry.setTtl(date.getTime());
-                    dbAsyncExecutor.updateEntry(entry, new ExecuteControllerAdapter<TaskEntry>() {
-                        @Override
-                        public void onFinish() {
-                            notifyDataUpdate();
+                coupler.bind(date -> mAPIServiceExecutor.updateEntry(
+                        entry.setTtl(date.getTime())
+                                .setEdited(System.currentTimeMillis()),
+                        new ExecuteControllerAdapter<TaskEntry>()
+                        {
+                            @Override
+                            public void onFinish() {
+                                notifyDataUpdate();
+                            }
                         }
-                    });
-                }, entry);
+                ), entry);
             }
         });
     }
 
     @Override
     public void deleteTheTask(int id) {
-        dbAsyncExecutor.removeEntryById(id, new ExecuteControllerAdapter<Void>() {
+        mAPIServiceExecutor.removeEntryById(id, new ExecuteControllerAdapter<TaskEntry>() {
             @Override
             public void onFinish() {
                 notifyDataUpdate();
@@ -92,13 +101,13 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
 
     @Override
     public void restoreTheTask(int id, Coupler<Callback<Date>, TaskEntry> coupler) {
-        dbAsyncExecutor.getEntryById(id, new ExecuteControllerAdapter<TaskEntry>() {
+        mDbAsyncExecutor.getEntryById(id, new ExecuteControllerAdapter<TaskEntry>()
+        {
             @Override
             public void onFinish(TaskEntry entry) {
-                entry.setCompleted(false);
                 coupler.bind(date -> {
-                    entry.setTtl(date.getTime());
-                    dbAsyncExecutor.updateEntry(entry, new ExecuteControllerAdapter<TaskEntry>() {
+                    entry.setTtl(date.getTime()).setEdited(System.currentTimeMillis());
+                    mAPIServiceExecutor.updateEntry(entry, new ExecuteControllerAdapter<TaskEntry>() {
                         @Override
                         public void onFinish() {
                             notifyDataUpdate();
@@ -126,7 +135,7 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
 
     @Override
     public void exportData(String path) {
-        dbAsyncExecutor.getAllEntries(
+        mAPIServiceExecutor.getAllEntries(
                 new DataExportController<>(
                         mManager.getBaseContext(), mManager,
                         path, EXPORTED_FILENAME,
@@ -141,7 +150,7 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
                 .openInputStream(uri);
 
         mDataExporter.importFrom(inputStream, TaskEntry.class,
-                new DataImportController<>(mManager, dbAsyncExecutor, aVoid -> notifyDataUpdate())
+                new DataImportController<>(mManager, mAPIServiceExecutor, aVoid -> notifyDataUpdate())
         );
     }
 
@@ -189,7 +198,7 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
                         .setType(taskList.getDataType())
                         .build();
 
-                dbAsyncExecutor.getCursor(filter, new ExecuteControllerAdapter<Cursor>() {
+                mAPIServiceExecutor.getCursor(filter, new ExecuteControllerAdapter<Cursor>() {
                         @Override
                         public void onStart() {
                             mManager.showProgress();

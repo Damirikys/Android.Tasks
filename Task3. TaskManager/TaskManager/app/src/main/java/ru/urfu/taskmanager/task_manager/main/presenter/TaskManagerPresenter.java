@@ -1,13 +1,12 @@
 package ru.urfu.taskmanager.task_manager.main.presenter;
 
 import android.content.Intent;
-import android.net.Uri;
 
 import java.util.Date;
 
 import ru.urfu.taskmanager.task_manager.fragments.view.TaskListView;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
-import ru.urfu.taskmanager.utils.db.DbTasksFilter;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
 import ru.urfu.taskmanager.utils.interfaces.Callback;
 import ru.urfu.taskmanager.utils.interfaces.Coupler;
 

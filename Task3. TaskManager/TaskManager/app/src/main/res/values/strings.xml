@@ -56,6 +56,12 @@
     <string name="data_collection_started">Сбор данных начался</string>
     <string name="data_collected">Собрано данных</string>
     <string name="could_not_load_image">Не удалось загрузить изображение</string>
+    <string name="merge_conflict_title">Конфликт изменений</string>
+    <string name="merge_conflict_descr">Нажмите на вариант, который хотите сохранить.</string>
+    <string name="sync_failed">Не удалось синхронизировать данные</string>
+    <string name="sync_success">Успешно синхронизировано</string>
+    <string name="sync_title">Синхронизация…</string>
+    <string name="conflict_not_resolved">Не удалось разрешить конфликт</string>
 
     <string-array name="sorting">
         <item>Выполнения</item>

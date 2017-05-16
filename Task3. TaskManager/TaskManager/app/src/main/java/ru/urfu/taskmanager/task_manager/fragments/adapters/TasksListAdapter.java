@@ -11,20 +11,19 @@ import android.widget.TextView;
 import java.util.Calendar;
 
 import ru.urfu.taskmanager.R;
+import ru.urfu.taskmanager.data.db.DbFilter;
+import ru.urfu.taskmanager.data.db.DbTasks;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
-import ru.urfu.taskmanager.utils.db.DbTasks;
-import ru.urfu.taskmanager.utils.db.DbTasksFilter;
 import ru.urfu.taskmanager.utils.tools.TimeUtils;
 
 public class TasksListAdapter extends AbstractTaskListAdapter
 {
-    private final Context mContext;
-    private final DbTasksFilter defaultFilter;
+    private final DbFilter defaultFilter;
     private final DbTasks mDatabase;
 
     public TasksListAdapter(Context context, DbTasksFilter tasksFilter) {
         super(context, LAYOUT, null, FROM, TO, 0);
-        this.mContext = context;
         this.defaultFilter = tasksFilter;
         this.mDatabase = DbTasks.getInstance();
         updateData(mDatabase.getCursor(defaultFilter));

@@ -15,7 +15,7 @@ import java.util.List;
 
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.main.filter.FiltersStorage;
-import ru.urfu.taskmanager.utils.db.DbTasksFilter;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
 
 
 public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter

@@ -2,13 +2,17 @@ package ru.urfu.taskmanager.task_manager.main.view;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -35,6 +39,11 @@ import org.androidannotations.annotations.ViewById;
 import java.lang.reflect.Field;
 
 import ru.urfu.taskmanager.R;
+import ru.urfu.taskmanager.auth.models.User;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
+import ru.urfu.taskmanager.data.db.DbTasksHelper;
+import ru.urfu.taskmanager.data.network.sync_module.BroadcastSyncManager;
+import ru.urfu.taskmanager.task_manager.editor.view.TaskEditorActivity_;
 import ru.urfu.taskmanager.task_manager.fragments.view.TaskListActive;
 import ru.urfu.taskmanager.task_manager.fragments.view.TaskListCompleted;
 import ru.urfu.taskmanager.task_manager.main.adapters.FiltersAdapter;
@@ -44,15 +53,11 @@ import ru.urfu.taskmanager.task_manager.main.adapters.ViewPagerAdapter;
 import ru.urfu.taskmanager.task_manager.main.filter.FilterLayoutWrapper;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenter;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenterImpl;
-import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity;
-import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity_;
-import ru.urfu.taskmanager.utils.db.DbTasksFilter;
-import ru.urfu.taskmanager.utils.db.DbTasksHelper;
 import ru.urfu.taskmanager.utils.tools.DirectoryChooser;
 
 @EActivity(R.layout.activity_task_list)
 public class TaskManagerActivity extends AppCompatActivity
-        implements TaskManager, MenuItemCompat.OnActionExpandListener, SearchView.OnQueryTextListener
+        implements TaskManager, MenuItemCompat.OnActionExpandListener, SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener
 {
     public static final String ACTION_CREATE = "ru.urfu.taskmanager.ACTION_CREATE";
     public static final String ACTION_EDIT = "ru.urfu.taskmanager.ACTION_EDIT";
@@ -69,6 +74,7 @@ public class TaskManagerActivity extends AppCompatActivity
         NORMAL, SEARCH, FILTER
     }
 
+    private BroadcastReceiver mBroadcastSyncManager;
     private FilterLayoutWrapper mFilterLayoutWrapper;
     private FiltersAdapter mAdapter;
 
@@ -105,6 +111,7 @@ public class TaskManagerActivity extends AppCompatActivity
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         setupPermissionController();
+        setupReceiver();
         initialize();
 
         mAdapter = new SavedFiltersAdapter(this, this::onApplyFilter);
@@ -122,9 +129,28 @@ public class TaskManagerActivity extends AppCompatActivity
         mViewPager.setOffscreenPageLimit(2);
         setupViewPager(mViewPager);
         mTabLayout.setupWithViewPager(mViewPager);
-
         mProgressDialog = new ProgressDialog(this);
         floatingActionButton.setOnClickListener(this);
+
+        showAlert("USER_ID: " + User.getActiveUser().getUserId());
+    }
+
+    private void setupReceiver() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(BroadcastSyncManager.SYNC_ASK_ACTION);
+        filter.addAction(BroadcastSyncManager.SYNC_SUCCESS_ACTION);
+        filter.addAction(BroadcastSyncManager.SYNC_FAILED_ACTION);
+        filter.addAction(BroadcastSyncManager.SYNC_START_ACTION);
+        filter.addAction(BroadcastSyncManager.SYNC_SCHEDULE_ACTION);
+
+        mBroadcastSyncManager = new BroadcastSyncManager(this) {
+            @Override
+            public void onStopSync() {
+                mPresenter.applyFilter(DbTasksFilter.DEFAULT_BUILDER);
+            }
+        };
+
+        registerReceiver(mBroadcastSyncManager, filter);
     }
 
     private void setupPermissionController() {
@@ -285,6 +311,8 @@ public class TaskManagerActivity extends AppCompatActivity
             case R.id.action_generation:
                 generateBigData();
                 break;
+            case R.id.action_sync:
+                sendBroadcast(new Intent(BroadcastSyncManager.SYNC_START_ACTION));
         }
 
         return super.onOptionsItemSelected(item);
@@ -353,6 +381,10 @@ public class TaskManagerActivity extends AppCompatActivity
         mPresenter.onResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public void onRefresh() {
+        sendBroadcast(new Intent(BroadcastSyncManager.SYNC_START_ACTION));
+    }
 
     @UiThread
     public void startProgressIndicator(int max) {
@@ -397,10 +429,10 @@ public class TaskManagerActivity extends AppCompatActivity
         Snackbar.make(getWindow().getDecorView(), message, SNACKBAR_SHOW_TIME).show();
     }
 
-
     @Override
     protected void onDestroy() {
         mPresenter.onDestroy();
+        unregisterReceiver(mBroadcastSyncManager);
         super.onDestroy();
     }
 }

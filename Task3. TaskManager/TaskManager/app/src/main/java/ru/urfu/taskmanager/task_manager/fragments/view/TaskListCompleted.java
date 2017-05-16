@@ -11,8 +11,8 @@ import java.util.Date;
 
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.fragments.adapters.TasksListAdapter;
-import ru.urfu.taskmanager.utils.db.DbTasksHelper;
-import ru.urfu.taskmanager.utils.db.DbTasksFilter;
+import ru.urfu.taskmanager.data.db.DbTasksHelper;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
 
 public class TaskListCompleted extends TaskListFragment
 {

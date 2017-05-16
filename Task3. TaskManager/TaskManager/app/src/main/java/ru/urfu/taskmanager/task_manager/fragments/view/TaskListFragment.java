@@ -14,11 +14,6 @@ import android.widget.ListView;
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.fragments.adapters.TasksListAdapter;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenter;
-import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity_;
-import ru.urfu.taskmanager.utils.db.DbTasksHelper;
-
-import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.ACTION_EDIT;
-import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQUEST_EDIT;
 
 public abstract class TaskListFragment extends Fragment
         implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, TaskListView
@@ -49,10 +44,7 @@ public abstract class TaskListFragment extends Fragment
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(getActivity(), TaskEditorActivity_.class);
-        intent.setAction(ACTION_EDIT);
-        intent.putExtra(DbTasksHelper.ID, (int) id);
-        startActivityForResult(intent, REQUEST_EDIT);
+        mPresenter.editTheTask((int) id);
         return true;
     }
 

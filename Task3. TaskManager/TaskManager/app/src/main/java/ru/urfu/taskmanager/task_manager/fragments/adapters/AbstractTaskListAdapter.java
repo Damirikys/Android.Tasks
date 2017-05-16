@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.widget.SimpleCursorAdapter;
 
 import ru.urfu.taskmanager.R;
-import ru.urfu.taskmanager.utils.db.DbTasksHelper;
+import ru.urfu.taskmanager.data.db.DbTasksHelper;
 
 
 public class AbstractTaskListAdapter extends SimpleCursorAdapter
