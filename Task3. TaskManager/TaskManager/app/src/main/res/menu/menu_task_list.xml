@@ -41,4 +41,15 @@
         android:title="Импорт"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/action_sync"
+        android:title="Синхронизация"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_generation"
+        android:title="Генерировать данные"
+        android:enabled="false"
+        app:showAsAction="never"/>
+
 </menu>

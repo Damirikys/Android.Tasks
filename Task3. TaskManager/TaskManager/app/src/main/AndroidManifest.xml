@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="ru.urfu.taskmanager">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -14,10 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
-            android:name=".task_manager.main.view.TaskManagerActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/app_name"
+            android:name=".auth.LoginActivity_"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -25,10 +27,19 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".task_manager.task_editor.view.TaskEditorActivity"
+            android:name=".task_manager.main.view.TaskManagerActivity_"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+            android:name=".task_manager.editor.view.TaskEditorActivity_"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <service android:enabled="true" android:name=".data.network.sync_module.SynchronizeService" />
     </application>
 
 </manifest>

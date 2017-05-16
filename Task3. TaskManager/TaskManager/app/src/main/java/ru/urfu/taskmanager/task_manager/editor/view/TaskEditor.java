@@ -1,4 +1,4 @@
-package ru.urfu.taskmanager.task_manager.task_editor.view;
+package ru.urfu.taskmanager.task_manager.editor.view;
 
 import android.content.Intent;
 import android.view.View;
@@ -16,6 +16,8 @@ public interface TaskEditor extends View.OnClickListener, PickerViewStateListene
     void setToolbarTitle(String title);
 
     void initializeEditor(TaskEntry entryToEdit);
+
+    void onComplete(TaskEntry entry);
 
     void showTitleError(String string);
 

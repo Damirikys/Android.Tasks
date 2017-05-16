@@ -1,10 +1,13 @@
 package ru.urfu.taskmanager.utils.tools;
 
 import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.JsonWriter;
 import com.squareup.moshi.Moshi;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+
+import okio.BufferedSink;
 
 public class JSONFactory
 {
@@ -12,6 +15,11 @@ public class JSONFactory
 
     public static <T> String toJson(T object, Class<T> _class) {
         JsonAdapter<T> jsonAdapter = sMoshi.adapter(_class);
+        return jsonAdapter.toJson(object);
+    }
+
+    public static <T> String toJson(T object, Type type) {
+        JsonAdapter<T> jsonAdapter = sMoshi.adapter(type);
         return jsonAdapter.toJson(object);
     }
 

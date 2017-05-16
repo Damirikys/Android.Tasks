@@ -1,6 +1,7 @@
 package ru.urfu.taskmanager.task_manager.fragments.view;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -13,12 +14,6 @@ import android.widget.ListView;
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.fragments.adapters.TasksListAdapter;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenter;
-import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity;
-import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
-import ru.urfu.taskmanager.utils.db.TasksFilter;
-
-import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.ACTION_EDIT;
-import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQUEST_EDIT;
 
 public abstract class TaskListFragment extends Fragment
         implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, TaskListView
@@ -49,16 +44,13 @@ public abstract class TaskListFragment extends Fragment
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(getActivity(), TaskEditorActivity.class);
-        intent.setAction(ACTION_EDIT);
-        intent.putExtra(TasksDatabaseHelper.ID, (int) id);
-        startActivityForResult(intent, REQUEST_EDIT);
+        mPresenter.editTheTask((int) id);
         return true;
     }
 
     @Override
-    public void onUpdate(TasksFilter.Builder filter) {
-        mAdapter.updateData(filter);
+    public void onUpdate(Cursor... cursor) {
+        getActivity().runOnUiThread(() -> mAdapter.updateData(cursor));
     }
 
     @Override
@@ -70,6 +62,11 @@ public abstract class TaskListFragment extends Fragment
     public TaskListView bindPresenter(TaskManagerPresenter presenter) {
         this.mPresenter = presenter;
         return this;
+    }
+
+    @Override
+    public int getDataType() {
+        return mAdapter.getDataType();
     }
 
     @Override

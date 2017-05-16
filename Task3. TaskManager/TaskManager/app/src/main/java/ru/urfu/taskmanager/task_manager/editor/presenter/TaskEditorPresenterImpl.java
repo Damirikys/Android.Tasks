@@ -1,12 +1,16 @@
-package ru.urfu.taskmanager.task_manager.task_editor.presenter;
+package ru.urfu.taskmanager.task_manager.editor.presenter;
 
 import ru.urfu.taskmanager.R;
+import ru.urfu.taskmanager.auth.models.User;
 import ru.urfu.taskmanager.color_picker.recent.RecentColorsStorage;
 import ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
-import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditor;
-import ru.urfu.taskmanager.utils.db.TasksDatabase;
-import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
+import ru.urfu.taskmanager.task_manager.editor.view.TaskEditor;
+import ru.urfu.taskmanager.data.db.DbTasks;
+import ru.urfu.taskmanager.data.db.DbTasksHelper;
+import ru.urfu.taskmanager.data.network.APIServiceExecutor;
+import ru.urfu.taskmanager.data.db.async.DbAsyncExecutor;
+import ru.urfu.taskmanager.data.db.async.ExecuteControllerAdapter;
 import ru.urfu.taskmanager.utils.interfaces.Callback;
 
 import static android.app.Activity.RESULT_OK;
@@ -16,15 +20,18 @@ public class TaskEditorPresenterImpl implements TaskEditorPresenter
     private final int INVALID_ID = -1;
 
     private int mItemId;
+    private int mEntryId;
 
     private TaskEditor mEditor;
     private TaskValidator mValidator;
-    private TasksDatabase mDatabase;
+    private DbAsyncExecutor<TaskEntry> mDbAsyncExecutor;
+    private APIServiceExecutor mAPIServiceExecutor;
     private RecentColorsStorage mRecentColorsStorage;
 
     public TaskEditorPresenterImpl(TaskEditor editor) {
         this.mEditor = editor;
-        this.mDatabase = TasksDatabase.getInstance();
+        this.mAPIServiceExecutor = User.getActiveUser().getExecutor();
+        this.mDbAsyncExecutor = DbTasks.getInstance().getAsyncExecutor();
         this.mRecentColorsStorage = RecentColorsStorage.getRepository();
         this.mValidator = new TaskValidator();
         init();
@@ -33,11 +40,19 @@ public class TaskEditorPresenterImpl implements TaskEditorPresenter
     private void init() {
         if (mEditor.getIntent().getAction().equals(TaskManagerActivity.ACTION_EDIT)) {
             mEditor.setToolbarTitle(mEditor.getResources().getString(R.string.editor_edit_title));
-            mItemId = mEditor.getIntent().getIntExtra(TasksDatabaseHelper.ID, INVALID_ID);
+            mItemId = mEditor.getIntent().getIntExtra(DbTasksHelper.ID, INVALID_ID);
             if (mItemId != INVALID_ID) {
-                TaskEntry entryToEdit = mDatabase.getEntryById(mItemId);
-                if (!mEditor.isRestored())
-                    mEditor.initializeEditor(entryToEdit);
+                mDbAsyncExecutor.getEntryById(mItemId,
+                        new ExecuteControllerAdapter<TaskEntry>() {
+                            @Override
+                            public void onFinish(TaskEntry result) {
+                                mEntryId = result.getEntryId();
+
+                                if (!mEditor.isRestored())
+                                    mEditor.initializeEditor(result);
+                                mEditor.onComplete(result);
+                            }
+                        });
             }
         }
     }
@@ -46,26 +61,34 @@ public class TaskEditorPresenterImpl implements TaskEditorPresenter
     public void saveState(TaskEntry state) {
         mValidator.validate(state, aVoid -> {
             long timestamp = System.currentTimeMillis();
+            state.setId(mItemId).setEntryId(mEntryId).setEdited(timestamp);
 
             switch (mEditor.getIntent().getAction()) {
                 case TaskManagerActivity.ACTION_CREATE:
-                    mDatabase.insertEntry(state.
-                            setId(mItemId)
-                            .setCreated(timestamp)
-                            .setEdited(timestamp)
+                    mAPIServiceExecutor.insertEntry(state.setCreated(timestamp),
+                            new ExecuteControllerAdapter<TaskEntry>()
+                            {
+                                @Override
+                                public void onFinish() {
+                                    mRecentColorsStorage.putItem(state.getColorInt());
+                                    mEditor.exit(RESULT_OK);
+                                }
+                            }
                     );
                     break;
                 case TaskManagerActivity.ACTION_EDIT:
-                    mDatabase.updateEntry(state.
-                            setId(mItemId)
-                            .setEdited(timestamp)
-                            .setCreated(mDatabase.getEntryById(mItemId).getCreatedTimestamp())
+                    mAPIServiceExecutor.updateEntry(state,
+                            new ExecuteControllerAdapter<TaskEntry>()
+                            {
+                                @Override
+                                public void onFinish() {
+                                    mRecentColorsStorage.putItem(state.getColorInt());
+                                    mEditor.exit(RESULT_OK);
+                                }
+                            }
                     );
                     break;
             }
-
-            mRecentColorsStorage.putItem(state.getColorInt());
-            mEditor.exit(RESULT_OK);
         });
     }
 

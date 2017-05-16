@@ -6,7 +6,7 @@ import java.util.Date;
 
 import ru.urfu.taskmanager.task_manager.fragments.view.TaskListView;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
-import ru.urfu.taskmanager.utils.db.TasksFilter;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
 import ru.urfu.taskmanager.utils.interfaces.Callback;
 import ru.urfu.taskmanager.utils.interfaces.Coupler;
 
@@ -24,7 +24,13 @@ public interface TaskManagerPresenter
 
     void editTheTask(int id);
 
-    void applyFilter(TasksFilter.Builder filterBuilder);
+    void applyFilter(DbTasksFilter.Builder filterBuilder);
+
+    void generateBigData();
+
+    void exportData(String path);
 
     void onResult(int requestCode, int resultCode, Intent data);
+
+    void onDestroy();
 }

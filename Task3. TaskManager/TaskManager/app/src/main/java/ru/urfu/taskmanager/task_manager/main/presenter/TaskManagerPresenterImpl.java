@@ -1,28 +1,33 @@
 package ru.urfu.taskmanager.task_manager.main.presenter;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 
-import com.squareup.moshi.Types;
-
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import ru.urfu.taskmanager.R;
+import ru.urfu.taskmanager.auth.models.User;
 import ru.urfu.taskmanager.task_manager.fragments.view.TaskListView;
+import ru.urfu.taskmanager.data.backup.DataExportController;
+import ru.urfu.taskmanager.data.backup.DataImportController;
+import ru.urfu.taskmanager.data.backup.BackupManager;
 import ru.urfu.taskmanager.task_manager.main.view.TaskManager;
+import ru.urfu.taskmanager.data.backup.TasksGenerator;
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
-import ru.urfu.taskmanager.utils.db.TasksDatabase;
-import ru.urfu.taskmanager.utils.db.TasksFilter;
+import ru.urfu.taskmanager.data.network.APIServiceExecutor;
+import ru.urfu.taskmanager.data.db.DbFilter;
+import ru.urfu.taskmanager.data.db.DbTasks;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
+import ru.urfu.taskmanager.data.db.async.DbAsyncExecutor;
+import ru.urfu.taskmanager.data.db.async.ExecuteControllerAdapter;
 import ru.urfu.taskmanager.utils.interfaces.Callback;
 import ru.urfu.taskmanager.utils.interfaces.Coupler;
-import ru.urfu.taskmanager.utils.tools.JSONFactory;
 
 import static android.app.Activity.RESULT_OK;
 import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQUEST_CREATE;
@@ -31,53 +36,86 @@ import static ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity.REQ
 
 public class TaskManagerPresenterImpl implements TaskManagerPresenter
 {
+    private static final String EXPORTED_FILENAME = "itemlist.ili";
+
     private final TaskManager mManager;
-    private final TasksDatabase mDatabase;
+    private final APIServiceExecutor mAPIServiceExecutor;
+    private final DbAsyncExecutor<TaskEntry> mDbAsyncExecutor;
+    private final BackupManager mDataExporter;
     private final List<TaskListView> mTasksList;
 
     public TaskManagerPresenterImpl(TaskManager view) {
         this.mManager = view;
         this.mTasksList = new ArrayList<>();
-        this.mDatabase = TasksDatabase.getInstance();
+        this.mAPIServiceExecutor = User.getActiveUser().getExecutor();
+        this.mDataExporter = new BackupManager();
+        this.mDbAsyncExecutor = DbTasks.getInstance().getAsyncExecutor();
     }
 
     @Override
     public void taskIsCompleted(int id) {
-        mDatabase.updateEntry(
-                mDatabase.getEntryById(id)
-                        .setTtl(System.currentTimeMillis())
-                        .setCompleted(true)
-        );
+        long timestamp = System.currentTimeMillis();
 
-        notifyDataUpdate();
+        TaskEntry updatedEntry = new TaskEntry(id)
+                .setTtl(timestamp)
+                .setEdited(timestamp);
+
+        mAPIServiceExecutor.updateEntry(updatedEntry, new ExecuteControllerAdapter<TaskEntry>() {
+            @Override
+            public void onFinish() {
+                notifyDataUpdate();
+            }
+        });
     }
 
     @Override
     public void postponeTheTask(int id, Coupler<Callback<Date>, TaskEntry> coupler) {
-        TaskEntry task = mDatabase.getEntryById(id);
-        coupler.bind(date -> {
-            task.setTtl(date.getTime());
-            mDatabase.updateEntry(task);
-            notifyDataUpdate();
-        }, task);
+        mDbAsyncExecutor.getEntryById(id, new ExecuteControllerAdapter<TaskEntry>()
+        {
+            @Override
+            public void onFinish(TaskEntry entry) {
+                coupler.bind(date -> mAPIServiceExecutor.updateEntry(
+                        entry.setTtl(date.getTime())
+                                .setEdited(System.currentTimeMillis()),
+                        new ExecuteControllerAdapter<TaskEntry>()
+                        {
+                            @Override
+                            public void onFinish() {
+                                notifyDataUpdate();
+                            }
+                        }
+                ), entry);
+            }
+        });
     }
 
     @Override
     public void deleteTheTask(int id) {
-        mDatabase.removeEntryById(id);
-        notifyDataUpdate();
+        mAPIServiceExecutor.removeEntryById(id, new ExecuteControllerAdapter<TaskEntry>() {
+            @Override
+            public void onFinish() {
+                notifyDataUpdate();
+            }
+        });
     }
 
     @Override
     public void restoreTheTask(int id, Coupler<Callback<Date>, TaskEntry> coupler) {
-        TaskEntry task = mDatabase.getEntryById(id)
-                .setCompleted(false);
-
-        coupler.bind(date -> {
-            task.setTtl(date.getTime());
-            mDatabase.updateEntry(task);
-            notifyDataUpdate();
-        }, task);
+        mDbAsyncExecutor.getEntryById(id, new ExecuteControllerAdapter<TaskEntry>()
+        {
+            @Override
+            public void onFinish(TaskEntry entry) {
+                coupler.bind(date -> {
+                    entry.setTtl(date.getTime()).setEdited(System.currentTimeMillis());
+                    mAPIServiceExecutor.updateEntry(entry, new ExecuteControllerAdapter<TaskEntry>() {
+                        @Override
+                        public void onFinish() {
+                            notifyDataUpdate();
+                        }
+                    });
+                }, entry);
+            }
+        });
     }
 
     @Override
@@ -86,14 +124,40 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
     }
 
     @Override
-    public TaskListView bindView(TaskListView view) {
-        mTasksList.add(view);
-        return view.bindPresenter(this);
+    public void applyFilter(DbTasksFilter.Builder filter) {
+        notifyDataUpdate(filter);
     }
 
     @Override
-    public void applyFilter(TasksFilter.Builder filter) {
-        notifyDataUpdate(filter);
+    public void generateBigData() {
+        new TasksGenerator(this, mManager).generate();
+    }
+
+    @Override
+    public void exportData(String path) {
+        mAPIServiceExecutor.getAllEntries(
+                new DataExportController<>(
+                        mManager.getBaseContext(), mManager,
+                        path, EXPORTED_FILENAME,
+                        mDataExporter
+                )
+        );
+    }
+
+    private void importData(Uri uri) throws FileNotFoundException {
+        InputStream inputStream = mManager.getBaseContext()
+                .getContentResolver()
+                .openInputStream(uri);
+
+        mDataExporter.importFrom(inputStream, TaskEntry.class,
+                new DataImportController<>(mManager, mAPIServiceExecutor, aVoid -> notifyDataUpdate())
+        );
+    }
+
+    @Override
+    public TaskListView bindView(TaskListView view) {
+        mTasksList.add(view);
+        return view.bindPresenter(this);
     }
 
     @Override
@@ -107,7 +171,11 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
                     mManager.showAlert(mManager.getResources().getString(R.string.task_was_updated));
                     break;
                 case REQUEST_IMPORT:
-                    importFrom(data.getData());
+                    try {
+                        importData(data.getData());
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                     break;
             }
 
@@ -115,46 +183,48 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
         }
     }
 
-    private void importFrom(Uri uri) {
-        StringBuilder builder = new StringBuilder();
-        try {
-            InputStream inputStream = mManager.getBaseContext()
-                    .getContentResolver()
-                    .openInputStream(uri);
-
-            if (inputStream == null)
-                throw new FileNotFoundException();
-
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(inputStream)
-            );
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                builder.append(line);
-                builder.append('\n');
-            }
-
-            br.close();
-
-            List<TaskEntry> entries = JSONFactory.fromJson(builder.toString(),
-                    Types.newParameterizedType(List.class, TaskEntry.class));
-
-            mDatabase.replaceAll(entries);
-            mManager.showAlert(mManager.getResources().getString(R.string.task_successful_import));
-        } catch (IOException e) {
-            e.printStackTrace();
-            mManager.showAlert(mManager.getResources().getString(R.string.task_import_failed));
-        }
-    }
-
     private void notifyDataUpdate() {
-        notifyDataUpdate(TasksFilter.DEFAULT_BUILDER);
+        notifyDataUpdate(DbTasksFilter.DEFAULT_BUILDER);
     }
 
-    private void notifyDataUpdate(TasksFilter.Builder builder) {
-        for (TaskListView taskList : mTasksList) {
-            taskList.onUpdate(builder.copy());
+    private void notifyDataUpdate(DbTasksFilter.Builder builder) {
+        if (builder.isDefault()) {
+            sendAction(taskList -> taskList.onUpdate());
+        } else {
+            AtomicInteger counter = new AtomicInteger(0);
+
+            sendAction(taskList -> {
+                DbFilter filter = builder.copy()
+                        .setType(taskList.getDataType())
+                        .build();
+
+                mAPIServiceExecutor.getCursor(filter, new ExecuteControllerAdapter<Cursor>() {
+                        @Override
+                        public void onStart() {
+                            mManager.showProgress();
+                            counter.incrementAndGet();
+                        }
+
+                        @Override
+                        public void onFinish(Cursor cursor) {
+                            taskList.onUpdate(cursor);
+                            if (counter.decrementAndGet() == 0)
+                                mManager.hideProgress();
+                        }
+                    }
+                );
+            });
         }
+    }
+
+    private void sendAction(Callback<TaskListView> callback) {
+        for (TaskListView taskList : mTasksList)
+            callback.call(taskList);
+    }
+
+
+    @Override
+    public void onDestroy() {
+        mDataExporter.quit();
     }
 }

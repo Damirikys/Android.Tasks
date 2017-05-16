@@ -15,8 +15,8 @@ import java.util.Date;
 
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.color_picker.recent.RecentColors;
-import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
-import ru.urfu.taskmanager.utils.db.TasksFilter;
+import ru.urfu.taskmanager.data.db.DbTasksHelper;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
 import ru.urfu.taskmanager.utils.tools.TimeUtils;
 
 
@@ -110,18 +110,18 @@ class FilterViewHolder
         });
     }
 
-    TasksFilter.Builder compileFilterBuilder() {
-        TasksFilter.Builder builder = TasksFilter.builder();
+    DbTasksFilter.Builder compileFilterBuilder() {
+        DbTasksFilter.Builder builder = DbTasksFilter.builder();
 
         switch (mSortBySpinner.getSelectedItemPosition()) {
             case 0:
-                builder.sortBy(TasksDatabaseHelper.TTL);
+                builder.sortBy(DbTasksHelper.TTL);
                 break;
             case 1:
-                builder.sortBy(TasksDatabaseHelper.TIME_CREATED);
+                builder.sortBy(DbTasksHelper.TIME_CREATED);
                 break;
             case 2:
-                builder.sortBy(TasksDatabaseHelper.TIME_EDITED);
+                builder.sortBy(DbTasksHelper.TIME_EDITED);
                 break;
         }
 
@@ -144,15 +144,15 @@ class FilterViewHolder
         }
 
         if (mAlphabeticallySwitcher.isChecked()) {
-            builder.sortBy(TasksDatabaseHelper.TITLE);
+            builder.sortBy(DbTasksHelper.TITLE);
         }
 
         switch (mOrderRadioGroup.getCheckedRadioButtonId()) {
             case R.id.order_front_radio:
-                builder.setOrientation(TasksFilter.FRONT);
+                builder.setOrientation(DbTasksFilter.FRONT);
                 break;
             case R.id.order_reverse_radio:
-                builder.setOrientation(TasksFilter.REVERSE);
+                builder.setOrientation(DbTasksFilter.REVERSE);
                 break;
         }
 

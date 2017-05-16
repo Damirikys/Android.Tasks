@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import ru.urfu.taskmanager.utils.db.TasksFilter;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
 import ru.urfu.taskmanager.utils.tools.JSONFactory;
 
 public final class FiltersStorage
@@ -17,26 +17,26 @@ public final class FiltersStorage
     private static final FiltersStorage REPOSITORY = new FiltersStorage();
     private SharedPreferences mStorage;
 
-    public void putBuilder(String name, TasksFilter.Builder builder) {
+    public void putBuilder(String name, DbTasksFilter.Builder builder) {
         SharedPreferences.Editor editor = mStorage.edit();
-        editor.putString(name, JSONFactory.toJson(builder, TasksFilter.Builder.class));
+        editor.putString(name, JSONFactory.toJson(builder, DbTasksFilter.Builder.class));
         editor.apply();
     }
 
-    public TasksFilter.Builder getBuilder(@NonNull String key) {
+    public DbTasksFilter.Builder getBuilder(@NonNull String key) {
         try {
-            return JSONFactory.fromJson(mStorage.getString(key, ""), TasksFilter.Builder.class);
+            return JSONFactory.fromJson(mStorage.getString(key, ""), DbTasksFilter.Builder.class);
         } catch (IOException e) {
             return null;
         }
     }
 
-    public Map<String, TasksFilter.Builder> getBuilders() {
-        Map<String, TasksFilter.Builder> items = new HashMap<>();
+    public Map<String, DbTasksFilter.Builder> getBuilders() {
+        Map<String, DbTasksFilter.Builder> items = new HashMap<>();
 
         for (String key : mStorage.getAll().keySet()) {
             try {
-                items.put(key, JSONFactory.fromJson(mStorage.getString(key, ""), TasksFilter.Builder.class));
+                items.put(key, JSONFactory.fromJson(mStorage.getString(key, ""), DbTasksFilter.Builder.class));
             } catch (IOException ignored) {
             }
         }

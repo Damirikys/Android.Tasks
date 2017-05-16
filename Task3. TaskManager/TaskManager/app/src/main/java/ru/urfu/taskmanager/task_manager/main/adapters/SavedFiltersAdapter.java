@@ -15,7 +15,7 @@ import java.util.List;
 
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.main.filter.FiltersStorage;
-import ru.urfu.taskmanager.utils.db.TasksFilter;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
 
 
 public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter
@@ -78,7 +78,7 @@ public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter
     }
 
     @Override
-    public void addItem(String name, TasksFilter.Builder builder) {
+    public void addItem(String name, DbTasksFilter.Builder builder) {
         mStorage.putBuilder(name, builder);
         update();
     }
@@ -92,12 +92,12 @@ public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (mFilterSelectedListener != null) {
-            TasksFilter.Builder builder = mStorage.getBuilder(mKeys.get(position));
+            DbTasksFilter.Builder builder = mStorage.getBuilder(mKeys.get(position));
             mFilterSelectedListener.onFilterSelected(builder);
         }
     }
 
     public interface OnFilterSelected {
-        void onFilterSelected(TasksFilter.Builder builder);
+        void onFilterSelected(DbTasksFilter.Builder builder);
     }
 }
