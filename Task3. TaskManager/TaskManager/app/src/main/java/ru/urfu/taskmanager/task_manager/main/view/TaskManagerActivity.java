@@ -372,6 +372,8 @@ public class TaskManagerActivity extends AppCompatActivity
 
     @UiThread
     public void showProgress(String title, String message) {
+        if (mProgressDialog.isShowing()) return;
+
         mProgressDialog.setTitle(title);
         mProgressDialog.setMessage(message);
         mProgressDialog.setCancelable(false);

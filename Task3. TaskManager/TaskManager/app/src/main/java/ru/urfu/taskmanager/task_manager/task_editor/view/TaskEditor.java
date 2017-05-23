@@ -17,7 +17,7 @@ public interface TaskEditor extends View.OnClickListener, PickerViewStateListene
 
     void initializeEditor(TaskEntry entryToEdit);
 
-    void onComplete(TaskEntry entry);
+    void onImageLoad(String url);
 
     void showTitleError(String string);
 

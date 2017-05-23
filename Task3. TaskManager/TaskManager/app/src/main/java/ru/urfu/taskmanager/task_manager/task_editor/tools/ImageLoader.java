@@ -30,12 +30,17 @@ public final class ImageLoader
             super(view.toString());
             this.mView = view;
             this.start();
-
-            this.mWorkerHandler = new Handler(getLooper());
         }
 
+        @Override
+        protected void onLooperPrepared() {
+            if (mWorkerHandler == null)
+                this.mWorkerHandler = new Handler(getLooper());
+        }
 
         public void from(String url) {
+            onLooperPrepared();
+
             mWorkerHandler.post(() -> {
                 try {
                     mImageUrl = new URL(url);
@@ -44,6 +49,8 @@ public final class ImageLoader
                 } catch (IOException e) {
                     mView.post(() -> Toast.makeText(mView.getContext(),
                             mView.getResources().getString(R.string.could_not_load_image), Toast.LENGTH_SHORT).show());
+                } finally {
+                    quit();
                 }
             });
         }

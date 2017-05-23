@@ -43,7 +43,7 @@ public class TaskEditorPresenterImpl implements TaskEditorPresenter
                             public void onFinish(TaskEntry result) {
                                 if (!mEditor.isRestored())
                                     mEditor.initializeEditor(result);
-                                mEditor.onComplete(result);
+                                mEditor.onImageLoad(result.getImageUrl());
                             }
                         });
             }

@@ -33,11 +33,6 @@ public class DataImportController<T> extends ExecuteControllerAdapter<List<T>>
 
     @Override
     public void onStart() {
-        mManager.showProgress(
-                mManager.getResources().getString(R.string.please_wait),
-                mManager.getResources().getString(R.string.data_is_imported)
-        );
-
         mNotificationBuilder =
                 new NotificationCompat.Builder(mManager.getApplicationContext());
 
@@ -62,6 +57,8 @@ public class DataImportController<T> extends ExecuteControllerAdapter<List<T>>
         mDbAsyncExecutor.replaceAll(result, new ExecuteControllerAdapter<Void>() {
             @Override
             public void onStart() {
+                mManager.showProgress();
+
                 mNotificationBuilder
                         .setContentTitle(mManager.getResources().getString(R.string.data_import))
                         .setContentText(mManager.getResources().getString(R.string.data_is_saved))

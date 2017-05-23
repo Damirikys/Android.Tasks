@@ -37,7 +37,6 @@ public class DataExportController<T> extends ExecuteControllerAdapter<List<T>>
     @Override
     public void onStart() {
         super.onStart();
-        mProgressive.showProgress();
         mProgressive.startProgressIndicator(MAX_PROGRESS_VALUE);
         mProgressive.showAlert(mContext.getString(R.string.data_collection_started));
 
@@ -67,16 +66,10 @@ public class DataExportController<T> extends ExecuteControllerAdapter<List<T>>
     public void onFinish(List<T> result) {
         super.onFinish(result);
         mProgressive.stopProgressIndicator();
-        mProgressive.hideProgress();
-        mProgressive.showProgress(
-                mContext.getString(R.string.please_wait),
-                mContext.getString(R.string.data_is_saved)
-        );
 
         mDataExporter.exportTo(new BackupManager.DataProvider<>(
                 mPath, mFileName,
-                result, List.class,
-                new JsonExporterController()
+                result, new JsonExporterController()
         ));
     }
 

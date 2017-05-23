@@ -7,6 +7,8 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -96,6 +98,24 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
         mPickerView.setCellCount(CELL_COUNT);
         mPickerView.subscribe(this);
 
+        mImageUrlEditField.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //Stub!
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //Stub!
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                onImageLoad(s.toString());
+            }
+        });
+
         mCardColorView.setCardBackgroundColor(mPickerView.getCurrentColor());
         mCardColorView.setOnClickListener(v -> RecentColors.showRecent(this, color -> {
             mPickerView.setCurrentColor(color);
@@ -125,9 +145,9 @@ public class TaskEditorActivity extends AppCompatActivity implements TaskEditor
 
     @Override
     @UiThread
-    public void onComplete(TaskEntry entry) {
+    public void onImageLoad(String url) {
         ImageLoader.into(mImageView)
-                .from(entry.getImageUrl());
+                .from(url);
     }
 
     @Override

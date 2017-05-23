@@ -1,17 +1,24 @@
 package ru.urfu.taskmanager.task_manager.main.tools;
 
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import com.squareup.moshi.Types;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,48 +43,66 @@ public class BackupManager extends HandlerThread
     public <T> void exportTo(DataProvider<T> provider) {
         mWorkerHandler.post(() -> {
             provider.mExecuteController.onStart();
+            OutputStream outputStream = null;
+            Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting()
+                    .create();
 
-            String json = JSONFactory.toJson(provider.mData, provider.mDataClass);
-            File itemList = new File(provider.mPath, provider.mFileName);
+            File file = new File(provider.mPath, provider.mFileName);
+
             try {
-                FileOutputStream fos = new FileOutputStream(itemList);
-                fos.write(json.getBytes());
-                fos.close();
+                outputStream = new FileOutputStream(file);
+                BufferedWriter bufferedWriter;
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,
+                            StandardCharsets.UTF_8));
+                } else {
+                    bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                }
 
+                gson.toJson(provider.mData, provider.getType(), bufferedWriter);
+                bufferedWriter.close();
                 provider.mExecuteController.onFinish(true);
             } catch (IOException e) {
+                e.printStackTrace();
                 provider.mExecuteController.onFinish(false);
+            } finally {
+                if (outputStream != null) {
+                    try {
+                        outputStream.flush();
+                        outputStream.close();
+                    } catch (IOException ignored) {}
+                }
             }
         });
     }
 
-    public <T> void importFrom(InputStream inputStream, Class<T> tClass, ExecuteController<List<T>> controller) throws FileNotFoundException {
+    public <T> void importFrom(InputStream inputStream, Class<T> _class, ExecuteController<List<T>> controller) throws FileNotFoundException {
         mWorkerHandler.post(() -> {
             controller.onStart();
 
-            StringBuilder builder = new StringBuilder();
+            Gson gson = new GsonBuilder().enableComplexMapKeySerialization().setPrettyPrinting()
+                    .create();
             try {
-                if (inputStream == null)
-                    throw new FileNotFoundException();
-
-                BufferedReader br = new BufferedReader(
-                        new InputStreamReader(inputStream)
-                );
-
-                String line;
-                while ((line = br.readLine()) != null) {
-                    builder.append(line);
-                    builder.append('\n');
+                InputStreamReader streamReader;
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    streamReader = new InputStreamReader(inputStream,
+                            StandardCharsets.UTF_8);
+                } else {
+                    streamReader = new InputStreamReader(inputStream, "UTF-8");
                 }
 
-                br.close();
-
-                List<T> entries = JSONFactory.fromJson(builder.toString(),
-                        Types.newParameterizedType(List.class, tClass));
-
-                controller.onFinish(entries);
+                List<T> result = gson.fromJson(streamReader, TypeToken.getParameterized(List.class, _class).getType());
+                streamReader.close();
+                controller.onFinish(result);
             } catch (IOException e) {
+                e.printStackTrace();
                 controller.onFinish(new ArrayList<>());
+            } finally {
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException ignored) {}
+                }
             }
         });
     }
@@ -88,22 +113,22 @@ public class BackupManager extends HandlerThread
         private String mFileName;
 
         private T mData;
-        private Class<T> mDataClass;
 
         private ExecuteController<Boolean> mExecuteController;
 
         public DataProvider(String path,
                             String filename,
                             T object,
-                            Class<T> objectClass,
                             ExecuteController<Boolean> controller)
         {
             this.mPath = path;
             this.mFileName = filename;
             this.mData = object;
-            this.mDataClass = objectClass;
             this.mExecuteController = controller;
         }
 
+        private Type getType() {
+            return new TypeToken<T>(){}.getType();
+        }
     }
 }
