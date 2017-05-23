@@ -15,8 +15,8 @@ import java.util.Date;
 
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.color_picker.recent.RecentColors;
-import ru.urfu.taskmanager.utils.db.DbTasksHelper;
-import ru.urfu.taskmanager.utils.db.DbTasksFilter;
+import ru.urfu.taskmanager.data.db.DbTasksHelper;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
 import ru.urfu.taskmanager.utils.tools.TimeUtils;
 
 
@@ -122,6 +122,9 @@ class FilterViewHolder
                 break;
             case 2:
                 builder.sortBy(DbTasksHelper.TIME_EDITED);
+                break;
+            case 3:
+                builder.sortBy(DbTasksHelper.ORDER);
                 break;
         }
 

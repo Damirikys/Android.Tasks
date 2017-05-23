@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".task_manager.main.view.TaskManagerActivity">
+
+    <item
+        android:id="@+id/action_export"
+        android:title="Экспорт"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_import"
+        android:title="Импорт"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_sync"
+        android:title="Синхронизация"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_generation"
+        android:title="Генерировать данные"
+        android:enabled="false"
+        app:showAsAction="never"/>
+
+</menu>

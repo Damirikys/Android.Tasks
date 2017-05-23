@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.urfu.taskmanager.task_manager.fragments.view.TaskListView;
+import ru.urfu.taskmanager.task_manager.main.fragments.view.TaskListView;
 
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter

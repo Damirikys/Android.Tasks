@@ -2,22 +2,32 @@ package ru.urfu.taskmanager.task_manager.main.view;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.transition.Fade;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,6 +38,7 @@ import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
@@ -35,28 +46,33 @@ import org.androidannotations.annotations.ViewById;
 import java.lang.reflect.Field;
 
 import ru.urfu.taskmanager.R;
-import ru.urfu.taskmanager.task_manager.fragments.view.TaskListActive;
-import ru.urfu.taskmanager.task_manager.fragments.view.TaskListCompleted;
+import ru.urfu.taskmanager.auth.models.User;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
+import ru.urfu.taskmanager.data.db.DbTasksHelper;
+import ru.urfu.taskmanager.data.network.sync_module.BroadcastSyncManager;
+import ru.urfu.taskmanager.task_manager.editor.view.EditorPagerFragment;
+import ru.urfu.taskmanager.task_manager.editor.view.TaskEditorFragment;
+import ru.urfu.taskmanager.task_manager.main.fragments.TaskPagerFragment;
+import ru.urfu.taskmanager.task_manager.main.fragments.helper.CursorProvider;
+import ru.urfu.taskmanager.task_manager.main.fragments.adapters.TasksListAdapter;
+import ru.urfu.taskmanager.task_manager.main.fragments.view.CustomTransition;
 import ru.urfu.taskmanager.task_manager.main.adapters.FiltersAdapter;
 import ru.urfu.taskmanager.task_manager.main.adapters.PermissionsAdapter;
 import ru.urfu.taskmanager.task_manager.main.adapters.SavedFiltersAdapter;
-import ru.urfu.taskmanager.task_manager.main.adapters.ViewPagerAdapter;
 import ru.urfu.taskmanager.task_manager.main.filter.FilterLayoutWrapper;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenter;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenterImpl;
-import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity;
-import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity_;
-import ru.urfu.taskmanager.utils.db.DbTasksFilter;
-import ru.urfu.taskmanager.utils.db.DbTasksHelper;
 import ru.urfu.taskmanager.utils.tools.DirectoryChooser;
+
+import static ru.urfu.taskmanager.task_manager.editor.view.EditorPagerFragment.EDITOR_PAGER_POSITION;
 
 @EActivity(R.layout.activity_task_list)
 public class TaskManagerActivity extends AppCompatActivity
-        implements TaskManager, MenuItemCompat.OnActionExpandListener, SearchView.OnQueryTextListener
+        implements TaskManager,
+        MenuItemCompat.OnActionExpandListener,
+        SearchView.OnQueryTextListener,
+        NavigationView.OnNavigationItemSelectedListener
 {
-    public static final String ACTION_CREATE = "ru.urfu.taskmanager.ACTION_CREATE";
-    public static final String ACTION_EDIT = "ru.urfu.taskmanager.ACTION_EDIT";
-
     public static final int REQUEST_CREATE = 1;
     public static final int REQUEST_EDIT = 2;
     public static final int REQUEST_IMPORT = 3;
@@ -69,8 +85,21 @@ public class TaskManagerActivity extends AppCompatActivity
         NORMAL, SEARCH, FILTER
     }
 
+    private BroadcastReceiver mBroadcastSyncManager;
     private FilterLayoutWrapper mFilterLayoutWrapper;
     private FiltersAdapter mAdapter;
+
+    @ViewById(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
+
+    @ViewById(R.id.nav_view)
+    NavigationView mNavigationView;
+
+    @ViewById(R.id.fragment_place)
+    FrameLayout mFragmentLayout;
+
+    @ViewById(R.id.nav_landscape_container)
+    FrameLayout mNavigationContainer;
 
     @ViewById(R.id.animate_progress_bar)
     AnimateHorizontalProgressBar mProgressBar;
@@ -78,20 +107,11 @@ public class TaskManagerActivity extends AppCompatActivity
     @ViewById(R.id.circleProgressBar)
     ProgressBar mCircleProgressBar;
 
-    @ViewById(R.id.viewpager)
-    ViewPager mViewPager;
-
-    @ViewById(R.id.tablayout)
-    TabLayout mTabLayout;
-
     @ViewById(R.id.toolbar)
     Toolbar mToolbar;
 
     @ViewById(R.id.filter_layout)
     View mFilterLayout;
-
-    @ViewById(R.id.fab)
-    FloatingActionButton floatingActionButton;
 
     ProgressDialog mProgressDialog;
     Spinner mSearchBySpinner;
@@ -101,30 +121,70 @@ public class TaskManagerActivity extends AppCompatActivity
     MenuItem mSearchSpinnerItem;
     MenuItem mFilterCatalogMenuItem;
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+    @AfterViews
+    public void initialize() {
+        onConfigurationChanged(getResources().getConfiguration());
+
+        mPresenter = new TaskManagerPresenterImpl(this);
+
         setupPermissionController();
-        initialize();
+        setupReceiver();
 
         mAdapter = new SavedFiltersAdapter(this, this::onApplyFilter);
         mFilterLayoutWrapper = new FilterLayoutWrapper(mFilterLayout)
                 .setFiltersAdapter(mAdapter)
                 .onSaveButtonClick(this::onSaveFilter)
                 .onApplyButtonClick(this::onApplyFilter);
-    }
 
-
-    private void initialize() {
-        mPresenter = new TaskManagerPresenterImpl(this);
 
         setSupportActionBar(mToolbar);
-        mViewPager.setOffscreenPageLimit(2);
-        setupViewPager(mViewPager);
-        mTabLayout.setupWithViewPager(mViewPager);
-
         mProgressDialog = new ProgressDialog(this);
-        floatingActionButton.setOnClickListener(this);
+        mNavigationView.setNavigationItemSelectedListener(this);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_place, TaskPagerFragment.newInstance(new Bundle()))
+                .commit();
+
+        showAlert("USER_ID: " + User.getActiveUser().getUserId());
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            mNavigationContainer.removeAllViews();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+            NavigationView navigationView = new NavigationView(this);
+            navigationView.inflateMenu(R.menu.nav_menu_bar);
+            navigationView.setNavigationItemSelectedListener(this);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                navigationView.setElevation(1f);
+            }
+
+            mNavigationContainer.addView(navigationView);
+        }
+    }
+
+    private void setupReceiver() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(BroadcastSyncManager.SYNC_ASK_ACTION);
+        filter.addAction(BroadcastSyncManager.SYNC_SUCCESS_ACTION);
+        filter.addAction(BroadcastSyncManager.SYNC_FAILED_ACTION);
+        filter.addAction(BroadcastSyncManager.SYNC_START_ACTION);
+        filter.addAction(BroadcastSyncManager.SYNC_SCHEDULE_ACTION);
+
+        mBroadcastSyncManager = new BroadcastSyncManager(this) {
+            @Override
+            public void onStopSync() {
+                mPresenter.applyFilter(DbTasksFilter.DEFAULT_BUILDER);
+            }
+        };
+
+        registerReceiver(mBroadcastSyncManager, filter);
     }
 
     private void setupPermissionController() {
@@ -147,15 +207,6 @@ public class TaskManagerActivity extends AppCompatActivity
                 .check();
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.add(mPresenter.bindView(new TaskListActive()), getString(R.string.active_tasks_title));
-        adapter.add(mPresenter.bindView(new TaskListCompleted()), getString(R.string.completed_tasks_title));
-
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(0);
-    }
-
     private void startToolbarMode(ToolbarMode startedToolbarMode) {
         switch (startedToolbarMode) {
             case FILTER:
@@ -164,8 +215,7 @@ public class TaskManagerActivity extends AppCompatActivity
                 mSearchSpinnerItem.setVisible(false);
                 mFilterCatalogMenuItem.setVisible(true);
 
-                mViewPager.setVisibility(View.INVISIBLE);
-                mTabLayout.setVisibility(View.INVISIBLE);
+                mFragmentLayout.setVisibility(View.INVISIBLE);
                 mFilterLayout.setVisibility(View.VISIBLE);
 
                 mToolbar.setTitle(getString(R.string.toolbar_filter_title));
@@ -186,8 +236,7 @@ public class TaskManagerActivity extends AppCompatActivity
                 mSearchSpinnerItem.setVisible(false);
                 mFilterCatalogMenuItem.setVisible(false);
 
-                mViewPager.setVisibility(View.VISIBLE);
-                mTabLayout.setVisibility(View.VISIBLE);
+                mFragmentLayout.setVisibility(View.VISIBLE);
                 mFilterLayout.setVisibility(View.GONE);
 
                 mFilterMenuItem.setIcon(R.drawable.ic_sort);
@@ -237,7 +286,6 @@ public class TaskManagerActivity extends AppCompatActivity
         swapFilterLayout();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_task_list, menu);
@@ -268,11 +316,26 @@ public class TaskManagerActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMPORT && resultCode == RESULT_OK) {
+            mPresenter.importData(data.getData());
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_filter:
                 swapFilterLayout();
                 break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.action_export:
                 startDirectoryChooser();
                 break;
@@ -285,9 +348,17 @@ public class TaskManagerActivity extends AppCompatActivity
             case R.id.action_generation:
                 generateBigData();
                 break;
+            case R.id.action_sync:
+                syncData();
+                break;
         }
 
-        return super.onOptionsItemSelected(item);
+        return false;
+    }
+
+    @Override
+    public void syncData() {
+        sendBroadcast(new Intent(BroadcastSyncManager.SYNC_START_ACTION));
     }
 
     private void generateBigData() {
@@ -331,28 +402,48 @@ public class TaskManagerActivity extends AppCompatActivity
         return true;
     }
 
-
     @Override
-    public void startEditor(int id) {
-        Intent intent = new Intent(this, TaskEditorActivity_.class);
-        intent.setAction(ACTION_EDIT);
-        intent.putExtra(DbTasksHelper.ID, id);
-        startActivityForResult(intent, REQUEST_EDIT);
+    public TaskManagerPresenter getPresenter() {
+        return mPresenter;
     }
 
     @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(this, TaskEditorActivity_.class);
-        intent.setAction(ACTION_CREATE);
-        startActivityForResult(intent, REQUEST_CREATE);
+    public FilterLayoutWrapper getFilterLayoutWrapper() {
+        return mFilterLayoutWrapper;
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        mPresenter.onResult(requestCode, resultCode, data);
-    }
+    public void startEditor(@Nullable Integer position, CursorProvider adapter, TasksListAdapter.ViewHolder holder) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(EDITOR_PAGER_POSITION, position);
 
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        Fragment editorFragment;
+
+        if (position == null) {
+            editorFragment = TaskEditorFragment.newInstance(bundle);
+        } else {
+            editorFragment = EditorPagerFragment.newInstance(bundle, adapter);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && holder != null) {
+                editorFragment.setSharedElementEnterTransition(new CustomTransition());
+                editorFragment.setSharedElementReturnTransition(new CustomTransition());
+                editorFragment.setEnterTransition(new Fade(Fade.IN));
+                editorFragment.setExitTransition(new Fade(Fade.OUT));
+
+                getSupportFragmentManager().getFragments().get(0)
+                        .setEnterTransition(new Fade(Fade.IN));
+                getSupportFragmentManager().getFragments().get(0)
+                        .setExitTransition(new Fade(Fade.OUT));
+
+                transaction.addSharedElement(holder.ttl, "timeBlock_" + position);
+            }
+        }
+
+        transaction.replace(R.id.fragment_place, editorFragment)
+            .addToBackStack(null)
+            .commit();
+    }
 
     @UiThread
     public void startProgressIndicator(int max) {
@@ -372,8 +463,6 @@ public class TaskManagerActivity extends AppCompatActivity
 
     @UiThread
     public void showProgress(String title, String message) {
-        if (mProgressDialog.isShowing()) return;
-
         mProgressDialog.setTitle(title);
         mProgressDialog.setMessage(message);
         mProgressDialog.setCancelable(false);
@@ -383,14 +472,14 @@ public class TaskManagerActivity extends AppCompatActivity
 
     @UiThread
     public void showProgress() {
-        mViewPager.setVisibility(View.GONE);
+        mFragmentLayout.setVisibility(View.INVISIBLE);
         mCircleProgressBar.setVisibility(View.VISIBLE);
     }
 
     @UiThread
     public void hideProgress() {
         mCircleProgressBar.setVisibility(View.GONE);
-        mViewPager.setVisibility(View.VISIBLE);
+        mFragmentLayout.setVisibility(View.VISIBLE);
         if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
     }
 
@@ -399,10 +488,10 @@ public class TaskManagerActivity extends AppCompatActivity
         Snackbar.make(getWindow().getDecorView(), message, SNACKBAR_SHOW_TIME).show();
     }
 
-
     @Override
     protected void onDestroy() {
         mPresenter.onDestroy();
+        unregisterReceiver(mBroadcastSyncManager);
         super.onDestroy();
     }
 }
