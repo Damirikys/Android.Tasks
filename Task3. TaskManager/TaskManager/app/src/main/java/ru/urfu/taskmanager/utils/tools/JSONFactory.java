@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 public class JSONFactory
 {
@@ -16,5 +17,9 @@ public class JSONFactory
 
     public static <T> T fromJson(String json, Class<T> _class) throws IOException {
         return gson.fromJson(json, _class);
+    }
+
+    public static <T> T fromJson(String json, Type type) throws IOException {
+        return gson.fromJson(json, type);
     }
 }

@@ -15,7 +15,7 @@ public final class TimeUtils
     private static final SimpleDateFormat sFormatter = new SimpleDateFormat("dd.MM.yyyy", sLocale);
 
     public static HoursAndMinutes getHoursAndMinutesFromUnix(long timestamp) {
-        Calendar calendar = new GregorianCalendar();
+        Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timestamp);
 
         HoursAndMinutes time = new HoursAndMinutes();

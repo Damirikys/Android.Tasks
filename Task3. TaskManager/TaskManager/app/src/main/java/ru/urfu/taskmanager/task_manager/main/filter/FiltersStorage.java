@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import ru.urfu.taskmanager.utils.db.DbTasksFilter;
+import ru.urfu.taskmanager.data.db.DbTasksFilter;
 import ru.urfu.taskmanager.utils.tools.JSONFactory;
 
 public final class FiltersStorage

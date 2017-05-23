@@ -30,20 +30,4 @@
         app:actionLayout="@layout/toolbar_search_spinner"
         app:showAsAction="always"/>
 
-
-    <item
-        android:id="@+id/action_export"
-        android:title="Экспорт"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/action_import"
-        android:title="Импорт"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/action_generation"
-        android:title="Генерировать данные"
-        app:showAsAction="never"/>
-
 </menu>
