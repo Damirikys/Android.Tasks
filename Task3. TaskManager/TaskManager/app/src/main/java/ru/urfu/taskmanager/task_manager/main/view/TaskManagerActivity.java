@@ -1,8 +1,10 @@
 package ru.urfu.taskmanager.task_manager.main.view;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
@@ -16,19 +18,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daasuu.ahp.AnimateHorizontalProgressBar;
 import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.UiThread;
+import org.androidannotations.annotations.ViewById;
+
 import java.lang.reflect.Field;
-import java.util.List;
 
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.task_manager.fragments.view.TaskListActive;
@@ -41,12 +45,12 @@ import ru.urfu.taskmanager.task_manager.main.filter.FilterLayoutWrapper;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenter;
 import ru.urfu.taskmanager.task_manager.main.presenter.TaskManagerPresenterImpl;
 import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity;
-import ru.urfu.taskmanager.utils.db.TasksDatabase;
-import ru.urfu.taskmanager.utils.db.TasksDatabaseHelper;
-import ru.urfu.taskmanager.utils.db.TasksFilter;
+import ru.urfu.taskmanager.task_manager.task_editor.view.TaskEditorActivity_;
+import ru.urfu.taskmanager.utils.db.DbTasksFilter;
+import ru.urfu.taskmanager.utils.db.DbTasksHelper;
 import ru.urfu.taskmanager.utils.tools.DirectoryChooser;
-import ru.urfu.taskmanager.utils.tools.JSONFactory;
 
+@EActivity(R.layout.activity_task_list)
 public class TaskManagerActivity extends AppCompatActivity
         implements TaskManager, MenuItemCompat.OnActionExpandListener, SearchView.OnQueryTextListener
 {
@@ -59,8 +63,6 @@ public class TaskManagerActivity extends AppCompatActivity
 
     public static final int SNACKBAR_SHOW_TIME = 2000;
 
-    public static final String EXPORTED_FILE_NAME = "itemlist.ili";
-
     private TaskManagerPresenter mPresenter;
 
     private enum ToolbarMode {
@@ -70,34 +72,42 @@ public class TaskManagerActivity extends AppCompatActivity
     private FilterLayoutWrapper mFilterLayoutWrapper;
     private FiltersAdapter mAdapter;
 
-    private ViewPager mViewPager;
-    private TabLayout mTabLayout;
-    private Toolbar mToolbar;
-    private Spinner mSearchBySpinner;
-    private View mFilterLayout;
+    @ViewById(R.id.animate_progress_bar)
+    AnimateHorizontalProgressBar mProgressBar;
 
-    private MenuItem mSearchMenuItem;
-    private MenuItem mFilterMenuItem;
-    private MenuItem mSearchSpinnerItem;
-    private MenuItem mFilterCatalogMenuItem;
+    @ViewById(R.id.circleProgressBar)
+    ProgressBar mCircleProgressBar;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_task_list);
-        setupPermissionController();
+    @ViewById(R.id.viewpager)
+    ViewPager mViewPager;
 
-        mPresenter = new TaskManagerPresenterImpl(this);
+    @ViewById(R.id.tablayout)
+    TabLayout mTabLayout;
 
-        initView();
-    }
+    @ViewById(R.id.toolbar)
+    Toolbar mToolbar;
+
+    @ViewById(R.id.filter_layout)
+    View mFilterLayout;
+
+    @ViewById(R.id.fab)
+    FloatingActionButton floatingActionButton;
+
+    ProgressDialog mProgressDialog;
+    Spinner mSearchBySpinner;
+
+    MenuItem mSearchMenuItem;
+    MenuItem mFilterMenuItem;
+    MenuItem mSearchSpinnerItem;
+    MenuItem mFilterCatalogMenuItem;
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        setupPermissionController();
+        initialize();
 
         mAdapter = new SavedFiltersAdapter(this, this::onApplyFilter);
-
         mFilterLayoutWrapper = new FilterLayoutWrapper(mFilterLayout)
                 .setFiltersAdapter(mAdapter)
                 .onSaveButtonClick(this::onSaveFilter)
@@ -105,20 +115,16 @@ public class TaskManagerActivity extends AppCompatActivity
     }
 
 
-    private void initView() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+    private void initialize() {
+        mPresenter = new TaskManagerPresenterImpl(this);
 
-        mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        setSupportActionBar(mToolbar);
         mViewPager.setOffscreenPageLimit(2);
         setupViewPager(mViewPager);
-
-        mTabLayout = (TabLayout) findViewById(R.id.tablayout);
         mTabLayout.setupWithViewPager(mViewPager);
 
-        findViewById(R.id.fab).setOnClickListener(this);
-
-        mFilterLayout = findViewById(R.id.filter_layout);
+        mProgressDialog = new ProgressDialog(this);
+        floatingActionButton.setOnClickListener(this);
     }
 
     private void setupPermissionController() {
@@ -200,23 +206,7 @@ public class TaskManagerActivity extends AppCompatActivity
     }
 
     private void startDirectoryChooser() {
-        new DirectoryChooser(this,
-                dir ->
-                {
-                    String json = JSONFactory.toJson(TasksDatabase.getInstance().getAllEntries(), List.class);
-                    File itemList = new File(dir, EXPORTED_FILE_NAME);
-                    try {
-                        FileOutputStream fos = new FileOutputStream(itemList);
-                        fos.write(json.getBytes());
-                        fos.close();
-                        Snackbar.make(getWindow().getDecorView(),
-                                getString(R.string.task_successful_export) + " " + itemList.getAbsolutePath(), SNACKBAR_SHOW_TIME)
-                                .show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Snackbar.make(getWindow().getDecorView(), getString(R.string.task_export_failed), SNACKBAR_SHOW_TIME).show();
-                    }
-                }, null);
+        new DirectoryChooser(this, dir -> mPresenter.exportData(dir), null);
     }
 
     private void sendImportRequest() {
@@ -225,7 +215,7 @@ public class TaskManagerActivity extends AppCompatActivity
         startActivityForResult(intent, REQUEST_IMPORT);
     }
 
-    private void onSaveFilter(TasksFilter.Builder builder) {
+    private void onSaveFilter(DbTasksFilter.Builder builder) {
         EditText filterNameEditText = new EditText(this);
         new BottomDialog.Builder(this)
                 .setTitle(getString(R.string.entry_filter_name))
@@ -242,7 +232,7 @@ public class TaskManagerActivity extends AppCompatActivity
                 }).show();
     }
 
-    private void onApplyFilter(TasksFilter.Builder builder) {
+    private void onApplyFilter(DbTasksFilter.Builder builder) {
         mPresenter.applyFilter(builder);
         swapFilterLayout();
     }
@@ -292,9 +282,16 @@ public class TaskManagerActivity extends AppCompatActivity
             case R.id.action_saved_filters:
                 mFilterLayoutWrapper.swapFilterList();
                 break;
+            case R.id.action_generation:
+                generateBigData();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void generateBigData() {
+        mPresenter.generateBigData();
     }
 
     @Override
@@ -303,10 +300,10 @@ public class TaskManagerActivity extends AppCompatActivity
             if (!newText.isEmpty()) {
                 switch (mSearchBySpinner.getSelectedItemPosition()) {
                     case 0:
-                        builder.startsWith(TasksDatabaseHelper.TITLE, newText);
+                        builder.match(DbTasksHelper.TITLE, newText);
                         break;
                     case 1:
-                        builder.startsWith(TasksDatabaseHelper.DESCRIPTION, newText);
+                        builder.match(DbTasksHelper.DESCRIPTION, newText);
                         break;
                 }
             }
@@ -337,15 +334,15 @@ public class TaskManagerActivity extends AppCompatActivity
 
     @Override
     public void startEditor(int id) {
-        Intent intent = new Intent(this, TaskEditorActivity.class);
+        Intent intent = new Intent(this, TaskEditorActivity_.class);
         intent.setAction(ACTION_EDIT);
-        intent.putExtra(TasksDatabaseHelper.ID, id);
+        intent.putExtra(DbTasksHelper.ID, id);
         startActivityForResult(intent, REQUEST_EDIT);
     }
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(this, TaskEditorActivity.class);
+        Intent intent = new Intent(this, TaskEditorActivity_.class);
         intent.setAction(ACTION_CREATE);
         startActivityForResult(intent, REQUEST_CREATE);
     }
@@ -356,8 +353,56 @@ public class TaskManagerActivity extends AppCompatActivity
         mPresenter.onResult(requestCode, resultCode, data);
     }
 
-    @Override
+
+    @UiThread
+    public void startProgressIndicator(int max) {
+        mProgressBar.setVisibility(View.VISIBLE);
+        mProgressBar.setMax(max);
+    }
+
+    @UiThread
+    public void setProgressIndicatorValue(int value) {
+        mProgressBar.setProgressWithAnim(value);
+    }
+
+    @UiThread
+    public void stopProgressIndicator() {
+        mProgressBar.setVisibility(View.GONE);
+    }
+
+    @UiThread
+    public void showProgress(String title, String message) {
+        if (mProgressDialog.isShowing()) return;
+
+        mProgressDialog.setTitle(title);
+        mProgressDialog.setMessage(message);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.show();
+    }
+
+    @UiThread
+    public void showProgress() {
+        mViewPager.setVisibility(View.GONE);
+        mCircleProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @UiThread
+    public void hideProgress() {
+        mCircleProgressBar.setVisibility(View.GONE);
+        mViewPager.setVisibility(View.VISIBLE);
+        if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
+    }
+
+    @UiThread
     public void showAlert(String message) {
         Snackbar.make(getWindow().getDecorView(), message, SNACKBAR_SHOW_TIME).show();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        mPresenter.onDestroy();
+        super.onDestroy();
     }
 }

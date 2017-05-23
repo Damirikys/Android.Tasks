@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ru.urfu.taskmanager.R;
+import ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity;
 
 public class DirectoryChooser implements AdapterView.OnItemClickListener, DialogInterface.OnClickListener
 {

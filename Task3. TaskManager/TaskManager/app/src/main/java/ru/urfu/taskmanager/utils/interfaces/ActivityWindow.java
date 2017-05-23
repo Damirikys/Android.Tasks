@@ -7,5 +7,7 @@ public interface ActivityWindow
 {
     Context getBaseContext();
 
+    Context getApplicationContext();
+
     Resources getResources();
 }

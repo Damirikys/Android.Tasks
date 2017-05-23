@@ -1,27 +1,20 @@
 package ru.urfu.taskmanager.utils.tools;
 
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 
 public class JSONFactory
 {
-    private static final Moshi sMoshi = new Moshi.Builder().build();
+    private static final Gson gson = new GsonBuilder().create();
 
     public static <T> String toJson(T object, Class<T> _class) {
-        JsonAdapter<T> jsonAdapter = sMoshi.adapter(_class);
-        return jsonAdapter.toJson(object);
+        return gson.toJson(object, _class);
     }
+
 
     public static <T> T fromJson(String json, Class<T> _class) throws IOException {
-        JsonAdapter<T> jsonAdapter = sMoshi.adapter(_class);
-        return jsonAdapter.fromJson(json);
-    }
-
-    public static <T> T fromJson(String json, Type type) throws IOException {
-        JsonAdapter<T> jsonAdapter = sMoshi.adapter(type);
-        return jsonAdapter.fromJson(json);
+        return gson.fromJson(json, _class);
     }
 }

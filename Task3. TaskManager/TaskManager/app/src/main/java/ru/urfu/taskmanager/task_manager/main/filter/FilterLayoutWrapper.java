@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 
 import ru.urfu.taskmanager.task_manager.main.adapters.FiltersAdapter;
-import ru.urfu.taskmanager.utils.db.TasksFilter;
+import ru.urfu.taskmanager.utils.db.DbTasksFilter;
 
 public class FilterLayoutWrapper
 {
@@ -44,6 +44,6 @@ public class FilterLayoutWrapper
 
 
     public interface OnFilterAction {
-        void onAction(TasksFilter.Builder builder);
+        void onAction(DbTasksFilter.Builder builder);
     }
 }

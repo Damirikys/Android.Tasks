@@ -42,6 +42,20 @@
     <string name="descendyngly">Убыванию</string>
     <string name="ascending">Возрастанию</string>
     <string name="today">Сегодня</string>
+    <string name="url_to_image">Ссылка на изображение</string>
+    <string name="data_generate_started">Генерация данных началась</string>
+    <string name="data_generate">Генерация данных</string>
+    <string name="generated">Сгенерировано</string>
+    <string name="data_is_generated">Данные сгенерированы</string>
+    <string name="please_wait">Подождите…</string>
+    <string name="data_is_imported">Данные импортируются</string>
+    <string name="data_import">Импорт данных</string>
+    <string name="data_export">Экспорт данных</string>
+    <string name="please_wait_data_is_imported">Подождите, данные импортируются…</string>
+    <string name="data_is_saved">Данные сохраняются…</string>
+    <string name="data_collection_started">Сбор данных начался</string>
+    <string name="data_collected">Собрано данных</string>
+    <string name="could_not_load_image">Не удалось загрузить изображение</string>
 
     <string-array name="sorting">
         <item>Выполнения</item>

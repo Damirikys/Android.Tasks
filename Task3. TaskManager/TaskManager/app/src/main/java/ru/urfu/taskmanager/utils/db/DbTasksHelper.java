@@ -4,9 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class TasksDatabaseHelper extends SQLiteOpenHelper
+public class DbTasksHelper extends SQLiteOpenHelper
 {
-    public static final String DATABASE_NAME = "TasksDatabase";
+    public static final String DATABASE_NAME = "DbTasks";
     public static final String TABLE_NAME = "tasks";
     public static final int DATABASE_VERSION = 1;
 
@@ -18,8 +18,9 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper
     public static final String TIME_EDITED = "_time_edited";
     public static final String DECORATE_COLOR = "_decorate_color";
     public static final String COMPLETED = "_completed";
+    public static final String IMAGE_URL = "_img_url";
 
-    public TasksDatabaseHelper(Context context) {
+    public DbTasksHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -32,6 +33,7 @@ public class TasksDatabaseHelper extends SQLiteOpenHelper
                 TTL + " text," +
                 TIME_CREATED + " text," +
                 TIME_EDITED + " text," +
+                IMAGE_URL + " text," +
                 DECORATE_COLOR + " integer," +
                 COMPLETED + " integer" + ")"
         );
