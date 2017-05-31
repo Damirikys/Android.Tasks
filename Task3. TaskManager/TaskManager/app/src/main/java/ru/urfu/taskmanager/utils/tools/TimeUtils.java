@@ -6,16 +6,26 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public final class TimeUtils
 {
-    private static final Locale sLocale = new Locale("ru");
-    private static final SimpleDateFormat sFormatter = new SimpleDateFormat("dd.MM.yyyy", sLocale);
+    private static final Locale LOCALE = new Locale("ru");
+    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("dd.MM.yyyy", LOCALE);
+    private static final String[] MONTHS_NAMES = {
+            "января", "февраля", "марта",
+            "апреля", "мая", "июня",
+            "июля", "августа", "сентября",
+            "октября", "ноября", "декабря"
+    };
 
-    public static HoursAndMinutes getHoursAndMinutesFromUnix(long timestamp) {
+    private TimeUtils() {}
+
+    public synchronized static HoursAndMinutes getHoursAndMinutesFromUnix(long timestamp) {
         Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.setLenient(false);
+
         calendar.setTimeInMillis(timestamp);
 
         HoursAndMinutes time = new HoursAndMinutes();
@@ -25,30 +35,27 @@ public final class TimeUtils
         return time;
     }
 
-    public static String format(Calendar date) {
-        String[] newMonths = {"января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"};
-        DateFormatSymbols dfs = DateFormatSymbols.getInstance(sLocale);
-        dfs.setMonths(newMonths);
+    public synchronized static String format(Calendar date) {
+        DateFormatSymbols dfs = DateFormatSymbols.getInstance(LOCALE);
+        dfs.setMonths(MONTHS_NAMES);
 
-        DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, sLocale);
+        DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, LOCALE);
         SimpleDateFormat sdf = (SimpleDateFormat) df;
         sdf.setDateFormatSymbols(dfs);
 
         Date jud = null;
-        try {
-            jud = sFormatter.parse(sFormatter.format(date.getTime()));
-        } catch (ParseException ignored) {
-        }
+        try { jud = FORMATTER.parse(FORMATTER.format(date.getTime())); }
+        catch (ParseException ignored) {}
 
         return sdf.format(jud); // output: 28 февраля 2014 г.
     }
 
-    public static Date parse(String text) throws ParseException {
-        return sFormatter.parse(text);
+    public synchronized static Date parse(String text) throws ParseException {
+        return FORMATTER.parse(text);
     }
 
-    public static String format(Date date) {
-        return sFormatter.format(date);
+    public synchronized static String format(Date date) {
+        return FORMATTER.format(date);
     }
 
     public static class HoursAndMinutes

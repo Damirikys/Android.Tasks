@@ -28,9 +28,10 @@ public class TaskListCompleted extends TaskListFragment
 
     @Override
     protected TasksListAdapter getAdapter() {
-        mManager.getFilterLayoutWrapper().onCompileFilter(builder -> filter = builder.setType(DbTasksFilter.COMPLETED_TASK)
-                .sortBy(DbTasksHelper.TTL)
-                .build());
+        mManager.getFilterLayoutWrapper().onCompileFilter(builder ->
+                filter = builder.setType(DbTasksFilter.COMPLETED_TASK)
+                        .sortBy(DbTasksHelper.TTL)
+                        .build());
 
         return new TasksListAdapter(this, filter);
     }
@@ -43,7 +44,7 @@ public class TaskListCompleted extends TaskListFragment
 
         popup.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
-                case R.id.restore_the_task: {
+                case R.id.restore_the_task:
                     mManager.getPresenter().restoreTheTask(
                             (int) id, (date, entry) ->
                                     new SingleDateAndTimePickerDialog.Builder(getContext())
@@ -55,7 +56,6 @@ public class TaskListCompleted extends TaskListFragment
                                             .build()
                                             .display()
                     );
-                }
                 break;
             }
 

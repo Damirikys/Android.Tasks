@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
              xmlns:tools="http://schemas.android.com/tools"
+             android:id="@+id/task_editor_scrollview"
              android:background="@color/white"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
@@ -16,7 +17,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="56dp"
                 android:orientation="vertical">
 
                 <ru.urfu.taskmanager.color_picker.PickerView
@@ -39,7 +39,7 @@
                         android:layout_height="46dp"
                         android:layout_margin="8dp"
                         android:gravity="center"
-                        android:text="00:00"
+                        android:text="@string/_00_00"
                         android:textColor="#fff"
                         android:textSize="12sp"
                         tools:ignore="UnusedAttribute"/>
@@ -48,6 +48,7 @@
                         android:id="@+id/title_input_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_marginLeft="12dp"
                         android:layout_marginTop="6dp">
 
@@ -91,7 +92,8 @@
                         android:id="@+id/image_url_input_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="16dp">
+                        android:layout_marginRight="16dp"
+                        android:layout_marginEnd="16dp">
 
                         <android.support.design.widget.TextInputEditText
                             android:id="@+id/image_url_edit_field"
@@ -108,7 +110,8 @@
                         android:background="@color/lite_gray"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:scaleType="centerCrop"/>
+                        android:scaleType="centerCrop"
+                        android:contentDescription="@string/image_from_web"/>
 
                 </LinearLayout>
 

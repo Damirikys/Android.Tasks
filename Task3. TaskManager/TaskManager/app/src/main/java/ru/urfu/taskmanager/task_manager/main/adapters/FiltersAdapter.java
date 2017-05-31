@@ -5,6 +5,7 @@ import android.widget.ListAdapter;
 
 import ru.urfu.taskmanager.data.db.DbTasksFilter;
 
+@SuppressWarnings("unused")
 public interface FiltersAdapter extends ListAdapter, AdapterView.OnItemClickListener
 {
     void addItem(String name, DbTasksFilter.Builder builder);

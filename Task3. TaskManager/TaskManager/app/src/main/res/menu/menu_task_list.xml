@@ -8,14 +8,14 @@
         android:icon="@drawable/ic_search"
         android:title="@android:string/search_go"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="always|collapseActionView"/>
+        app:showAsAction="ifRoom|collapseActionView"/>
 
     <item
         android:id="@+id/action_saved_filters"
         android:icon="@drawable/ic_grade"
-        android:title="Сохраненные фильтры"
+        android:title="@string/saved_filters"
         android:visible="false"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_filter"
@@ -25,7 +25,7 @@
 
     <item
         android:id="@+id/search_spinner"
-        android:title="Фильтр поиска"
+        android:title="@string/search_filter"
         android:visible="false"
         app:actionLayout="@layout/toolbar_search_spinner"
         app:showAsAction="always"/>

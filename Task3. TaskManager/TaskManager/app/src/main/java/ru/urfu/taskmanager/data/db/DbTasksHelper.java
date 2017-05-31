@@ -6,9 +6,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbTasksHelper extends SQLiteOpenHelper
 {
-    public static final String DATABASE_NAME = "DbTasks";
+    private static final String DATABASE_NAME = "DbTasks";
     public static final String TABLE_NAME = "tasks";
-    public static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 1;
 
     public static final String ID = "_id";
     public static final String ORDER = "_order";

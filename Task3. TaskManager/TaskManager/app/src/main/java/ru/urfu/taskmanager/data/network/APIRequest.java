@@ -21,27 +21,13 @@ public class APIRequest<T>
     private HttpUriRequest request;
     private Type parseType;
 
-    public APIRequest(HttpUriRequest request) {
+    APIRequest(HttpUriRequest request) {
         this.request = request;
     }
 
-    public APIRequest(HttpUriRequest request, Type type) {
+    APIRequest(HttpUriRequest request, Type type) {
         this.request = request;
         this.parseType = type;
-    }
-
-    public void send() {
-        send(new APICallbackInterface<T>()
-        {
-            @Override
-            public void onResponse(APIResponse<T> response) {
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                t.printStackTrace();
-            }
-        });
     }
 
     public void send(APICallbackInterface<T> cb)
@@ -73,7 +59,8 @@ public class APIRequest<T>
 
                     if (parseType != null) {
                         apiResponse = JSONFactory.fromJson(stringBuilder.toString(),
-                                TypeToken.getParameterized(APIResponse.class, parseType).getType());
+                                TypeToken.getParameterized(APIResponse.class, parseType)
+                                        .getType());
                     } else {
                         apiResponse = JSONFactory.fromJson(stringBuilder.toString(),
                                 new TypeToken<APIResponse<T>>(){}.getType());
@@ -86,10 +73,12 @@ public class APIRequest<T>
                     if (apiResponse.getStatus().equals(APIResponse.STATUS_OK)) {
                         cb.onResponse(apiResponse);
                     } else {
-                        cb.onFailure(new NetworkErrorException("The server response is different than expected."));
+                        cb.onFailure(new NetworkErrorException(
+                                "The server response is different than expected."));
                     }
                 } else {
-                    cb.onFailure(new NetworkErrorException("The server did not receive a reply."));
+                    cb.onFailure(new NetworkErrorException(
+                            "The server did not receive a reply."));
                 }
             }
             catch (IOException | ParseException e)

@@ -25,9 +25,9 @@ public abstract class BroadcastSyncManager extends BroadcastReceiver
 {
     public static final String SYNC_AT_FIRST_TIME_KEY = "ru.urfu.taskmanager.SYNC_AT_FIRST_TIME_KEY";
 
-    public static final int SYNC_SCHEDULED = 1;
-    public static final int SYNC_NOT_SCHEDULED = 2;
-    public static final int SYNC_AT_FIRST_TIME = 3;
+    private static final int SYNC_SCHEDULED = 1;
+    private static final int SYNC_NOT_SCHEDULED = 2;
+    private static final int SYNC_AT_FIRST_TIME = 3;
 
     public static final String SYNC_SCHEDULE_ACTION = "ru.urfu.taskmanager.SYNC_SCHEDULE_ACTION";
     public static final String SYNC_SUCCESS_ACTION = "ru.urfu.taskmanager.SYNC_SUCCESS_ACTION";
@@ -35,7 +35,7 @@ public abstract class BroadcastSyncManager extends BroadcastReceiver
     public static final String SYNC_START_ACTION = "ru.urfu.taskmanager.SYNC_START_ACTION";
     public static final String SYNC_ASK_ACTION = "ru.urfu.taskmanager.SYNC_ASK_ACTION";
 
-    public static final String REPOSITORY_NAME = "ru.urfu.taskmanager.API_SYNC";
+    private static final String REPOSITORY_NAME = "ru.urfu.taskmanager.API_SYNC";
 
     private Context mContext;
     private MergeConflictsSolver mMergeConflictsSolver;
@@ -74,7 +74,7 @@ public abstract class BroadcastSyncManager extends BroadcastReceiver
         }
     }
 
-    public final void startConflictsSolver(TaskEntryCouples mergeCouples) {
+    private void startConflictsSolver(TaskEntryCouples mergeCouples) {
 
         mMergeConflictsSolver = new MergeConflictsSolver(mContext, mergeCouples);
 

@@ -43,7 +43,7 @@ public class DbTasksFilter implements DbFilter
     }
 
     public String[] getColumns() {
-        return null;
+        return new String[0];
     }
 
     public String getWhereClause() {
@@ -59,7 +59,7 @@ public class DbTasksFilter implements DbFilter
     }
 
     public String[] getSelectionArgs() {
-        return null;
+        return new String[0];
     }
 
     public String getGroupBy() {
@@ -149,11 +149,6 @@ public class DbTasksFilter implements DbFilter
         public Builder fromColor(int color) {
             mFilter.mWhereClause.add(DbTasksHelper.DECORATE_COLOR + "=" + String.valueOf(color));
 
-            return this;
-        }
-
-        public Builder groupBy(String type) {
-            mFilter.mGroupBy.add(type);
             return this;
         }
 

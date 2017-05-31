@@ -5,22 +5,22 @@
 
     <item
         android:id="@+id/action_export"
-        android:title="Экспорт"
+        android:title="@string/export_title"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_import"
-        android:title="Импорт"
+        android:title="@string/import_title"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_sync"
-        android:title="Синхронизация"
+        android:title="@string/sync_title"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_generation"
-        android:title="Генерировать данные"
+        android:title="@string/generate_data"
         android:enabled="false"
         app:showAsAction="never"/>
 

@@ -21,12 +21,16 @@ public class EditorPagerFragment extends TaskPagerFragment
 {
     public static final String EDITOR_PAGER_POSITION = "ru.urfu.taskmanager.task_manager.editor.EDITOR_PAGER_POSITION";
 
-    CursorProvider mDataAdapter;
-    DbTasks mDatabase;
+    private CursorProvider mDataAdapter;
+    private DbTasks mDatabase;
 
-    private EditorPagerFragment(CursorProvider adapter) {
-        mDataAdapter = adapter;
+    public EditorPagerFragment() {
         mDatabase = DbTasks.getInstance();
+    }
+
+    public EditorPagerFragment bindCursorProvider(CursorProvider provider) {
+        mDataAdapter = provider;
+        return this;
     }
 
     @Override
@@ -44,8 +48,8 @@ public class EditorPagerFragment extends TaskPagerFragment
         return new EditorPagerAdapter(getChildFragmentManager());
     }
 
-    public static EditorPagerFragment newInstance(Bundle args, CursorProvider adapter) {
-        EditorPagerFragment fragment = new EditorPagerFragment(adapter);
+    public static EditorPagerFragment newInstance(Bundle args) {
+        EditorPagerFragment fragment = new EditorPagerFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,7 +58,7 @@ public class EditorPagerFragment extends TaskPagerFragment
     {
         private Cursor cursor;
 
-        public EditorPagerAdapter(FragmentManager fm) {
+        EditorPagerAdapter(FragmentManager fm) {
             super(fm);
             cursor = (mDataAdapter != null)
                     ? mDataAdapter.getCursor()

@@ -2,9 +2,6 @@ package ru.urfu.taskmanager.data.network;
 
 import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
-import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import cz.msebera.android.httpclient.client.methods.HttpDelete;

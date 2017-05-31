@@ -2,6 +2,7 @@ package ru.urfu.taskmanager.data.network;
 
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("unused")
 public class APIResponse<T>
 {
     public static final String STATUS_OK = "ok";

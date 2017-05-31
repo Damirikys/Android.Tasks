@@ -20,5 +20,5 @@ public interface TaskEditor extends View.OnClickListener, PickerViewStateListene
 
     void showDescriptionError(String string);
 
-    void exit(int result);
+    void exit();
 }

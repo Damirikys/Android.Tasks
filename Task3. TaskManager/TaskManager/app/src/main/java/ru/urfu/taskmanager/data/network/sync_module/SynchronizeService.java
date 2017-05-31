@@ -7,7 +7,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
@@ -20,7 +19,6 @@ import ru.urfu.taskmanager.task_manager.models.TaskEntryCouples;
 import ru.urfu.taskmanager.data.network.APICallback;
 import ru.urfu.taskmanager.data.network.APIResponse;
 import ru.urfu.taskmanager.data.network.APIService;
-import ru.urfu.taskmanager.utils.interfaces.Callback;
 import ru.urfu.taskmanager.utils.interfaces.Thenable;
 
 public class SynchronizeService extends Service implements Thenable<Void>
@@ -97,15 +95,13 @@ public class SynchronizeService extends Service implements Thenable<Void>
                     TaskEntry remoteEntry = mRemoteMapEntries.get(localEntry.getEntryId());
 
                     if (remoteEntry != null) {
-                        System.out.println("local: " + localEntry.getTtlTimestamp());
-                        System.out.println("remote: " + remoteEntry.getTtlTimestamp());
                         if (localEntry.hashCode() == remoteEntry.hashCode()) {
-                            System.out.println("continue");
                             mRemoteMapEntries.remove(localEntry.getEntryId());
                             continue;
                         }
 
-                        if (localEntry.getDeviceIdentifier().equals(remoteEntry.getDeviceIdentifier())) {
+                        if (localEntry.getDeviceIdentifier()
+                                .equals(remoteEntry.getDeviceIdentifier())) {
                             if (localEntry.getEditedTimestamp() > remoteEntry.getEditedTimestamp()) {
                                 mApiService.editNote(localEntry).send(new APICallback<Void>()
                                 {
@@ -123,31 +119,38 @@ public class SynchronizeService extends Service implements Thenable<Void>
 
                         mRemoteMapEntries.remove(localEntry.getEntryId());
                     } else {
-                        mApiService.createNote(localEntry).send(new APICallback<Integer>()
-                        {
-                            @Override
-                            public void onResponse(APIResponse<Integer> response) {
-                                mDatabase.updateEntry(localEntry.setEntryId(response.getBody()));
-                            }
+                        mApiService.createNote(localEntry)
+                                .send(new APICallback<Integer>()
+                                {
+                                    @Override
+                                    public void onResponse(APIResponse<Integer> response) {
+                                        mDatabase.updateEntry(
+                                                localEntry.setEntryId(
+                                                        response.getBody()
+                                                )
+                                        );
+                                    }
 
-                            @Override
-                            public void onFailure(Throwable t) {
-                                SynchronizeService.this.onFailed(t);
-                            }
-                        });
+                                    @Override
+                                    public void onFailure(Throwable t) {
+                                        SynchronizeService.this.onFailed(t);
+                                    }
+                                });
                     }
                 }
 
                 while (mRemoteMapEntries.size() != 0) {
                     TaskEntry remoteEntry = mRemoteMapEntries.valueAt(0);
-                    if (remoteEntry.getDeviceIdentifier().equals(User.getActiveUser().getDeviceIdentifier())) {
-                        mApiService.deleteNote(remoteEntry.getEntryId()).send(new APICallback<Void>()
-                        {
-                            @Override
-                            public void onFailure(Throwable t) {
-                                SynchronizeService.this.onFailed(t);
-                            }
-                        });
+                    if (remoteEntry.getDeviceIdentifier()
+                            .equals(User.getActiveUser().getDeviceIdentifier())) {
+                        mApiService.deleteNote(remoteEntry.getEntryId())
+                                .send(new APICallback<Void>()
+                                {
+                                    @Override
+                                    public void onFailure(Throwable t) {
+                                        SynchronizeService.this.onFailed(t);
+                                    }
+                                });
                     } else {
                         mDatabase.insertEntry(remoteEntry);
                     }

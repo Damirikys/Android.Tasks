@@ -32,11 +32,11 @@ public class TasksListAdapter extends AbstractTaskListAdapter<TasksListAdapter.V
     private DbFilter mDefaultFilter;
 
     public TasksListAdapter(TaskListFragment fragment, DbTasksFilter filter) {
-        super(fragment.getContext(), null);
+        super(null);
         this.mFragment = fragment;
         this.mDefaultFilter = filter;
         this.mDatabase = DbTasks.getInstance();
-        updateData(mDatabase.getCursor(mDefaultFilter));
+        changeCursor(mDatabase.getCursor(mDefaultFilter));
     }
 
     @Override
@@ -75,7 +75,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter<TasksListAdapter.V
         else holder.layout.setAlpha(1f);
 
         if (mDefaultFilter.isOrdered()) {
-            holder.header_text.setText(entryTitle);
+            holder.headerText.setText(entryTitle);
             holder.header.setVisibility(View.VISIBLE);
             return holder;
         }
@@ -84,13 +84,13 @@ public class TasksListAdapter extends AbstractTaskListAdapter<TasksListAdapter.V
             String prevTitle = getTitleFromEntry(prev);
 
             if (!entryTitle.equals(prevTitle)) {
-                holder.header_text.setText(entryTitle);
+                holder.headerText.setText(entryTitle);
                 holder.header.setVisibility(View.VISIBLE);
             } else {
                 holder.header.setVisibility(View.GONE);
             }
         } else {
-            holder.header_text.setText(entryTitle);
+            holder.headerText.setText(entryTitle);
             holder.header.setVisibility(View.VISIBLE);
         }
 
@@ -98,12 +98,16 @@ public class TasksListAdapter extends AbstractTaskListAdapter<TasksListAdapter.V
     }
 
     private String getTitleFromEntry(TaskEntry entry) {
-        if (System.currentTimeMillis() > entry.getTtlTimestamp() & mDefaultFilter.getType() == DbTasksFilter.ACTIVE_TASK) {
+        if ((System.currentTimeMillis() > entry.getTtlTimestamp()) &&
+                (mDefaultFilter.getType() == DbTasksFilter.ACTIVE_TASK)) {
             return OVERDUE;
         } else {
             Calendar entryDate = Calendar.getInstance();
             entryDate.setTimeInMillis(entry.getTtlTimestamp());
-            int diffDay = Math.abs(entryDate.get(Calendar.DAY_OF_YEAR) - Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+            int diffDay = Math.abs(
+                    entryDate.get(Calendar.DAY_OF_YEAR) -
+                            Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+
             return getHeaderTitleByNum(diffDay, entryDate);
         }
     }
@@ -154,19 +158,19 @@ public class TasksListAdapter extends AbstractTaskListAdapter<TasksListAdapter.V
     public class ViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener, ItemTouchHelperViewHolder
     {
+        View header;
+        TextView headerText;
+        TextView description;
 
         public View layout;
-        public View header;
-        public TextView header_text;
         public TextView title;
-        public TextView description;
         public TextView ttl;
 
         public ViewHolder(View view) {
             super(view);
             this.layout = view.findViewById(R.id.task_layout);
             this.header = view.findViewById(R.id.task_header);
-            this.header_text = (TextView) view.findViewById(R.id.header_text);
+            this.headerText = (TextView) view.findViewById(R.id.header_text);
             this.title = (TextView) view.findViewById(R.id.task_item_title);
             this.description = (TextView) view.findViewById(R.id.task_item_description);
             this.ttl = (TextView) view.findViewById(R.id.task_item_deadline);
@@ -192,7 +196,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter<TasksListAdapter.V
 
         @Override
         public boolean onLongClick(View v) {
-            mFragment.onItemLongClick(this, getAdapterPosition(), TasksListAdapter.this.getItemId(getAdapterPosition()));
+            mFragment.onItemLongClick(this, getAdapterPosition());
             return true;
         }
 

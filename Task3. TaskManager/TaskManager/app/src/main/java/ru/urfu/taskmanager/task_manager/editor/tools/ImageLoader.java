@@ -5,15 +5,14 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.URL;
 
-import ru.urfu.taskmanager.R;
-
 public final class ImageLoader
 {
+    private ImageLoader() {}
+
     public static Loader into(ImageView view) {
         return new Loader(view);
     }
@@ -48,8 +47,6 @@ public final class ImageLoader
                     mView.post(() -> mView.setImageBitmap(mBitmap));
                 } catch (IOException e) {
                     e.printStackTrace();
-//                    mView.post(() -> Toast.makeText(mView.getContext(),
-//                            mView.getResources().getString(R.string.could_not_load_image), Toast.LENGTH_SHORT).show());
                 } finally {
                     quit();
                 }

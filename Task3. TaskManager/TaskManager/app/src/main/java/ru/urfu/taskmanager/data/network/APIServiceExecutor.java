@@ -7,9 +7,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import ru.urfu.taskmanager.task_manager.models.TaskEntry;
@@ -116,7 +114,7 @@ public class APIServiceExecutor implements AsyncExecutor<TaskEntry>
         mDbAsyncExecutor.insertEntry(entry, new ExecuteControllerAdapter<TaskEntry>()
         {
             @Override
-            public void onFinish(TaskEntry result) {
+            public void onResult(@NonNull TaskEntry result) {
                 controller.onFinish(result);
 
                 if (isConnected()) {
@@ -153,7 +151,7 @@ public class APIServiceExecutor implements AsyncExecutor<TaskEntry>
         mDbAsyncExecutor.removeEntryById(id, new ExecuteControllerAdapter<TaskEntry>()
         {
             @Override
-            public void onFinish(TaskEntry deleted) {
+            public void onResult(@NonNull TaskEntry deleted) {
                 if (isConnected()) {
                     mApiService.deleteNote(deleted.getEntryId()).send(mFailedCallback);
                 }
@@ -168,7 +166,7 @@ public class APIServiceExecutor implements AsyncExecutor<TaskEntry>
         mDbAsyncExecutor.updateEntry(entry, new ExecuteControllerAdapter<TaskEntry>()
         {
             @Override
-            public void onFinish(TaskEntry result) {
+            public void onResult(@NonNull TaskEntry result) {
                 if (isConnected()) mApiService.editNote(result).send(mFailedCallback);
             }
         });
@@ -180,7 +178,7 @@ public class APIServiceExecutor implements AsyncExecutor<TaskEntry>
         mDbAsyncExecutor.updateEntry(entry, new ExecuteControllerAdapter<TaskEntry>()
         {
             @Override
-            public void onFinish(TaskEntry result) {
+            public void onResult(@NonNull TaskEntry result) {
                 controller.onFinish(result);
                 if (isConnected()) mApiService.editNote(result).send(mFailedCallback);
             }

@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+@SuppressWarnings("unused")
 public class TaskEntryCouples
         implements Parcelable, Iterable<TaskEntryCouples.Couple>
 {
@@ -15,7 +16,7 @@ public class TaskEntryCouples
         this.data = new ArrayList<>();
     }
 
-    protected TaskEntryCouples(Parcel in) {
+    private TaskEntryCouples(Parcel in) {
         data = in.createTypedArrayList(Couple.CREATOR);
     }
 
@@ -78,7 +79,7 @@ public class TaskEntryCouples
             this.value = value;
         }
 
-        protected Couple(Parcel in) {
+        Couple(Parcel in) {
             key = in.readParcelable(TaskEntry.class.getClassLoader());
             value = in.readParcelable(TaskEntry.class.getClassLoader());
         }

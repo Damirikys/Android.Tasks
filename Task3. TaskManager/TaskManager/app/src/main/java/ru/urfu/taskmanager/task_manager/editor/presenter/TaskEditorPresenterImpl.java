@@ -1,5 +1,7 @@
 package ru.urfu.taskmanager.task_manager.editor.presenter;
 
+import android.support.annotation.NonNull;
+
 import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.auth.models.User;
 import ru.urfu.taskmanager.color_picker.recent.RecentColorsStorage;
@@ -11,7 +13,6 @@ import ru.urfu.taskmanager.data.db.async.DbAsyncExecutor;
 import ru.urfu.taskmanager.data.db.async.ExecuteControllerAdapter;
 import ru.urfu.taskmanager.utils.interfaces.Callback;
 
-import static android.app.Activity.RESULT_OK;
 import static ru.urfu.taskmanager.task_manager.editor.view.TaskEditorFragment.NON_ID;
 
 public class TaskEditorPresenterImpl implements TaskEditorPresenter
@@ -42,7 +43,7 @@ public class TaskEditorPresenterImpl implements TaskEditorPresenter
             mDbAsyncExecutor.getEntryById(mItemId,
                     new ExecuteControllerAdapter<TaskEntry>() {
                         @Override
-                        public void onFinish(TaskEntry result) {
+                        public void onResult(@NonNull TaskEntry result) {
                             mEntryId = result.getEntryId();
                             mEditor.initializeEditor(result);
                             mEditor.onImageLoad(result.getImageUrl());
@@ -57,7 +58,7 @@ public class TaskEditorPresenterImpl implements TaskEditorPresenter
             @Override
             public void onFinish() {
                 mRecentColorsStorage.putItem(state.getColorInt());
-                mEditor.exit(RESULT_OK);
+                mEditor.exit();
             }
         };
 

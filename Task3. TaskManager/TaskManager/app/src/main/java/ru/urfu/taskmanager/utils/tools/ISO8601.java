@@ -12,14 +12,17 @@ import java.util.Locale;
  * parsing the "Z" timezone, but many other less-used features are
  * missing.
  */
+
 public final class ISO8601
 {
     private static final DateFormat sFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
 
+    private ISO8601() {}
+
     /**
      * Transform Calendar to ISO 8601 string.
      */
-    public static String fromTimestamp(final long timestamp) {
+    public synchronized static String fromTimestamp(final long timestamp) {
         Date date = new Date(timestamp);
         String formatted = sFormatter.format(date);
         return formatted.substring(0, 22) + ":" + formatted.substring(22);
@@ -28,7 +31,7 @@ public final class ISO8601
     /**
      * Transform ISO 8601 string to Calendar.
      */
-    public static long toTimestamp(final String iso8601string) throws ParseException {
+    public synchronized static long toTimestamp(final String iso8601string) throws ParseException {
         String s = iso8601string.replace("Z", "+00:00");
         try {
             s = s.substring(0, 22) + s.substring(23);  // to get rid of the ":"

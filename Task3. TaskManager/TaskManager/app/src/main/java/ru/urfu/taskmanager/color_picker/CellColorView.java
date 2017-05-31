@@ -17,9 +17,10 @@ import ru.urfu.taskmanager.utils.tools.SizeManager;
 
 import static ru.urfu.taskmanager.color_picker.AbstractPickerView.HSV_ARRAY_LENGTH;
 
+@SuppressWarnings("unused")
 public class CellColorView extends View implements View.OnTouchListener
 {
-    public static final int CELL_SIZE = SizeManager.dpToPx(45);
+    private static final int CELL_SIZE = SizeManager.dpToPx(45);
     public static final int CELL_MARGIN = (int) (CELL_SIZE * 0.25);
 
     private static LinearLayout.LayoutParams sDefaultParams;

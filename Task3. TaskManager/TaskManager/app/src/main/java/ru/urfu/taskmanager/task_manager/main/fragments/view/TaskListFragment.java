@@ -22,14 +22,14 @@ import ru.urfu.taskmanager.task_manager.main.view.TaskManager;
 public abstract class TaskListFragment extends Fragment
         implements TaskListView, OnStartDragListener
 {
-    public static final String ARG_TITLE_KEY = "ru.urfu.taskmanager.task_manager.ARG_TITLE_KEY";
-    private ItemTouchHelper mItemTouchHelper;
-    protected TaskManager mManager;
 
-    RecyclerView mTaskListView;
+    static final String ARG_TITLE_KEY = "ru.urfu.taskmanager.task_manager.ARG_TITLE_KEY";
+    private ItemTouchHelper mItemTouchHelper;
+    TaskManager mManager;
+
+    private RecyclerView mTaskListView;
     TasksListAdapter mAdapter;
 
-    @Override
     public String getTitle() {
         return getArguments().getString(ARG_TITLE_KEY);
     }
@@ -53,7 +53,7 @@ public abstract class TaskListFragment extends Fragment
         mItemTouchHelper.attachToRecyclerView(mTaskListView);
     }
 
-    protected View initView(View root) {
+    private View initView(View root) {
         mTaskListView = (RecyclerView) root.findViewById(R.id.task_list);
         return root;
     }
@@ -62,7 +62,7 @@ public abstract class TaskListFragment extends Fragment
 
     public abstract void onItemClick(TasksListAdapter.ViewHolder holder, int position, long id);
 
-    public boolean onItemLongClick(TasksListAdapter.ViewHolder holder, int position, long id) {
+    public boolean onItemLongClick(TasksListAdapter.ViewHolder holder, int position) {
         mManager.startEditor(position, mAdapter, holder);
         return true;
     }
@@ -78,18 +78,13 @@ public abstract class TaskListFragment extends Fragment
     }
 
     @Override
-    public Fragment getInstance() {
-        return this;
-    }
-
-    @Override
     public int getDataType() {
         return mAdapter.getDataType();
     }
 
     @Override
     public void showAlert(String message) {
-        Snackbar.make(getActivity().getWindow().getDecorView(), message, 2000).show();
+        Snackbar.make(getActivity().getWindow().getDecorView(), message, TIMEOUT_IN_MILLIS).show();
     }
 
     @Override

@@ -17,9 +17,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import ru.urfu.taskmanager.R;
-import ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity;
 
 public class DirectoryChooser implements AdapterView.OnItemClickListener, DialogInterface.OnClickListener
 {
@@ -52,10 +52,10 @@ public class DirectoryChooser implements AdapterView.OnItemClickListener, Dialog
 
         builder.setNegativeButton(mContext.getString(R.string.cancel), (dialog, id) -> dialog.cancel());
 
-        AlertDialog m_alertDialog = builder.create();
-        mListView = m_alertDialog.getListView();
+        AlertDialog alertDialog = builder.create();
+        mListView = alertDialog.getListView();
         mListView.setOnItemClickListener(this);
-        m_alertDialog.show();
+        alertDialog.show();
     }
 
     private void listDirs() {
@@ -72,7 +72,8 @@ public class DirectoryChooser implements AdapterView.OnItemClickListener, Dialog
             }
         }
 
-        Collections.sort(mEntries, (f1, f2) -> f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase()));
+        Collections.sort(mEntries, (f1, f2) -> f1.getName().toLowerCase(Locale.getDefault())
+                .compareTo(f2.getName().toLowerCase(Locale.getDefault())));
     }
 
     @Override
@@ -90,8 +91,8 @@ public class DirectoryChooser implements AdapterView.OnItemClickListener, Dialog
     public void onClick(DialogInterface dialog, int which) {
     }
 
-    public interface OnDirectoryChosen
-    {
+    @SuppressWarnings("unused")
+    public interface OnDirectoryChosen {
         void onChooseDirectory(String dir);
     }
 

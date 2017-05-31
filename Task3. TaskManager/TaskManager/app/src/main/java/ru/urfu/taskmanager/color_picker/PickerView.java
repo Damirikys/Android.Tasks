@@ -13,7 +13,7 @@ import ru.urfu.taskmanager.color_picker.states.Action;
 
 public class PickerView extends AbstractPickerView
 {
-    protected List<PickerViewStateListener> mListeners = new ArrayList<>();
+    private List<PickerViewStateListener> mListeners = new ArrayList<>();
 
     public PickerView(Context context) {
         super(context);
@@ -38,12 +38,7 @@ public class PickerView extends AbstractPickerView
         mListeners.add(listener);
     }
 
-    public void unsubscribe(PickerViewStateListener listener) {
-        mListeners.remove(listener);
-    }
-
-
-    protected void notifySubscribers(Action state) {
+    void notifySubscribers(Action state) {
         switch (state) {
             case onColorChange:
                 notify(observer -> observer.onColorChanged(getCurrentColor()));

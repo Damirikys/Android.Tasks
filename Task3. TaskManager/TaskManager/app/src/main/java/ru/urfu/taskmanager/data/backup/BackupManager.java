@@ -10,7 +10,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,7 +74,7 @@ public class BackupManager extends HandlerThread
         });
     }
 
-    public <T> void importFrom(InputStream inputStream, Class<T> _class, ExecuteController<List<T>> controller) throws FileNotFoundException {
+    public <T> void importFrom(InputStream inputStream, Class<T> clazz, ExecuteController<List<T>> controller) {
         mWorkerHandler.post(() -> {
             controller.onStart();
 
@@ -90,7 +89,7 @@ public class BackupManager extends HandlerThread
                     streamReader = new InputStreamReader(inputStream, "UTF-8");
                 }
 
-                List<T> result = gson.fromJson(streamReader, TypeToken.getParameterized(List.class, _class).getType());
+                List<T> result = gson.fromJson(streamReader, TypeToken.getParameterized(List.class, clazz).getType());
                 streamReader.close();
                 controller.onFinish(result);
             } catch (IOException e) {

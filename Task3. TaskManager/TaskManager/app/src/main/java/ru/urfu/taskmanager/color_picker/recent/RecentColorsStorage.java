@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -28,16 +29,18 @@ public final class RecentColorsStorage
         editor.apply();
     }
 
-    public List<Integer> getItems() {
+    @SuppressWarnings("unchecked")
+    List<Integer> getItems() {
         List<Integer> items = new ArrayList<>();
         Map<String, ?> map = mStorage.getAll();
-        for (Object o : map.values())
-            items.add((int) o);
+        Collection<? extends Integer> entries = (Collection<? extends Integer>) map.values();
+        for (int number : entries)
+            items.add(number);
 
         return items;
     }
 
-    public boolean isExist(int color) {
+    private boolean isExist(int color) {
         return mStorage.contains(String.valueOf(color));
     }
 }

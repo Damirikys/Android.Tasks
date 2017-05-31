@@ -19,17 +19,21 @@ import ru.urfu.taskmanager.task_manager.main.fragments.adapters.TaskPagerAdapter
 
 public class TaskPagerFragment extends Fragment implements View.OnClickListener
 {
-    protected TaskManager mManager;
-    protected FragmentStatePagerAdapter mPagerAdapter;
+    private TaskManager mManager;
+    private FragmentStatePagerAdapter mPagerAdapter;
 
     protected ViewPager mViewPager;
     protected TabLayout mTabLayout;
 
     protected FloatingActionButton fab;
 
+    public TaskPagerFragment(){}
+
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return initView(inflater.inflate(R.layout.main_fragment, container, false));
     }
 

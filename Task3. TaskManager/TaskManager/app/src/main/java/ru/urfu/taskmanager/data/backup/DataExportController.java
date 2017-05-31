@@ -2,6 +2,7 @@ package ru.urfu.taskmanager.data.backup;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 
 import java.util.List;
@@ -63,8 +64,7 @@ public class DataExportController<T> extends ExecuteControllerAdapter<List<T>>
     }
 
     @Override
-    public void onFinish(List<T> result) {
-        super.onFinish(result);
+    public void onResult(@NonNull List<T> result) {
         mProgressive.stopProgressIndicator();
 
         mDataExporter.exportTo(new BackupManager.DataProvider<>(
@@ -88,17 +88,17 @@ public class DataExportController<T> extends ExecuteControllerAdapter<List<T>>
     {
         @Override
         public void onStart() {
-            DataExportController.this.getNotificationManager().notify(getNotificationID(),
-                    mNotificationBuilder
-                            .setContentText(mContext.getString(R.string.data_is_saved))
-                            .setProgress(0, 0, true)
-                            .build()
+            DataExportController.this.getNotificationManager()
+                    .notify(DataExportController.this.getNotificationID(),
+                            mNotificationBuilder
+                                    .setContentText(mContext.getString(R.string.data_is_saved))
+                                    .setProgress(0, 0, true)
+                                    .build()
             );
         }
 
         @Override
-        public void onFinish(Boolean result) {
-            super.onFinish(result);
+        public void onResult(@NonNull Boolean result) {
             if (result) {
                 mProgressive.showAlert(mContext
                         .getString(R.string.task_successful_export));
@@ -108,7 +108,8 @@ public class DataExportController<T> extends ExecuteControllerAdapter<List<T>>
             }
 
             mProgressive.hideProgress();
-            DataExportController.this.getNotificationManager().cancel(getNotificationID());
+            DataExportController.this.getNotificationManager()
+                    .cancel(DataExportController.this.getNotificationID());
         }
     }
 }

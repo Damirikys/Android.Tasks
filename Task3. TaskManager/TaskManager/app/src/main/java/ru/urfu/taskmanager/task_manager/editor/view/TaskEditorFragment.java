@@ -5,7 +5,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
@@ -47,23 +46,25 @@ public class TaskEditorFragment extends Fragment implements TaskEditor, SingleDa
 
     private static final int CELL_COUNT = 16;
 
-    TaskManager mManager;
-    TaskEditorPresenter mPresenter;
+    private TaskManager mManager;
+    private TaskEditorPresenter mPresenter;
 
-    SingleDateAndTimePicker mDateTimePicker;
-    TextInputLayout mTitleInputLayout;
-    TextInputLayout mDescInputLayout;
-    ImageView mImageView;
-    PickerView mPickerView;
-    TextView mColorDeadlineTextView;
-    EditText mTitleEditField;
-    EditText mDescEditField;
-    EditText mImageUrlEditField;
-    Button mButtonSave;
+    private SingleDateAndTimePicker mDateTimePicker;
+    private TextInputLayout mTitleInputLayout;
+    private TextInputLayout mDescInputLayout;
+    private ImageView mImageView;
+    private PickerView mPickerView;
+    private TextView mColorDeadlineTextView;
+    private EditText mTitleEditField;
+    private EditText mDescEditField;
+    private EditText mImageUrlEditField;
+    private Button mButtonSave;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return initView(inflater.inflate(R.layout.activity_task_editor, container, false));
     }
 
@@ -203,7 +204,7 @@ public class TaskEditorFragment extends Fragment implements TaskEditor, SingleDa
     }
 
     @Override
-    public void exit(int result) {
+    public void exit() {
         mManager.getPresenter()
                 .onResult((getEditedItemId() == NON_ID) ? REQUEST_CREATE : REQUEST_EDIT);
 

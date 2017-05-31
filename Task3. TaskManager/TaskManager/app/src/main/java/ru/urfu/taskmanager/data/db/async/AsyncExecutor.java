@@ -8,6 +8,7 @@ import java.util.List;
 import ru.urfu.taskmanager.data.db.DbFilter;
 
 
+@SuppressWarnings("unused")
 public interface AsyncExecutor<T>
 {
     void getAllEntries(@NonNull ExecuteController<List<T>> controller);

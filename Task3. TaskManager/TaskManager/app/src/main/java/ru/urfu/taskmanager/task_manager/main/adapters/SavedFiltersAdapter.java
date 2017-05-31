@@ -20,7 +20,7 @@ import ru.urfu.taskmanager.data.db.DbTasksFilter;
 
 public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter
 {
-    private class ViewHolder
+    private static class ViewHolder
     {
         TextView title;
 
@@ -40,7 +40,7 @@ public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter
     public SavedFiltersAdapter(@NonNull Context context, @Nullable OnFilterSelected onFilterSelected) {
         this.mContext = context;
         this.mFilterSelectedListener = onFilterSelected;
-        update();
+        this.mKeys = new ArrayList<>(mStorage.getBuilders().keySet());
     }
 
     @Override
@@ -60,21 +60,21 @@ public class SavedFiltersAdapter extends BaseAdapter implements FiltersAdapter
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         final ViewHolder viewHolder;
+        View view = convertView;
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.saved_filters_item, parent, false);
-            viewHolder = new ViewHolder(convertView);
-            convertView.setTag(viewHolder);
+            view = inflater.inflate(R.layout.saved_filters_item, parent, false);
+            viewHolder = new ViewHolder(view);
+            view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
         viewHolder.title.setText(mKeys.get(position));
-        return convertView;
+        return view;
     }
 
     @Override

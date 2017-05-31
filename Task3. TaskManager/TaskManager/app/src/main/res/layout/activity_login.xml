@@ -20,7 +20,7 @@
             android:layout_height="60dp"
             android:inputType="text"
             android:textColor="@color/half_lite_gray"
-            android:hint="Введите логин"
+            android:hint="@string/enter_the_login"
             android:maxLength="16"/>
 
     </android.support.design.widget.TextInputLayout>
@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/lite_gray"
-        android:text="Войти"
+        android:text="@string/login"
         style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"/>
 
 </LinearLayout>

@@ -15,8 +15,6 @@ import ru.urfu.taskmanager.utils.tools.JSONFactory;
 
 public class TaskEntry implements Parcelable
 {
-    private transient int mAuthorId = User.getActiveUser().getUserId();
-
     private transient int mId;
 
     private transient Integer mOrder = null;
@@ -89,10 +87,6 @@ public class TaskEntry implements Parcelable
 
     public String getDeviceIdentifier() {
         return deviceId;
-    }
-
-    public int getAuthorId() {
-        return mAuthorId;
     }
 
     public TaskEntry setId(int id) {
@@ -207,6 +201,7 @@ public class TaskEntry implements Parcelable
         return this;
     }
 
+    @SuppressWarnings("unused")
     public boolean isCompleted() {
         return mTimeToLive.equals(mEdited);
     }
@@ -229,6 +224,7 @@ public class TaskEntry implements Parcelable
     @Override
     public boolean equals(Object obj) {
         try {
+            if (obj == null) return false;
             TaskEntry other = (TaskEntry) obj;
             return this.mEntryId.equals(other.mEntryId);
         } catch (ClassCastException e) {

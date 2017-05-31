@@ -13,7 +13,7 @@ import ru.urfu.taskmanager.task_manager.models.TaskEntry;
 import ru.urfu.taskmanager.data.db.async.DbAsyncExecutor;
 import ru.urfu.taskmanager.utils.interfaces.Callback;
 
-public class DbTasks implements SimpleDatabase<TaskEntry>
+public final class DbTasks implements SimpleDatabase<TaskEntry>
 {
     private static DbTasks sInstance;
     private SQLiteDatabase mDatabase;
@@ -42,7 +42,11 @@ public class DbTasks implements SimpleDatabase<TaskEntry>
     @Override
     public long insertEntry(TaskEntry entry) {
         long id = mDatabase.insert(DbTasksHelper.TABLE_NAME, null, contentValuesFrom(entry));
-        updateEntry(getEntryById((int) id).setOrder((int) id));
+        TaskEntry updated = updateEntry(getEntryById((int) id));
+        if (updated != null) {
+            updated.setOrder((int) id);
+        }
+
         return id;
     }
 
@@ -53,7 +57,8 @@ public class DbTasks implements SimpleDatabase<TaskEntry>
 
     @Override
     public TaskEntry updateEntry(TaskEntry entry) {
-        mDatabase.update(DbTasksHelper.TABLE_NAME, contentValuesFrom(entry), DbTasksHelper.ID + "=" + entry.getId(), null);
+        mDatabase.update(DbTasksHelper.TABLE_NAME,
+                contentValuesFrom(entry), DbTasksHelper.ID + "=" + entry.getId(), null);
         return getEntryById(entry.getId());
     }
 
@@ -83,18 +88,6 @@ public class DbTasks implements SimpleDatabase<TaskEntry>
         return getCurrentEntryFromCursor(cursor);
     }
 
-    public TaskEntry getEntryByEntryId(int entryId) {
-        Cursor cursor = mDatabase.rawQuery("SELECT * FROM " +
-                DbTasksHelper.TABLE_NAME + " WHERE " +
-                DbTasksHelper.ENTRY_ID + "=" + entryId + " AND " +
-                DbTasksHelper.USER_ID + "=" + User.getActiveUser().getUserId(), null);
-
-        if (cursor.getCount() == 0) return null;
-
-        cursor.moveToFirst();
-        return getCurrentEntryFromCursor(cursor);
-    }
-
     @Override
     public void replaceAll(List<TaskEntry> entries) {
         mDatabase.delete(DbTasksHelper.TABLE_NAME, null, null);
@@ -109,25 +102,25 @@ public class DbTasks implements SimpleDatabase<TaskEntry>
         int id = cursor.getColumnIndex(DbTasksHelper.ID);
         int order = cursor.getColumnIndex(DbTasksHelper.ORDER);
         int title = cursor.getColumnIndex(DbTasksHelper.TITLE);
-        int entry_id = cursor.getColumnIndex(DbTasksHelper.ENTRY_ID);
-        int image_url = cursor.getColumnIndex(DbTasksHelper.IMAGE_URL);
+        int entryId = cursor.getColumnIndex(DbTasksHelper.ENTRY_ID);
+        int imageUrl = cursor.getColumnIndex(DbTasksHelper.IMAGE_URL);
         int timetolive = cursor.getColumnIndex(DbTasksHelper.TTL);
-        int time_edited = cursor.getColumnIndex(DbTasksHelper.TIME_EDITED);
-        int time_created = cursor.getColumnIndex(DbTasksHelper.TIME_CREATED);
+        int timeEdited = cursor.getColumnIndex(DbTasksHelper.TIME_EDITED);
+        int timeCreated = cursor.getColumnIndex(DbTasksHelper.TIME_CREATED);
         int description = cursor.getColumnIndex(DbTasksHelper.DESCRIPTION);
-        int decorate_color = cursor.getColumnIndex(DbTasksHelper.DECORATE_COLOR);
+        int decorateColor = cursor.getColumnIndex(DbTasksHelper.DECORATE_COLOR);
 
         return new TaskEntry(cursor.getInt(id))
                 .setId(cursor.getInt(id))
                 .setOrder(cursor.getInt(order))
-                .setEntryId(cursor.getInt(entry_id))
+                .setEntryId(cursor.getInt(entryId))
                 .setTitle(cursor.getString(title))
                 .setDescription(cursor.getString(description))
-                .setCreated(Long.valueOf(cursor.getString(time_created)))
-                .setEdited(Long.valueOf(cursor.getString(time_edited)))
-                .setTtl(Long.valueOf(cursor.getString(timetolive)))
-                .setColor(cursor.getInt(decorate_color))
-                .setImageUrl(cursor.getString(image_url));
+                .setCreated(Long.parseLong(cursor.getString(timeCreated)))
+                .setEdited(Long.parseLong(cursor.getString(timeEdited)))
+                .setTtl(Long.parseLong(cursor.getString(timetolive)))
+                .setColor(cursor.getInt(decorateColor))
+                .setImageUrl(cursor.getString(imageUrl));
     }
 
     public Cursor getCursor(DbFilter filter) {

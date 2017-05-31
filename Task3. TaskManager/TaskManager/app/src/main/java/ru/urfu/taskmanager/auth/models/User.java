@@ -7,8 +7,9 @@ import android.provider.Settings;
 import ru.urfu.taskmanager.data.network.APIServiceExecutor;
 import ru.urfu.taskmanager.data.network.APIService;
 
-public class User
+public final class User
 {
+    private static final int DIVIDER = 2;
     private static User activeUser;
 
     private int mId;

@@ -2,8 +2,6 @@
     <string name="app_name">TaskManager</string>
     <string name="toolbar_filter_title">Параметры</string>
     <string name="action_filter">Фильтр</string>
-    <string name="editor_create_title">Новая задача</string>
-    <string name="editor_edit_title">Редактирование</string>
     <string name="active_tasks_title">В планах</string>
     <string name="completed_tasks_title">Выполнено</string>
     <string name="task_is_complete">Задача выполнена</string>
@@ -47,21 +45,28 @@
     <string name="data_generate">Генерация данных</string>
     <string name="generated">Сгенерировано</string>
     <string name="data_is_generated">Данные сгенерированы</string>
-    <string name="please_wait">Подождите…</string>
-    <string name="data_is_imported">Данные импортируются</string>
     <string name="data_import">Импорт данных</string>
     <string name="data_export">Экспорт данных</string>
     <string name="please_wait_data_is_imported">Подождите, данные импортируются…</string>
     <string name="data_is_saved">Данные сохраняются…</string>
     <string name="data_collection_started">Сбор данных начался</string>
     <string name="data_collected">Собрано данных</string>
-    <string name="could_not_load_image">Не удалось загрузить изображение</string>
     <string name="merge_conflict_title">Конфликт изменений</string>
     <string name="merge_conflict_descr">Нажмите на вариант, который хотите сохранить.</string>
     <string name="sync_failed">Не удалось синхронизировать данные</string>
     <string name="sync_success">Успешно синхронизировано</string>
-    <string name="sync_title">Синхронизация…</string>
+    <string name="sync_title">Синхронизация</string>
     <string name="conflict_not_resolved">Не удалось разрешить конфликт</string>
+    <string name="enter_the_login">Введите логин</string>
+    <string name="login">Войти</string>
+    <string name="apply">Применить</string>
+    <string name="saved_filters">Сохраненные фильтры</string>
+    <string name="search_filter">Фильтр поиска</string>
+    <string name="image_from_web">img_descr</string>
+    <string name="_00_00">00:00</string>
+    <string name="export_title">Экспорт</string>
+    <string name="import_title">Импорт</string>
+    <string name="generate_data">Генерировать данные</string>
 
     <string-array name="sorting">
         <item>Дате выполнения</item>

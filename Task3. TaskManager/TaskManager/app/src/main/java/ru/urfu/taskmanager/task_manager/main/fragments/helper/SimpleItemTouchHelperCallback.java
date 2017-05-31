@@ -7,7 +7,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 
 public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
-    public static final float ALPHA_FULL = 1.0f;
+    private static final float ALPHA_FULL = 1.0f;
 
     private final ItemTouchHelperAdapter mAdapter;
 
@@ -28,7 +28,12 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
-            final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+            final int dragFlags =
+                    ItemTouchHelper.UP |
+                    ItemTouchHelper.DOWN |
+                    ItemTouchHelper.LEFT |
+                    ItemTouchHelper.RIGHT;
+
             final int swipeFlags = 0;
             return makeMovementFlags(dragFlags, swipeFlags);
         } else {
@@ -39,7 +44,9 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder source, RecyclerView.ViewHolder target) {
+    public boolean onMove(RecyclerView recyclerView,
+                          RecyclerView.ViewHolder source,
+                          RecyclerView.ViewHolder target) {
         if (source.getItemViewType() != target.getItemViewType()) {
             return false;
         }

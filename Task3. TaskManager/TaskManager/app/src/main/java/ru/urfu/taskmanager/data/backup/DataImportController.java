@@ -2,6 +2,7 @@ package ru.urfu.taskmanager.data.backup;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 
 import java.util.List;
@@ -19,7 +20,10 @@ public class DataImportController<T> extends ExecuteControllerAdapter<List<T>>
     private DbAsyncExecutor<T> mDbAsyncExecutor;
     private NotificationCompat.Builder mNotificationBuilder;
 
-    public DataImportController(TaskManager manager, DbAsyncExecutor<T> dbAsyncExecutor, Callback<Void> onFinishImport) {
+    public DataImportController(TaskManager manager,
+                                DbAsyncExecutor<T> dbAsyncExecutor,
+                                Callback<Void> onFinishImport)
+    {
         this.mManager = manager;
         this.mDbAsyncExecutor = dbAsyncExecutor;
         this.mFinishImportCallback = onFinishImport;
@@ -46,7 +50,7 @@ public class DataImportController<T> extends ExecuteControllerAdapter<List<T>>
     }
 
     @Override
-    public void onFinish(List<T> result) {
+    public void onResult(@NonNull List<T> result) {
         if (result.isEmpty()) {
             mManager.hideProgress();
             mManager.showAlert(mManager.getResources()

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,21 +23,15 @@ public final class FiltersStorage
     }
 
     public DbTasksFilter.Builder getBuilder(@NonNull String key) {
-        try {
-            return JSONFactory.fromJson(mStorage.getString(key, ""), DbTasksFilter.Builder.class);
-        } catch (IOException e) {
-            return null;
-        }
+        return JSONFactory.fromJson(mStorage.getString(key, ""), DbTasksFilter.Builder.class);
     }
 
     public Map<String, DbTasksFilter.Builder> getBuilders() {
         Map<String, DbTasksFilter.Builder> items = new HashMap<>();
 
         for (String key : mStorage.getAll().keySet()) {
-            try {
-                items.put(key, JSONFactory.fromJson(mStorage.getString(key, ""), DbTasksFilter.Builder.class));
-            } catch (IOException ignored) {
-            }
+            items.put(key, JSONFactory.fromJson(mStorage.getString(key, ""),
+                    DbTasksFilter.Builder.class));
         }
 
         return items;

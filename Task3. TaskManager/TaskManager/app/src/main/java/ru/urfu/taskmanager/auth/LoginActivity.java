@@ -1,5 +1,6 @@
 package ru.urfu.taskmanager.auth;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.EditText;
@@ -13,6 +14,7 @@ import ru.urfu.taskmanager.R;
 import ru.urfu.taskmanager.auth.models.User;
 import ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity_;
 
+@SuppressLint("Registered")
 @EActivity(R.layout.activity_login)
 public class LoginActivity extends AppCompatActivity
 {

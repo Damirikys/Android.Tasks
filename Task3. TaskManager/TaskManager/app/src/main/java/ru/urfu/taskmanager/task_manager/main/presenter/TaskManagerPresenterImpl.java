@@ -2,6 +2,7 @@ package ru.urfu.taskmanager.task_manager.main.presenter;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -72,7 +73,7 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
         mDbAsyncExecutor.getEntryById(id, new ExecuteControllerAdapter<TaskEntry>()
         {
             @Override
-            public void onFinish(TaskEntry entry) {
+            public void onResult(@NonNull TaskEntry entry) {
                 coupler.bind(date -> mAPIServiceExecutor.updateEntry(
                         entry.setTtl(date.getTime())
                                 .setEdited(System.currentTimeMillis()),
@@ -103,7 +104,7 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
         mDbAsyncExecutor.getEntryById(id, new ExecuteControllerAdapter<TaskEntry>()
         {
             @Override
-            public void onFinish(TaskEntry entry) {
+            public void onResult(@NonNull TaskEntry entry) {
                 coupler.bind(date -> {
                     entry.setTtl(date.getTime()).setEdited(System.currentTimeMillis());
                     mAPIServiceExecutor.updateEntry(entry, new ExecuteControllerAdapter<TaskEntry>() {
@@ -209,7 +210,7 @@ public class TaskManagerPresenterImpl implements TaskManagerPresenter
                         }
 
                         @Override
-                        public void onFinish(Cursor cursor) {
+                        public void onResult(@NonNull Cursor cursor) {
                             taskList.onUpdate(cursor);
                             taskList.onUpdate(filter);
                             if (counter.decrementAndGet() == 0)

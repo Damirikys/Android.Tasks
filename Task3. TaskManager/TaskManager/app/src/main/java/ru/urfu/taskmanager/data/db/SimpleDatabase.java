@@ -6,6 +6,7 @@ import java.util.List;
 
 import ru.urfu.taskmanager.utils.interfaces.Callback;
 
+@SuppressWarnings("unused")
 public interface SimpleDatabase<T>
 {
     List<T> getAllEntries();

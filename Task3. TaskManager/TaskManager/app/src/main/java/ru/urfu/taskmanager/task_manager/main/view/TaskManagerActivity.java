@@ -1,6 +1,7 @@
 package ru.urfu.taskmanager.task_manager.main.view;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -66,6 +67,7 @@ import ru.urfu.taskmanager.utils.tools.DirectoryChooser;
 
 import static ru.urfu.taskmanager.task_manager.editor.view.EditorPagerFragment.EDITOR_PAGER_POSITION;
 
+@SuppressLint("Registered")
 @EActivity(R.layout.activity_task_list)
 public class TaskManagerActivity extends AppCompatActivity
         implements TaskManager,
@@ -75,9 +77,7 @@ public class TaskManagerActivity extends AppCompatActivity
 {
     public static final int REQUEST_CREATE = 1;
     public static final int REQUEST_EDIT = 2;
-    public static final int REQUEST_IMPORT = 3;
-
-    public static final int SNACKBAR_SHOW_TIME = 2000;
+    private static final int REQUEST_IMPORT = 3;
 
     private TaskManagerPresenter mPresenter;
 
@@ -113,13 +113,13 @@ public class TaskManagerActivity extends AppCompatActivity
     @ViewById(R.id.filter_layout)
     View mFilterLayout;
 
-    ProgressDialog mProgressDialog;
-    Spinner mSearchBySpinner;
+    private ProgressDialog mProgressDialog;
+    private Spinner mSearchBySpinner;
 
-    MenuItem mSearchMenuItem;
-    MenuItem mFilterMenuItem;
-    MenuItem mSearchSpinnerItem;
-    MenuItem mFilterCatalogMenuItem;
+    private MenuItem mSearchMenuItem;
+    private MenuItem mFilterMenuItem;
+    private MenuItem mSearchSpinnerItem;
+    private MenuItem mFilterCatalogMenuItem;
 
     @AfterViews
     public void initialize() {
@@ -146,7 +146,7 @@ public class TaskManagerActivity extends AppCompatActivity
                 .add(R.id.fragment_place, TaskPagerFragment.newInstance(new Bundle()))
                 .commit();
 
-        showAlert("USER_ID: " + User.getActiveUser().getUserId());
+        //showAlert("USER_ID: " + User.getActiveUser().getUserId());
     }
 
     @Override
@@ -423,7 +423,8 @@ public class TaskManagerActivity extends AppCompatActivity
         if (position == null) {
             editorFragment = TaskEditorFragment.newInstance(bundle);
         } else {
-            editorFragment = EditorPagerFragment.newInstance(bundle, adapter);
+            editorFragment = EditorPagerFragment.newInstance(bundle)
+                    .bindCursorProvider(adapter);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && holder != null) {
                 editorFragment.setSharedElementEnterTransition(new CustomTransition());
@@ -485,7 +486,7 @@ public class TaskManagerActivity extends AppCompatActivity
 
     @UiThread
     public void showAlert(String message) {
-        Snackbar.make(getWindow().getDecorView(), message, SNACKBAR_SHOW_TIME).show();
+        Snackbar.make(getWindow().getDecorView(), message, TIMEOUT_IN_MILLIS).show();
     }
 
     @Override

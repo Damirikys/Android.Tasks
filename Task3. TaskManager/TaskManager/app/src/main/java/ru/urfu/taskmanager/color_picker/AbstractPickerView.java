@@ -21,8 +21,8 @@ import ru.urfu.taskmanager.color_picker.listeners.PickerViewStateListener;
 public abstract class AbstractPickerView extends HorizontalScrollView
 {
     public static final int HSV_ARRAY_LENGTH = 3;
-    protected static final int DEFAULT_CELL_COUNT = 10;
-    protected static final int DEFAULT_CELL_COLOR = Color.WHITE;
+    private static final int DEFAULT_CELL_COUNT = 10;
+    private static final int DEFAULT_CELL_COLOR = Color.WHITE;
 
     private LinearLayout mRoot;
 
@@ -33,14 +33,6 @@ public abstract class AbstractPickerView extends HorizontalScrollView
     private boolean mScrollingEnable = true;
 
     private float[][] mColorCache;
-
-    public float[][] getColorCache() {
-        return mColorCache;
-    }
-
-    public void setColorCache(float[][] cache) {
-        mColorCache = cache;
-    }
 
     public AbstractPickerView(Context context) {
         super(context);
@@ -55,11 +47,11 @@ public abstract class AbstractPickerView extends HorizontalScrollView
     }
 
 
-    public boolean isScrollingEnable() {
+    private boolean isScrollingEnable() {
         return mScrollingEnable;
     }
 
-    public void setScrollingEnable(boolean mScrollingEnable) {
+    void setScrollingEnable(boolean mScrollingEnable) {
         this.mScrollingEnable = mScrollingEnable;
     }
 
@@ -67,7 +59,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
         return mEditMode;
     }
 
-    protected void setEnableEditMode(boolean bool) {
+    void setEnableEditMode(boolean bool) {
         mEditMode = bool;
     }
 
@@ -76,11 +68,11 @@ public abstract class AbstractPickerView extends HorizontalScrollView
         return mCurrentColor;
     }
 
-    protected void setCurrentColor(int mCurrentColor) {
+    void setCurrentColor(int mCurrentColor) {
         this.mCurrentColor = mCurrentColor;
     }
 
-    protected void changeColorCache(int position, float[] value) {
+    void changeColorCache(int position, float[] value) {
         mColorCache[position] = Arrays.copyOf(value, value.length);
     }
 
@@ -103,13 +95,13 @@ public abstract class AbstractPickerView extends HorizontalScrollView
         addView(mRoot);
     }
 
-    protected void init() {
+    private void init() {
         this.setBackgroundColor(Color.BLACK);
         mRoot.setBackground(getHueGradientDrawable());
         calculateColors();
     }
 
-    protected void calculateColors() {
+    private void calculateColors() {
         boolean restoreCache = (mColorCache != null && mColorCache.length == mCellCount);
         if (!restoreCache) mColorCache = new float[mCellCount][HSV_ARRAY_LENGTH];
 
@@ -141,17 +133,17 @@ public abstract class AbstractPickerView extends HorizontalScrollView
         if (position == 0) {
 
             CellColorView next = (CellColorView) mRoot.getChildAt(cellColorView.getmPosition() + 1);
-            float[] hsv_next = new float[3];
-            Color.colorToHSV(next.getmDefaultColor(), hsv_next);
+            float[] hsvNext = new float[3];
+            Color.colorToHSV(next.getmDefaultColor(), hsvNext);
             borders[0] = 0f;
-            borders[1] = defaultColorHsv[0] + ((hsv_next[0] - defaultColorHsv[0]) / 2);
+            borders[1] = defaultColorHsv[0] + ((hsvNext[0] - defaultColorHsv[0]) / 2);
 
         } else if (position == mCellCount - 1) {
 
             CellColorView prev = (CellColorView) mRoot.getChildAt(cellColorView.getmPosition() - 1);
-            float[] hsv_prev = new float[3];
-            Color.colorToHSV(prev.getmDefaultColor(), hsv_prev);
-            borders[0] = hsv_prev[0] + ((defaultColorHsv[0] - hsv_prev[0]) / 2);
+            float[] hsvPrev = new float[3];
+            Color.colorToHSV(prev.getmDefaultColor(), hsvPrev);
+            borders[0] = hsvPrev[0] + ((defaultColorHsv[0] - hsvPrev[0]) / 2);
             borders[1] = 360f;
 
         } else {
@@ -159,13 +151,13 @@ public abstract class AbstractPickerView extends HorizontalScrollView
             CellColorView prev = (CellColorView) mRoot.getChildAt(cellColorView.getmPosition() - 1);
             CellColorView next = (CellColorView) mRoot.getChildAt(cellColorView.getmPosition() + 1);
 
-            float[] hsv_prev = new float[3];
-            Color.colorToHSV(prev.getmDefaultColor(), hsv_prev);
-            float[] hsv_next = new float[3];
-            Color.colorToHSV(next.getmDefaultColor(), hsv_next);
+            float[] hsvPrev = new float[3];
+            Color.colorToHSV(prev.getmDefaultColor(), hsvPrev);
+            float[] hsvNext = new float[3];
+            Color.colorToHSV(next.getmDefaultColor(), hsvNext);
 
-            borders[0] = hsv_prev[0] + ((defaultColorHsv[0] - hsv_prev[0]) / 2);
-            borders[1] = defaultColorHsv[0] + ((hsv_next[0] - defaultColorHsv[0]) / 2);
+            borders[0] = hsvPrev[0] + ((defaultColorHsv[0] - hsvPrev[0]) / 2);
+            borders[1] = defaultColorHsv[0] + ((hsvNext[0] - defaultColorHsv[0]) / 2);
         }
 
         return borders;
