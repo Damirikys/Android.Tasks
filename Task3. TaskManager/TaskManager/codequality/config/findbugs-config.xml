@@ -5,6 +5,7 @@
         <Or>
             <Class name="~.*\.R\$.*"/>
             <Class name="~.*\.Manifest\$.*"/>
+            <Class name="~.*\.*Test" />
         </Or>
     </Match>
 
@@ -12,6 +13,7 @@
         <Or>
             <Bug pattern="SF_SWITCH_NO_DEFAULT"/>
             <Bug pattern="RV_RETURN_VALUE_IGNORED"/>
+            <Bug pattern="RV_ABSOLUTE_VALUE_OF_HASHCODE"/>
         </Or>
     </Match>
 </FindBugsFilter>

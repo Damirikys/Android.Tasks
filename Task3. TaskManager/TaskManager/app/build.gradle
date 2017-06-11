@@ -31,6 +31,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 repositories {
@@ -77,4 +81,5 @@ dependencies {
     testCompile 'org.mockito:mockito-core:2.8.9'
     testCompile "org.robolectric:robolectric:3.3.2"
     testCompile "org.assertj:assertj-core:1.7.0"
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.8.0'
 }

@@ -11,8 +11,8 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 import ru.urfu.taskmanager.R;
-import ru.urfu.taskmanager.auth.models.User;
-import ru.urfu.taskmanager.task_manager.main.view.TaskManagerActivity_;
+import ru.urfu.taskmanager.entities.User;
+import ru.urfu.taskmanager.view.main.view.TaskManagerActivity_;
 
 @SuppressLint("Registered")
 @EActivity(R.layout.activity_login)
