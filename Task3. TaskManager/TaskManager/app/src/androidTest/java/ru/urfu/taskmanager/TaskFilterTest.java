@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
@@ -36,6 +37,6 @@ public class TaskFilterTest extends TaskManagerInstrumentedTest
         waitView();
         onView(withId(R.id.alphabetically_switch)).perform(click());
         onView(withText(getString(R.string.descendyngly))).perform(click());
-        onView(withText(getString(R.string.apply))).perform(click());
+        onView(withText(getString(R.string.apply))).perform(scrollTo(), click());
     }
 }

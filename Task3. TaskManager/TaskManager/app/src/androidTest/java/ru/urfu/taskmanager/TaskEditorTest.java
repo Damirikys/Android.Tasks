@@ -110,10 +110,10 @@ public class TaskEditorTest extends TaskManagerInstrumentedTest
         imgUrlField.clear();
         imgUrlField.setText(IMAGE_URL);
 
-        object.scroll(Direction.DOWN, 100f);
+        object.findObject(By.res(PACKAGE, "image_view"))
+                .scroll(Direction.DOWN, 100f);
 
-        object.findObject(By.res(PACKAGE, "save_button"))
-                .click();
+        object.findObject(By.text("Готово")).click();
 
         waitView();
     }
