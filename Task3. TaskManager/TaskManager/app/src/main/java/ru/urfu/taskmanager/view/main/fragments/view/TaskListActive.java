@@ -50,7 +50,7 @@ public class TaskListActive extends TaskListFragment
                 case R.id.edit_the_task:
                     mManager.getPresenter().editTheTask(position, mAdapter, holder);
                     break;
-                case R.id.postpone_the_task: {
+                case R.id.postpone_the_task:
                     mManager.getPresenter().postponeTheTask(
                             (int) id, (date, entry) ->
                                     new SingleDateAndTimePickerDialog.Builder(getContext())
@@ -62,7 +62,6 @@ public class TaskListActive extends TaskListFragment
                                             .build()
                                             .display()
                     );
-                }
                 break;
                 case R.id.delete_the_task:
                     mManager.getPresenter().deleteTheTask((int) id);

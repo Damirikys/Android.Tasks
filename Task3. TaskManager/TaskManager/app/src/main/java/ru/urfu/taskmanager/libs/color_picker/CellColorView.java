@@ -23,6 +23,8 @@ public class CellColorView extends View implements View.OnTouchListener
     private static final int CELL_SIZE = SizeManager.dpToPx(45);
     public static final int CELL_MARGIN = (int) (CELL_SIZE * 0.25);
 
+    private static final float DISTANCE_OFFSET = 0.005f;
+
     private static LinearLayout.LayoutParams sDefaultParams;
     private static LinearLayout.LayoutParams sScaledParams;
 
@@ -109,7 +111,7 @@ public class CellColorView extends View implements View.OnTouchListener
         float fromY = mGestureListener.tapY;
 
         float distanceX = (x - fromX);
-        float distanceY = ((y - fromY) * 0.005f);
+        float distanceY = ((y - fromY) * DISTANCE_OFFSET);
 
         float[] hsvValue = Arrays.copyOf(mCurrentColor, HSV_ARRAY_LENGTH);
 

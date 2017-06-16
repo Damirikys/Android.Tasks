@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import ru.urfu.taskmanager.entities.User;
-import ru.urfu.taskmanager.entities.TaskEntry;
 import ru.urfu.taskmanager.db.DbTasks;
+import ru.urfu.taskmanager.entities.TaskEntry;
 import ru.urfu.taskmanager.entities.TaskEntryCouples;
+import ru.urfu.taskmanager.entities.User;
+import ru.urfu.taskmanager.interfaces.Thenable;
 import ru.urfu.taskmanager.network.APICallback;
 import ru.urfu.taskmanager.network.APIResponse;
-import ru.urfu.taskmanager.network.APIService;
-import ru.urfu.taskmanager.interfaces.Thenable;
+import ru.urfu.taskmanager.network.NotesBackendService;
 
 public class SynchronizeService extends Service implements Thenable<Void>
 {
@@ -28,7 +28,7 @@ public class SynchronizeService extends Service implements Thenable<Void>
     private TaskEntryCouples mDisputableEntries;
     private SparseArray<TaskEntry> mRemoteMapEntries;
 
-    private APIService<TaskEntry> mApiService;
+    private NotesBackendService<TaskEntry> mApiService;
     private DbTasks mDatabase;
 
     @Override

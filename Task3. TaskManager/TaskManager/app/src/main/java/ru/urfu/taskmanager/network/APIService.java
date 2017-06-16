@@ -29,7 +29,7 @@ public class APIService<T> implements NotesBackendService<T>
         serviceUrl = serverBaseUrl + "/user/" + user.getUserId() + "/";
     }
 
-    public APIService<T> setRawType(Class clazz) {
+    public NotesBackendService<T> setRawType(Class clazz) {
         typeToken = clazz;
         return this;
     }

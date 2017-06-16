@@ -22,6 +22,8 @@ import ru.urfu.taskmanager.tools.TimeUtils;
 
 class FilterViewHolder
 {
+    private static final float ALPHA_CONST = 0.3f;
+
     ListView mSavedFiltersList;
     Button mFilterApplyButton;
     Button mFilterSaveButton;
@@ -98,7 +100,7 @@ class FilterViewHolder
                 RecentColors.showRecent(mContext,
                         color -> mColorPickedArea.setBackgroundColor(color));
             } else {
-                mColorPickedArea.setAlpha(0.3f);
+                mColorPickedArea.setAlpha(ALPHA_CONST);
             }
         });
 

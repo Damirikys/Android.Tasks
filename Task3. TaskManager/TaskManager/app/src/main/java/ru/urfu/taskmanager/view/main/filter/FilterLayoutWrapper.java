@@ -1,7 +1,6 @@
 package ru.urfu.taskmanager.view.main.filter;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 
 import ru.urfu.taskmanager.view.main.adapters.FiltersAdapter;

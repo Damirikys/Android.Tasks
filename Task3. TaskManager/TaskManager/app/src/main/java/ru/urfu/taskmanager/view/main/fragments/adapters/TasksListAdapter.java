@@ -26,6 +26,8 @@ import ru.urfu.taskmanager.tools.TimeUtils;
 
 public class TasksListAdapter extends AbstractTaskListAdapter<TasksListAdapter.ViewHolder>
 {
+    private static final float ALPHA_CONST = 0.4f;
+
     private final TaskListFragment mFragment;
     private final SimpleDatabase<TaskEntry> mDatabase;
 
@@ -42,9 +44,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter<TasksListAdapter.V
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
         TaskEntry entry = mDatabase.getCurrentEntryFromCursor(cursor);
-        TaskEntry prev = (cursor.moveToPrevious())
-                ? mDatabase.getCurrentEntryFromCursor(cursor)
-                : null;
+        TaskEntry prev = (cursor.moveToPrevious()) ? mDatabase.getCurrentEntryFromCursor(cursor) : null;
 
         GradientDrawable gd = new GradientDrawable();
         gd.setColor(entry.getColorInt());
@@ -71,7 +71,7 @@ public class TasksListAdapter extends AbstractTaskListAdapter<TasksListAdapter.V
         String entryTitle = getTitleFromEntry(entry);
 
         if (entryTitle.equals(OVERDUE))
-            holder.layout.setAlpha(0.4f);
+            holder.layout.setAlpha(ALPHA_CONST);
         else holder.layout.setAlpha(1f);
 
         if (mDefaultFilter.isOrdered()) {

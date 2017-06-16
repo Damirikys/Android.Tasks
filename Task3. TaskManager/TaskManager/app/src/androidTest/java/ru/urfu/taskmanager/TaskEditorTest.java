@@ -85,31 +85,6 @@ public class TaskEditorTest extends TaskManagerInstrumentedTest
 
         UiObject2 object = device.findObject(By.res(PACKAGE, "task_editor_scrollview"));
 
-        String title = "";
-        for (String titleWord : generateRandomWords(2)) {
-            title += titleWord + " ";
-        }
-
-        // Print title
-        UiObject2 titleField = object.findObject(By.res(PACKAGE, "title_edit_field"));
-        titleField.clear();
-        titleField.setText(title);
-
-        String desc = "";
-        for (String descWord : generateRandomWords(3)) {
-            desc += descWord + " ";
-        }
-
-        // Print description
-        UiObject2 descField = object.findObject(By.res(PACKAGE, "descr_edit_field"));
-        descField.clear();
-        descField.setText(desc);
-
-        // Print image url
-        UiObject2 imgUrlField = object.findObject(By.res(PACKAGE, "image_url_edit_field"));
-        imgUrlField.clear();
-        imgUrlField.setText(IMAGE_URL);
-
         object.findObject(By.res(PACKAGE, "image_view"))
                 .scroll(Direction.DOWN, 100f);
 
@@ -150,13 +125,12 @@ public class TaskEditorTest extends TaskManagerInstrumentedTest
     {
         String[] randomStrings = new String[numberOfWords];
         Random random = new Random();
-        for(int i = 0; i < numberOfWords; i++)
-        {
+        for (int i = 0; i < numberOfWords; i++) {
             char[] word = new char[random.nextInt(5)+3];
-            for(int j = 0; j < word.length; j++)
-            {
-                word[j] = (char)('a' + random.nextInt(26));
+            for (int j = 0; j < word.length; j++) {
+                word[j] = (char) ('a' + random.nextInt(26));
             }
+
             randomStrings[i] = new String(word);
         }
         return randomStrings;

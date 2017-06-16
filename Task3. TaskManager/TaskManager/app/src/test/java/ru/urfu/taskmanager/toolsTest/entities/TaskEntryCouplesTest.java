@@ -31,8 +31,8 @@ public class TaskEntryCouplesTest
 
         for (TaskEntryCouples.Couple couple : couples) {
             assertNotEquals(couple.getKey(), couple.getValue());
-            assertEquals((int)couple.getKey().getEntryId(), 1);
-            assertEquals((int)couple.getValue().getEntryId(), 2);
+            assertEquals((int) couple.getKey().getEntryId(), 1);
+            assertEquals((int) couple.getValue().getEntryId(), 2);
         }
     }
 }

@@ -1,4 +1,4 @@
-package ru.urfu.taskmanager.toolsTest.network;
+package ru.urfu.taskmanager.mockserver;
 
 import android.accounts.NetworkErrorException;
 
@@ -12,12 +12,12 @@ import ru.urfu.taskmanager.network.APIRequestInterface;
 import ru.urfu.taskmanager.network.APIResponse;
 import ru.urfu.taskmanager.tools.JSONFactory;
 
-class MockAPIRequest<S, R> implements APIRequestInterface<R>
+public class MockAPIRequest<S, R> implements APIRequestInterface<R>
 {
     private MockServer<S> mockServer;
     private APIRequestInterface<R> mockableRequest;
 
-    MockAPIRequest(MockServer<S> server, APIRequestInterface<R> request) {
+    public MockAPIRequest(MockServer<S> server, APIRequestInterface<R> request) {
         this.mockServer = server;
         this.mockableRequest = request;
     }
@@ -38,7 +38,8 @@ class MockAPIRequest<S, R> implements APIRequestInterface<R>
                     new TypeToken<APIResponse<R>>(){}.getType());
         }
 
-        if (apiResponse.getStatus().equals(APIResponse.STATUS_OK)) {
+        String status = apiResponse.getStatus();
+        if (status.equals(APIResponse.STATUS_OK)) {
             cb.onResponse(apiResponse);
         } else {
             cb.onFailure(new NetworkErrorException(

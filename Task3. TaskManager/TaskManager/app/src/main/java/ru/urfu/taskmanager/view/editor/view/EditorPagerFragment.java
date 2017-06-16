@@ -60,9 +60,8 @@ public class EditorPagerFragment extends TaskPagerFragment
 
         EditorPagerAdapter(FragmentManager fm) {
             super(fm);
-            cursor = (mDataAdapter != null)
-                    ? mDataAdapter.getCursor()
-                    : mDatabase.getCursor(DbTasksFilter.DEFAULT_BUILDER.build());
+            cursor = (mDataAdapter != null) ? mDataAdapter.getCursor() : mDatabase
+                    .getCursor(DbTasksFilter.DEFAULT_BUILDER.build());
         }
 
         @Override

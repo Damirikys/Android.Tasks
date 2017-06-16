@@ -7,7 +7,7 @@ apply from: "${rootProject.projectDir}/codequality/codequality-android.gradle"
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "ru.urfu.taskmanager"
         minSdkVersion 18

@@ -52,7 +52,7 @@ public class APIRequest<T> implements APIRequestInterface<T>
                 response = client.execute(request);
                 APIResponse<T> apiResponse = null;
 
-                if(response.getEntity() != null)
+                if (response.getEntity() != null)
                 {
                     BufferedReader reader = new BufferedReader(
                             new InputStreamReader(response.getEntity().getContent()));
@@ -90,21 +90,14 @@ public class APIRequest<T> implements APIRequestInterface<T>
                     cb.onFailure(new NetworkErrorException(
                             "The server did not receive a reply."));
                 }
-            }
-            catch (IOException | ParseException e)
-            {
+            } catch (IOException | ParseException e) {
                 cb.onFailure(e);
                 e.printStackTrace();
-            }
-            finally
-            {
-                try
-                {
+            } finally {
+                try {
                     if (response != null) response.close();
                     if (client != null) client.close();
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     cb.onFailure(e);
                     e.printStackTrace();
                 }

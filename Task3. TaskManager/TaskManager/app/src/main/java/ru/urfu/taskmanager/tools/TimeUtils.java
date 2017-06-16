@@ -44,8 +44,10 @@ public final class TimeUtils
         sdf.setDateFormatSymbols(dfs);
 
         Date jud = null;
-        try { jud = FORMATTER.parse(FORMATTER.format(date.getTime())); }
-        catch (ParseException ignored) {}
+        try {
+            jud = FORMATTER.parse(FORMATTER.format(date.getTime()));
+        } catch (ParseException ignored) {
+        }
 
         return sdf.format(jud); // output: 28 февраля 2014 г.
     }

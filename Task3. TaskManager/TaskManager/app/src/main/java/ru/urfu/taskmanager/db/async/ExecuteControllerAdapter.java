@@ -55,8 +55,6 @@ public abstract class ExecuteControllerAdapter<T> extends Notificator implements
 
     @Override
     protected NotificationManager getNotificationManager() {
-        return (notificationManager == null)
-                ? notificationManager = bindNotificationManager()
-                : notificationManager;
+        return (notificationManager == null) ? notificationManager = bindNotificationManager() : notificationManager;
     }
 }

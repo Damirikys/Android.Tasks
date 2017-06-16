@@ -1,11 +1,15 @@
-package ru.urfu.taskmanager.toolsTest.network;
+package ru.urfu.taskmanager.mockserver;
+
+import android.util.Log;
 
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 
-import org.codehaus.plexus.util.IOUtil;
-
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,8 +22,9 @@ import ru.urfu.taskmanager.network.APIRequestInterface;
 import ru.urfu.taskmanager.network.APIResponse;
 import ru.urfu.taskmanager.tools.JSONFactory;
 
-class MockServer<T>
+public class MockServer<T>
 {
+    private static final String TAG = "MOCK_SERVER";
     private static final String UNDEFINED =
             "<h1>404 Not Found</h1>\n" + "<h3>The page you have requested could not be found.</h3>";
     private static final String NOT_FOUND =
@@ -31,9 +36,10 @@ class MockServer<T>
 
     private Map<Integer, List<T>> mockDatabase = new LinkedTreeMap<>();
 
-    <R> String handleRequest(APIRequestInterface<R> apiRequestInterface)
+    public <R> String handleRequest(APIRequestInterface<R> apiRequestInterface)
     {
         try {
+            Log.d(TAG, "handle request: " + apiRequestInterface.getRequest().toString());
             return handleResponse(apiRequestInterface);
         } catch (Exception e) {
             return "";
@@ -48,7 +54,9 @@ class MockServer<T>
         return handleOptions(method, options, request);
     }
 
-    private String handleOptions(final String method, final List<String> options, HttpUriRequest request) throws IOException {
+    private String handleOptions(final String method,
+                                 final List<String> options,
+                                 HttpUriRequest request) throws IOException {
         if (options.get(0).equals("user")) {
             final int userId = Integer.parseInt(options.get(1));
 
@@ -72,18 +80,33 @@ class MockServer<T>
                     }
                     case METHOD_POST:
                     {
-                        String stringRequest = IOUtil.toString(((HttpPost) request).getEntity().getContent());
+                        String stringRequest = convertStreamToString(((HttpPost) request).getEntity().getContent());
+
                         T entry = JSONFactory.fromJson(stringRequest, new TypeToken<T>() {}.getType());
 
-                        mockDatabase.get(userId).set(noteId, entry);
-                        APIResponse<Void> apiResponse = new APIResponse<>(APIResponse.STATUS_OK, null, null);
-                        return JSONFactory.toJson(apiResponse, APIResponse.class);
+                        APIResponse<Void> apiResponse;
 
+                        List<T> data = mockDatabase.get(userId);
+                        if (data != null) {
+                            data.set(noteId, entry);
+                            apiResponse = new APIResponse<>(APIResponse.STATUS_OK, null, null);
+                        } else {
+                            apiResponse = new APIResponse<>(APIResponse.NOT_FOUND, null, null);
+                        }
+
+                        return JSONFactory.toJson(apiResponse, APIResponse.class);
                     }
                     case METHOD_DELETE:
                     {
-                        mockDatabase.get(userId).remove(noteId);
-                        APIResponse<Void> apiResponse = new APIResponse<>(APIResponse.STATUS_OK, null, null);
+                        APIResponse<Void> apiResponse;
+
+                        if (mockDatabase.get(userId) != null) {
+                            mockDatabase.get(userId).remove(noteId);
+                            apiResponse = new APIResponse<>(APIResponse.STATUS_OK, null, null);
+                        } else {
+                            apiResponse = new APIResponse<>(APIResponse.NOT_FOUND, null, null);
+                        }
+
                         return JSONFactory.toJson(apiResponse, APIResponse.class);
                     }
                     default: return UNDEFINED;
@@ -92,7 +115,7 @@ class MockServer<T>
                 switch (method) {
                     case METHOD_POST:
                     {
-                        String stringRequest = IOUtil.toString(((HttpPost) request).getEntity().getContent());
+                        String stringRequest = convertStreamToString(((HttpPost) request).getEntity().getContent());
                         T entry = JSONFactory.fromJson(stringRequest, new TypeToken<T>() {}.getType());
 
                         APIResponse<Integer> apiResponse = new APIResponse<>(APIResponse.STATUS_OK, null,
@@ -132,5 +155,26 @@ class MockServer<T>
         }
 
         return userData.size() - 1;
+    }
+
+    private String convertStreamToString(InputStream is) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append('\n');
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
     }
 }

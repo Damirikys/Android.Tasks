@@ -15,7 +15,8 @@ import java.util.Locale;
 
 public final class ISO8601
 {
-    private static final DateFormat sFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
+    private static final DateFormat S_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
+    private static final int ISO_OFFSET = 20;
 
     private ISO8601() {}
 
@@ -24,8 +25,8 @@ public final class ISO8601
      */
     public synchronized static String fromTimestamp(final long timestamp) {
         Date date = new Date(timestamp);
-        String formatted = sFormatter.format(date);
-        return formatted.substring(0, 22) + ":" + formatted.substring(22);
+        String formatted = S_FORMATTER.format(date);
+        return formatted.substring(0, ISO_OFFSET) + ":" + formatted.substring(ISO_OFFSET);
     }
 
     /**
@@ -34,10 +35,10 @@ public final class ISO8601
     public synchronized static long toTimestamp(final String iso8601string) throws ParseException {
         String s = iso8601string.replace("Z", "+00:00");
         try {
-            s = s.substring(0, 22) + s.substring(23);  // to get rid of the ":"
+            s = s.substring(0, ISO_OFFSET) + s.substring(ISO_OFFSET + 1);  // to get rid of the ":"
         } catch (IndexOutOfBoundsException e) {
             throw new ParseException("Invalid length", 0);
         }
-        return sFormatter.parse(s).getTime();
+        return S_FORMATTER.parse(s).getTime();
     }
 }

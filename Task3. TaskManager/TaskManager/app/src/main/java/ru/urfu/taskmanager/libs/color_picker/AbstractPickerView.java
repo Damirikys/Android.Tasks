@@ -24,6 +24,14 @@ public abstract class AbstractPickerView extends HorizontalScrollView
     private static final int DEFAULT_CELL_COUNT = 10;
     private static final int DEFAULT_CELL_COLOR = Color.WHITE;
 
+    private static final int COLOR_A = 0xFFFF0D00;
+    private static final int COLOR_B = 0xFFFBFF00;
+    private static final int COLOR_C = 0xFF04FF00;
+    private static final int COLOR_D = 0xFF00FBFF;
+    private static final int COLOR_E = 0xFF0800FF;
+    private static final int COLOR_F = 0xFFFF0004;
+    private static final int COLOR_G = 0xFFFF00FF;
+
     private LinearLayout mRoot;
 
     private int mCurrentColor = DEFAULT_CELL_COLOR;
@@ -168,14 +176,7 @@ public abstract class AbstractPickerView extends HorizontalScrollView
             @Override
             public Shader resize(int width, int height) {
                 return new LinearGradient(0, 0, width, height,
-                        new int[]{
-                                0xFFFF0D00,
-                                0xFFFBFF00,
-                                0xFF04FF00,
-                                0xFF00FBFF,
-                                0xFF0800FF,
-                                0xFFFF00FF,
-                                0xFFFF0004
+                        new int[]{COLOR_A, COLOR_B, COLOR_C, COLOR_D, COLOR_E, COLOR_F, COLOR_G
                         },
                         null, Shader.TileMode.CLAMP);
             }

@@ -1,11 +1,11 @@
-package ru.urfu.taskmanager.toolsTest.network;
+package ru.urfu.taskmanager.toolsTest.network.mockserver;
 
 import java.util.Collection;
 
 import ru.urfu.taskmanager.network.APIRequestInterface;
 import ru.urfu.taskmanager.network.NotesBackendService;
 
-final class MockAPIService<T> implements NotesBackendService<T>
+public final class MockAPIService<T> implements NotesBackendService<T>
 {
     private MockServer<T> mockedServer;
     private NotesBackendService<T> mockedService;
@@ -40,7 +40,12 @@ final class MockAPIService<T> implements NotesBackendService<T>
         return new MockAPIRequest<>(mockedServer, mockedService.deleteNote(id));
     }
 
-    static <T> MockAPIService<T> mock(MockServer<T> server, NotesBackendService<T> service) {
+    @Override
+    public NotesBackendService<T> setRawType(Class clazz) {
+        return mockedService.setRawType(clazz);
+    }
+
+    public static <T> MockAPIService<T> mock(MockServer<T> server, NotesBackendService<T> service) {
         return new MockAPIService<>(server, service);
     }
 }

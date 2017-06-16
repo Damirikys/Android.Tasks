@@ -196,7 +196,7 @@ public class TaskEntry implements Parcelable
     }
 
     public TaskEntry setColor(@ColorInt int color) {
-        this.mColor = String.format("#%06X", (0xFFFFFF & color));
+        this.mColor = String.format("#%06X", (color));
         return this;
     }
 

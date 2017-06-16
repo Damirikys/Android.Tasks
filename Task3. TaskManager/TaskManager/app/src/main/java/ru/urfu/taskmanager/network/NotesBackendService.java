@@ -13,4 +13,6 @@ public interface NotesBackendService<T>
     APIRequestInterface<Void> editNote(T entry, int id);
 
     APIRequestInterface<Void> deleteNote(int id);
+
+    NotesBackendService<T> setRawType(Class clazz);
 }

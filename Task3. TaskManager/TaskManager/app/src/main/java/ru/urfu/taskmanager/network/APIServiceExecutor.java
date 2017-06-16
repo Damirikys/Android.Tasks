@@ -24,7 +24,7 @@ public class APIServiceExecutor implements AsyncExecutor<TaskEntry>
 {
     private Context mContext;
     private DbAsyncExecutor<TaskEntry> mDbAsyncExecutor = DbTasks.getInstance().getAsyncExecutor();
-    private APIService<TaskEntry> mApiService;
+    private NotesBackendService<TaskEntry> mApiService;
 
     private APICallback<Void> mFailedCallback = new APICallback<Void>() {
         @Override
@@ -33,7 +33,7 @@ public class APIServiceExecutor implements AsyncExecutor<TaskEntry>
         }
     };
 
-    public APIServiceExecutor(Context context, APIService<TaskEntry> service) {
+    public APIServiceExecutor(Context context, NotesBackendService<TaskEntry> service) {
         this.mContext = context;
         this.mApiService = service;
     }

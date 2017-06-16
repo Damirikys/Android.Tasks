@@ -9,12 +9,14 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Collection;
 
-import ru.urfu.taskmanager.entities.User;
 import ru.urfu.taskmanager.db.DbTasks;
+import ru.urfu.taskmanager.entities.TaskEntry;
+import ru.urfu.taskmanager.entities.User;
 import ru.urfu.taskmanager.network.APICallback;
 import ru.urfu.taskmanager.network.APIResponse;
 import ru.urfu.taskmanager.network.APIService;
-import ru.urfu.taskmanager.entities.TaskEntry;
+import ru.urfu.taskmanager.toolsTest.network.mockserver.MockAPIService;
+import ru.urfu.taskmanager.toolsTest.network.mockserver.MockServer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

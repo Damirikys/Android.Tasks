@@ -209,7 +209,6 @@ public class TaskManagerActivity extends AppCompatActivity
     private void startToolbarMode(ToolbarMode startedToolbarMode) {
         switch (startedToolbarMode) {
             case FILTER:
-            {
                 mSearchMenuItem.setVisible(false);
                 mSearchSpinnerItem.setVisible(false);
                 mFilterCatalogMenuItem.setVisible(true);
@@ -219,17 +218,13 @@ public class TaskManagerActivity extends AppCompatActivity
 
                 mToolbar.setTitle(getString(R.string.toolbar_filter_title));
                 mFilterMenuItem.setIcon(R.drawable.ic_undo);
-            }
             break;
             case SEARCH:
-            {
                 mSearchMenuItem.setVisible(false);
                 mFilterMenuItem.setVisible(false);
                 mSearchSpinnerItem.setVisible(true);
-            }
             break;
             default:
-            {
                 mSearchMenuItem.setVisible(true);
                 mFilterMenuItem.setVisible(true);
                 mSearchSpinnerItem.setVisible(false);
@@ -240,7 +235,6 @@ public class TaskManagerActivity extends AppCompatActivity
 
                 mFilterMenuItem.setIcon(R.drawable.ic_sort);
                 mToolbar.setTitle(getString(R.string.app_name));
-            }
             break;
         }
     }

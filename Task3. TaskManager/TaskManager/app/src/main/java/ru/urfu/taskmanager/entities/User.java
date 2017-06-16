@@ -6,6 +6,7 @@ import android.provider.Settings;
 
 import ru.urfu.taskmanager.network.APIServiceExecutor;
 import ru.urfu.taskmanager.network.APIService;
+import ru.urfu.taskmanager.network.NotesBackendService;
 
 public final class User
 {
@@ -13,7 +14,7 @@ public final class User
 
     private int mId;
     private String mLogin;
-    private APIService<TaskEntry> mApiService;
+    private NotesBackendService<TaskEntry> mApiService;
     private APIServiceExecutor mAPIServiceExecutor;
     private String deviceIdentifier;
 
@@ -21,8 +22,16 @@ public final class User
         this.mId = Math.abs(mLogin.hashCode());
         this.mLogin = mLogin;
         this.deviceIdentifier = initDeviceId(context);
-        this.mAPIServiceExecutor = new APIServiceExecutor(context,
-                mApiService = new APIService<TaskEntry>(this).setRawType(TaskEntry.class));
+
+        this.mApiService = new APIService<>(this);
+        this.mApiService.setRawType(TaskEntry.class);
+
+        this.mAPIServiceExecutor = new APIServiceExecutor(context, mApiService);
+    }
+
+    public void changeApiService(Context context, NotesBackendService<TaskEntry> apiService) {
+        this.mApiService = apiService;
+        this.mAPIServiceExecutor = new APIServiceExecutor(context, mApiService);
     }
 
     public int getUserId() {
@@ -41,7 +50,7 @@ public final class User
         return mAPIServiceExecutor;
     }
 
-    public APIService<TaskEntry> getService() {
+    public NotesBackendService<TaskEntry> getService() {
         return mApiService;
     }
 
@@ -50,8 +59,9 @@ public final class User
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
-    public static void doLogin(Context context, String login) {
+    public static User doLogin(Context context, String login) {
         activeUser = new User(context, login);
+        return activeUser;
     }
 
     public static User getActiveUser() {

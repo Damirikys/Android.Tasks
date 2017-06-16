@@ -79,7 +79,6 @@
                     android:id="@+id/by_single_date_radio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="8dp"
                     android:layout_marginEnd="8dp"
                     android:text="@string/by_date"/>
 
@@ -102,6 +101,7 @@
 
                 <EditText
                     android:id="@+id/start_date"
+                    android:labelFor="@id/start_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -116,6 +116,7 @@
 
                 <EditText
                     android:id="@+id/end_date"
+                    android:labelFor="@id/end_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -140,7 +141,6 @@
                     android:id="@+id/selected_color_area"
                     android:layout_width="match_parent"
                     android:layout_height="27dp"
-                    android:layout_marginRight="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="3"
                     android:alpha="0.3"
