@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".view.main.view.TaskManagerActivity">
+
+    <item
+        android:id="@+id/action_export"
+        android:title="@string/export_title"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_import"
+        android:title="@string/import_title"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_sync"
+        android:title="@string/sync_title"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_generation"
+        android:title="@string/generate_data"
+        android:enabled="false"
+        app:showAsAction="never"/>
+
+</menu>

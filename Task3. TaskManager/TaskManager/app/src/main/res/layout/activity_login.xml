@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/colorPrimary"
+              android:gravity="center"
+              android:padding="48dp"
+              android:descendantFocusability="beforeDescendants"
+              android:focusableInTouchMode="true">
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/LoginEditText">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/loginEditText"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:inputType="text"
+            android:textColor="@color/half_lite_gray"
+            android:hint="@string/enter_the_login"
+            android:maxLength="16"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/loginButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/lite_gray"
+        android:text="@string/login"
+        style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"/>
+
+</LinearLayout>

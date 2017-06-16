@@ -1,0 +1,19 @@
+<FindBugsFilter>
+    <Match>
+        <!-- Ignore generated *.R and *.Manifest classes -->
+        <!-- Also ignore protobuf Metrica file -->
+        <Or>
+            <Class name="~.*\.R\$.*"/>
+            <Class name="~.*\.Manifest\$.*"/>
+            <Class name="~.*\.*Test" />
+        </Or>
+    </Match>
+
+    <Match>
+        <Or>
+            <Bug pattern="SF_SWITCH_NO_DEFAULT"/>
+            <Bug pattern="RV_RETURN_VALUE_IGNORED"/>
+            <Bug pattern="RV_ABSOLUTE_VALUE_OF_HASHCODE"/>
+        </Or>
+    </Match>
+</FindBugsFilter>
